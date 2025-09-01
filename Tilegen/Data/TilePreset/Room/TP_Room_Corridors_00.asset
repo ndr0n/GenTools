@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59acb41231e04177b221598d8adf5b83, type: 3}
+  m_Name: TP_Room_Corridors_00
+  m_EditorClassIdentifier: Assembly-CSharp::Tilegen.TilegenPreset
+  Layer:
+  - Iterations:
+    - Tile: {fileID: 11400000, guid: f5ba76eb4082e07f0be497d518d68fd8, type: 2}
+      Type: 0
+      Algorithm:
+      - Algorithm: 0
+        FillPercentage: {x: 100, y: 100}
+        DegradePercentage: {x: 25, y: 75}
+        Size: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0.25}
+        PathWidth: {x: 0, y: 0}
+        XBeginPercent: {x: 0, y: 0}
+        XFinishPercent: {x: 0, y: 0}
+        YBeginPercent: {x: 0, y: 0}
+        YFinishPercent: {x: 0, y: 0}
+        RoomAmount: {x: 0, y: 0}
+        RoomWidth: {x: 0, y: 0}
+        RoomHeight: {x: 0, y: 0}
+        OuterWall: 0
+        WallPercentage: {x: 0, y: 100}
+        InputTexture: {fileID: 2800000, guid: d1a5f707f8b508411b44579066e3db54, type: 3}
+        N: {x: 3, y: 3}
+        Symmetry: {x: 1, y: 1}
+        Iterations: {x: 0, y: 0}
+        Invert: 0
+  - Iterations:
+    - Tile: {fileID: 11400000, guid: e5b224ff15c4dd371916fbed3c848648, type: 2}
+      Type: 0
+      Algorithm:
+      - Algorithm: 7
+        FillPercentage: {x: 100, y: 100}
+        DegradePercentage: {x: 25, y: 75}
+        Size: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0.25}
+        PathWidth: {x: 0, y: 0}
+        XBeginPercent: {x: 0, y: 0}
+        XFinishPercent: {x: 0, y: 0}
+        YBeginPercent: {x: 0, y: 0}
+        YFinishPercent: {x: 0, y: 0}
+        RoomAmount: {x: 5, y: 10}
+        RoomWidth: {x: 5, y: 10}
+        RoomHeight: {x: 5, y: 10}
+        OuterWall: 0
+        WallPercentage: {x: 0, y: 100}
+        InputTexture: {fileID: 2800000, guid: d1a5f707f8b508411b44579066e3db54, type: 3}
+        N: {x: 3, y: 3}
+        Symmetry: {x: 1, y: 1}
+        Iterations: {x: 0, y: 0}
+        Invert: 0

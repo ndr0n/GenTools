@@ -10,17 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 758cf2ccf13a4ae6a34a37b0288688e1, type: 3}
-  m_Name: TR_Test
-  m_EditorClassIdentifier: Assembly-CSharp::Tilegen.TileRoomType
+  m_Name: TR_Default
+  m_EditorClassIdentifier: Assembly-CSharp::GenTools.TileRoomType
   RoomTile:
   - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
-  - {fileID: 11400000, guid: e5b224ff15c4dd371916fbed3c848648, type: 2}
   - {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
+  - {fileID: 11400000, guid: e5b224ff15c4dd371916fbed3c848648, type: 2}
   MinSize: {x: 3, y: 3}
   MaxSize: {x: 100, y: 100}
   Floor:
   - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
-  Walls: []
+  Walls:
+  - Amount: 100
+    Chance: 100
+    Tile:
+    - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
+    Recursion: []
   Doors:
   - Amount: 2
     Chance: 100
@@ -29,8 +34,8 @@ MonoBehaviour:
     Recursion: []
   Stairs: []
   Objects:
-  - Amount: 5
-    Chance: 100
+  - Amount: 4
+    Chance: 50
     Tile:
     - {fileID: 11400000, guid: b6310488849e2a8a696a36663907763f, type: 2}
     Recursion: []

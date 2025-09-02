@@ -11,7 +11,7 @@ namespace GenTools
     }
 
     [System.Serializable]
-    [CreateAssetMenu(fileName = "TP", menuName = "Tilegen/Preset")]
+    [CreateAssetMenu(fileName = "TP", menuName = "GenTools/Tilegen/Preset")]
     public class TilegenPreset : ScriptableObject
     {
         public List<TilegenLayer> Layer = new();

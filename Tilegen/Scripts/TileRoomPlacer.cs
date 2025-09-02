@@ -159,18 +159,19 @@ namespace GenTools
             return PlacedRooms;
         }
     }
-
-#if UNITY_EDITOR
-    [CustomEditor(typeof(TileRoomPlacer))]
-    public class Tileroom_Editor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            TileRoomPlacer tileRoomPlacer = (TileRoomPlacer) target;
-            if (GUILayout.Button("Generate")) tileRoomPlacer.Generate();
-            if (GUILayout.Button("Clear")) tileRoomPlacer.Clear();
-        }
-    }
-#endif
+//
+// #if UNITY_EDITOR
+//     [CustomEditor(typeof(TileRoomPlacer))]
+//     public class Tileroom_Editor : Editor
+//     {
+//         public override void OnInspectorGUI()
+//         {
+//             base.OnInspectorGUI();
+//             TileRoomPlacer tileRoomPlacer = (TileRoomPlacer) target;
+//             if (GUILayout.Button("Generate")) tileRoomPlacer.Generate();
+//             if (GUILayout.Button("Clear")) tileRoomPlacer.Clear();
+//         }
+//     }
+// #endif
+//     
 }

@@ -4,10 +4,10 @@ namespace GenTools
 {
     public enum CardinalDirection
     {
-        North = 0,
-        East = 1,
-        South = 2,
-        West = 3,
+        South = 0,
+        West = 1,
+        North = 2,
+        East = 3,
         NorthEast = 4,
         SouthEast = 5,
         SouthWest = 6,

@@ -17,16 +17,11 @@ namespace GenTools
         public List<GenTileRoomType> RoomType = new();
         public List<GenTileRoom> PlacedRooms = new();
 
-        [FormerlySerializedAs("RoomBuilder")]
-        [Header("Extensions")]
-        public GenTileAreaBuilder AreaBuilder;
-
         System.Random random = new();
 
         public void Clear()
         {
             PlacedRooms.Clear();
-            if (AreaBuilder) AreaBuilder.Clear();
         }
 
         public void Generate()
@@ -36,7 +31,6 @@ namespace GenTools
             random = new(Seed);
             PlacedRooms = CreateRooms();
             PopulateRooms(PlacedRooms);
-            if (AreaBuilder) AreaBuilder.BuildRooms();
         }
 
         void PopulateRooms(List<GenTileRoom> rooms)

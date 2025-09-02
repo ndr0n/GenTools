@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Scaerth;
 using UnityEngine;
 
 namespace GenTools
@@ -79,8 +78,6 @@ namespace GenTools
                         southWall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
                         southWall.transform.localPosition += new Vector3(0, 0, -room.TileSize.z / 2f);
                         room.Node[pos.y][pos.x][pos.z].Wall[(int) CardinalDirection.South] = southWall;
-                        
-                        Debug.Log($"Added South Wall");
 
                         // North
                         pos = new Vector3Int(x, y, room.GridSize.z - 1);
@@ -89,8 +86,6 @@ namespace GenTools
                         northWall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
                         northWall.transform.localPosition += new Vector3(0, 0, room.TileSize.z / 2f);
                         room.Node[pos.y][pos.x][pos.z].Wall[(int) CardinalDirection.North] = northWall;
-                        
-                        Debug.Log($"Added North Wall");
 
                         await room.Await();
                     }

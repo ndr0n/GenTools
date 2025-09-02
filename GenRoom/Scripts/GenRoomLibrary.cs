@@ -141,6 +141,26 @@ namespace GenTools
             }
         }
 
+        public static async Awaitable BuildRoof(GenRoom room, System.Random random, GenRoomPreset preset)
+        {
+            if (preset.Roof.Count > 0)
+            {
+                GameObject roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
+                for (int x = 0; x < room.GridSize.x; x++)
+                {
+                    for (int z = 0; z < room.GridSize.z; z++)
+                    {
+                        Vector3Int pos = new Vector3Int(x, room.GridSize.y, z);
+                        GameObject roof = Object.Instantiate(roofPreset, room.Content);
+                        roof.transform.localPosition = new Vector3(pos.x * room.TileSize.x, pos.y * room.TileSize.y, pos.z * room.TileSize.z);
+                        roof.transform.localRotation = Quaternion.identity;
+                        room.Node[room.GridSize.y - 1][x][z].Roof = roof;
+                        await room.Await();
+                    }
+                }
+            }
+        }
+
         #endregion
     }
 }

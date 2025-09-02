@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace GenTools
 {
@@ -41,24 +43,26 @@ namespace GenTools
 
         public async Awaitable Generate()
         {
-            Clear();
-            if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
-            random = new(Seed);
-            if (GenTile != null)
+            try
             {
-                GenTile.Width = (Size.x - Border.x);
-                GenTile.Height = (Size.z - Border.y);
-                await GenerateFromGenTile();
+                Clear();
+                if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
+                random = new(Seed);
+                if (GenTile != null)
+                {
+                    GenTile.Width = (Size.x - Border.x);
+                    GenTile.Height = (Size.z - Border.y);
+                    await GenerateFromGenTile();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"{ex.Message}\n{ex.StackTrace}");
             }
         }
 
         public async Awaitable GenerateFromGenTile()
         {
-            // Generate Tile Data
-            GenTile.RandomSeed = false;
-            GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
-            GenTile.Generate();
-
             // Generate Main Room
             MainRoom = Instantiate(GenRoomPrefab.gameObject, transform).GetComponent<GenRoom>();
             MainRoom.name = "MainRoom";
@@ -69,24 +73,29 @@ namespace GenTools
             MainRoom.OuterDoorAmount = Vector2Int.zero;
             await MainRoom.Generate();
 
-            // Generate Inner Rooms
-            int index = 0;
-            foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
+            for (int y = 0; y < Size.y; y++)
             {
-                await BuildRoomFromTileRoom(tileRoom, index);
-                index++;
+                // Generate Tile Data
+                GenTile.RandomSeed = false;
+                GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
+                GenTile.Generate();
+                // Generate Inner Rooms
+                foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
+                {
+                    await BuildRoomFromTileRoom(tileRoom, y);
+                }
             }
         }
 
-        public async Awaitable BuildRoomFromTileRoom(GenTileRoom tileRoom, int index)
+        public async Awaitable BuildRoomFromTileRoom(GenTileRoom tileRoom, int y)
         {
             GenRoom room = Instantiate(GenRoomPrefab.gameObject, transform).GetComponent<GenRoom>();
-            room.name = $"InnerRoom-{index}";
+            room.name = $"InnerRoom-{room.transform.parent.childCount}";
             room.Type = InnerRoomType;
             room.RandomSeed = false;
             room.Seed = random.Next(int.MinValue, int.MaxValue);
             room.GridSize = new Vector3Int(tileRoom.Size.x, 1, tileRoom.Size.y);
-            room.transform.localPosition = new Vector3(tileRoom.Position.x * room.TileSize.x, 0, tileRoom.Position.y * room.TileSize.z);
+            room.transform.localPosition = new Vector3(tileRoom.Position.x * room.TileSize.x, y * room.TileSize.y, tileRoom.Position.y * room.TileSize.z);
             room.transform.localRotation = Quaternion.identity;
 
             room.transform.localPosition += new Vector3(Border.x * MainRoom.TileSize.x, 0, Border.y * MainRoom.TileSize.z);

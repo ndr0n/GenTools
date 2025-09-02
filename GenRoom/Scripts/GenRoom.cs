@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace GenTools
 {
@@ -63,14 +65,22 @@ namespace GenTools
 
         public async Awaitable Generate()
         {
-            Clear();
-            if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
-            random = new System.Random(Seed);
-            preset = Type.Presets[random.Next(Type.Presets.Count)];
+            try
+            {
+                Clear();
+                if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
+                random = new System.Random(Seed);
+                preset = Type.Presets[random.Next(Type.Presets.Count)];
 
-            await GenRoomLibrary.BuildFloor(this, random, preset);
-            await GenRoomLibrary.BuildOuterWalls(this, random, preset);
-            await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
+                await GenRoomLibrary.BuildFloor(this, random, preset);
+                await GenRoomLibrary.BuildOuterWalls(this, random, preset);
+                await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
+                await GenRoomLibrary.BuildRoof(this, random, preset);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"{ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         public async Awaitable Await()

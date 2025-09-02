@@ -70,6 +70,8 @@ namespace GenTools
                     }
                 }
             }
+            
+            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Clear();
         }
 
         void Initialize()
@@ -185,15 +187,6 @@ namespace GenTools
             Draw();
             Render(Map);
             if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
-            return Map;
-        }
-
-        public List<byte[,]> RenderMap(List<byte[,]> map)
-        {
-            Map = map;
-            Clear();
-            // Initialize();
-            Render(map);
             return Map;
         }
     }

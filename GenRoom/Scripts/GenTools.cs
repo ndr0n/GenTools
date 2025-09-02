@@ -18,7 +18,7 @@ namespace GenTools
     {
         public static GameObject CreateGameObject(string name, Transform parent)
         {
-            Transform obj = new GameObject("Content").transform;
+            Transform obj = new GameObject(name).transform;
             obj.parent = parent;
             obj.localPosition = Vector3.zero;
             obj.localRotation = Quaternion.identity;

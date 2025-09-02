@@ -83,4 +83,4 @@ MonoBehaviour:
   Seed: 1428903341
   TileSize: {x: 4, y: 4, z: 4}
   GridSize: {x: 5, y: 1, z: 5}
-  OuterDoorAmount: {x: 4, y: 4}
+  OuterDoorAmount: {x: 2, y: 2}

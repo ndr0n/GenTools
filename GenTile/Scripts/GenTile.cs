@@ -35,11 +35,12 @@ namespace GenTools
         public bool RandomSeed = false;
         public int Seed = 0;
 
-        public GenTileRoomPlacer GenTileRoomPlacer;
-
         public List<GenTilePreset> Presets = new();
 
         public bool ShowPresetEditor = false;
+
+        [Header("Extensions")]
+        public GenTileRoomPlacer GenTileRoomPlacer;
 
         public List<byte[,]> Map = new();
         public bool[,] CollisionMap = new bool[0, 0];

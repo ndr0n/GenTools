@@ -6,19 +6,19 @@ using UnityEngine.Tilemaps;
 namespace GenTools
 {
     [System.Serializable]
-    public class TileRoom
+    public class GenTileRoom
     {
-        public TileRoomType Type;
+        public GenTileRoomType Type;
         public Vector2Int Size;
         public Vector2Int Position;
 
         [Header("Runtime")]
-        public List<TileObject> PlacedWalls = new();
-        public List<TileObject> PlacedDoors = new();
-        public List<TileObject> PlacedStairs = new();
-        public List<TileObject> PlacedObjects = new();
+        public List<GenTileObject> PlacedWalls = new();
+        public List<GenTileObject> PlacedDoors = new();
+        public List<GenTileObject> PlacedStairs = new();
+        public List<GenTileObject> PlacedObjects = new();
 
-        public TileRoom(TileRoomType type, Vector2Int size, Vector2Int position)
+        public GenTileRoom(GenTileRoomType type, Vector2Int size, Vector2Int position)
         {
             Type = type;
             Size = size;
@@ -28,11 +28,11 @@ namespace GenTools
             PlacedObjects = new();
         }
 
-        public List<Vector3Int> ReplaceFloor(Tilegen tilegen, List<Vector3Int> availablePositions, System.Random random)
+        public List<Vector3Int> ReplaceFloor(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
         {
             if (Type.Floor.Count > 0)
             {
-                Tilemap tilemap = tilegen.Tilemap[(int) TilegenType.Terrain];
+                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Terrain];
                 TileBase floor = Type.Floor[random.Next(Type.Floor.Count)];
                 foreach (var pos in availablePositions)
                 {
@@ -43,7 +43,7 @@ namespace GenTools
             return availablePositions;
         }
 
-        public List<Vector3Int> PlaceWallsAndDoors(Tilegen tilegen, List<Vector3Int> availablePositions, System.Random random)
+        public List<Vector3Int> PlaceWallsAndDoors(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
         {
             List<Vector3Int> possiblePosition = new();
             for (int x = 0; x < (Size.x); x++)
@@ -65,7 +65,7 @@ namespace GenTools
                 if (availablePositions.Contains(pos2)) possiblePosition.Add(pos2);
             }
 
-            List<TileObjectData> doorsToPlace = new();
+            List<GenTileObjectData> doorsToPlace = new();
             foreach (var door in Type.Doors)
             {
                 for (int i = 0; i < door.Amount; i++) doorsToPlace.Add(door);
@@ -74,13 +74,13 @@ namespace GenTools
 
             if (doorsToPlace.Count > 0)
             {
-                Tilemap tilemap = tilegen.Tilemap[(int) TilegenType.Objects];
-                List<TileObjectData> priority = new();
+                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
+                List<GenTileObjectData> priority = new();
                 foreach (var pos in iterPositions)
                 {
                     // if (floorTilemap.GetTile(pos) != null) continue;
 
-                    TileObjectData door = null;
+                    GenTileObjectData door = null;
                     if (priority.Count > 0)
                     {
                         door = priority[0];
@@ -100,7 +100,7 @@ namespace GenTools
                             availablePositions.Remove(pos);
                             TileBase tile = door.Tile[random.Next(door.Tile.Count)];
                             tilemap.SetTile(pos, tile);
-                            PlacedDoors.Add(new TileObject(tile, pos));
+                            PlacedDoors.Add(new GenTileObject(tile, pos));
                             priority.AddRange(door.Recursion);
                             // Tilegen.CollisionMap[pos.x, pos.y] = true;
                         }
@@ -108,7 +108,7 @@ namespace GenTools
                 }
             }
 
-            List<TileObjectData> wallsToPlace = new();
+            List<GenTileObjectData> wallsToPlace = new();
             foreach (var wall in Type.Walls)
             {
                 for (int i = 0; i < (possiblePosition.Count * (wall.Amount / 100)); i++) wallsToPlace.Add(wall);
@@ -117,13 +117,13 @@ namespace GenTools
 
             if (wallsToPlace.Count > 0)
             {
-                Tilemap tilemap = tilegen.Tilemap[(int) TilegenType.Terrain];
-                List<TileObjectData> priority = new();
+                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Terrain];
+                List<GenTileObjectData> priority = new();
                 foreach (var pos in iterPositions)
                 {
                     // if (floorTilemap.GetTile(pos) != null) continue;
 
-                    TileObjectData wall = null;
+                    GenTileObjectData wall = null;
                     if (priority.Count > 0)
                     {
                         wall = priority[0];
@@ -143,7 +143,7 @@ namespace GenTools
                             availablePositions.Remove(pos);
                             TileBase tile = wall.Tile[random.Next(wall.Tile.Count)];
                             tilemap.SetTile(pos, tile);
-                            PlacedWalls.Add(new TileObject(tile, pos));
+                            PlacedWalls.Add(new GenTileObject(tile, pos));
                             // PlacedObjects.Add(new TileObject(door, tile, pos));
                             priority.AddRange(wall.Recursion);
                             // Tilegen.CollisionMap[pos.x, pos.y] = true;
@@ -157,17 +157,17 @@ namespace GenTools
 
         public void PlaceStairs()
         {
-            List<TileObjectData> toPlace = new();
+            List<GenTileObjectData> toPlace = new();
         }
 
-        public List<Vector3Int> PlaceObjects(Tilegen tilegen, List<Vector3Int> availablePositions, System.Random random)
+        public List<Vector3Int> PlaceObjects(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
         {
-            List<TileObjectData> toPlace = new();
+            List<GenTileObjectData> toPlace = new();
             List<Vector3Int> possiblePosition = new();
 
             if (Type.Objects.Count > 0)
             {
-                Tilemap tilemap = tilegen.Tilemap[(int) TilegenType.Objects];
+                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
                 foreach (var pos in availablePositions)
                 {
                     possiblePosition.Add(pos);
@@ -179,12 +179,12 @@ namespace GenTools
                     for (int i = 0; i < obj.Amount; i++) toPlace.Add(obj);
                 }
 
-                List<TileObjectData> priority = new();
+                List<GenTileObjectData> priority = new();
                 foreach (var pos in iterPositions)
                 {
                     if (tilemap.GetTile(pos) != null) continue;
 
-                    TileObjectData obj = null;
+                    GenTileObjectData obj = null;
                     if (priority.Count > 0)
                     {
                         obj = priority[0];
@@ -205,7 +205,7 @@ namespace GenTools
 
                             TileBase tile = obj.Tile[random.Next(obj.Tile.Count)];
                             tilemap.SetTile(pos, tile);
-                            PlacedObjects.Add(new TileObject(tile, pos));
+                            PlacedObjects.Add(new GenTileObject(tile, pos));
                             priority.AddRange(obj.Recursion);
                             // Tilegen.CollisionMap[pos.x, pos.y] = true;
                         }

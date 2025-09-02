@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GenTools
 {
-    public enum TilegenAlgorithmType
+    public enum GenTileAlgorithmType
     {
         Fill,
         Degrade,
@@ -15,7 +15,7 @@ namespace GenTools
         WaveFunctionCollapse
     }
 
-    public static class TilegenAlgorithm
+    public static class GenTileAlgorithm
     {
         #region Fill
 

@@ -7,16 +7,17 @@ using UnityEngine.Tilemaps;
 namespace GenTools
 {
     [System.Serializable]
-    public class TileRoomPlacer : MonoBehaviour
+    public class GenTileRoomPlacer : MonoBehaviour
     {
         public int Seed = 0;
         public bool RandomizeSeed = false;
 
-        public Tilegen Tilegen;
+        [FormerlySerializedAs("Tilegen")]
+        public GenTile GenTile;
         // public Tilemap RoomsTilemap;
 
-        public List<TileRoomType> RoomType = new();
-        public List<TileRoom> PlacedRooms = new();
+        public List<GenTileRoomType> RoomType = new();
+        public List<GenTileRoom> PlacedRooms = new();
         System.Random random = new();
 
         public void Clear()
@@ -34,7 +35,7 @@ namespace GenTools
             PopulateRooms(PlacedRooms);
         }
 
-        void PopulateRooms(List<TileRoom> rooms)
+        void PopulateRooms(List<GenTileRoom> rooms)
         {
             foreach (var room in rooms)
             {
@@ -46,16 +47,16 @@ namespace GenTools
                         availablePositions.Add(new Vector3Int(x + room.Position.x, y + room.Position.y, 0));
                     }
                 }
-                availablePositions = room.ReplaceFloor(Tilegen, availablePositions, random);
-                availablePositions = room.PlaceWallsAndDoors(Tilegen, availablePositions, random);
+                availablePositions = room.ReplaceFloor(GenTile, availablePositions, random);
+                availablePositions = room.PlaceWallsAndDoors(GenTile, availablePositions, random);
                 // availablePositions = room.PlaceStairs();
-                availablePositions = room.PlaceObjects(Tilegen, availablePositions, random);
+                availablePositions = room.PlaceObjects(GenTile, availablePositions, random);
             }
 
-            foreach (var tilemap in Tilegen.Tilemap) tilemap.RefreshAllTiles();
+            foreach (var tilemap in GenTile.Tilemap) tilemap.RefreshAllTiles();
         }
 
-        TileRoom TryCreateRoom(Tilemap tilemap, Vector3Int pos, TileRoomType roomType)
+        GenTileRoom TryCreateRoom(Tilemap tilemap, Vector3Int pos, GenTileRoomType roomType)
         {
             foreach (var roomTile in roomType.RoomTile)
             {
@@ -66,7 +67,7 @@ namespace GenTools
                     List<Vector3Int> roomPositions = new();
                     roomPositions.Add(pos);
 
-                    for (int x = pos.x; x < Tilegen.Width; x++)
+                    for (int x = pos.x; x < GenTile.Width; x++)
                     {
                         if (tilemap.GetTile(new Vector3Int(x, pos.y, 0)) == roomTile)
                         {
@@ -84,7 +85,7 @@ namespace GenTools
                         }
                         else break;
                     }
-                    for (int y = pos.y; y < Tilegen.Height; y++)
+                    for (int y = pos.y; y < GenTile.Height; y++)
                     {
                         if (tilemap.GetTile(new Vector3Int(pos.x, y, 0)) == roomTile)
                         {
@@ -109,7 +110,7 @@ namespace GenTools
                         Vector2Int rsize = new Vector2Int(max.x - min.x + 1, max.y - min.y + 1);
                         if (rsize.x >= roomType.MinSize.x && rsize.x <= roomType.MaxSize.x && rsize.y >= roomType.MinSize.y && rsize.y <= roomType.MaxSize.y)
                         {
-                            TileRoom room = new TileRoom(roomType, rsize, rposition);
+                            GenTileRoom room = new GenTileRoom(roomType, rsize, rposition);
                             return room;
                         }
                     }
@@ -118,12 +119,12 @@ namespace GenTools
             return null;
         }
 
-        List<TileRoom> CreateRooms()
+        List<GenTileRoom> CreateRooms()
         {
             PlacedRooms.Clear();
-            for (int x = 0; x < Tilegen.Width; x++)
+            for (int x = 0; x < GenTile.Width; x++)
             {
-                for (int y = 0; y < Tilegen.Height; y++)
+                for (int y = 0; y < GenTile.Height; y++)
                 {
                     bool positionAvailable = true;
                     foreach (var room in PlacedRooms)
@@ -137,13 +138,13 @@ namespace GenTools
                     if (positionAvailable)
                     {
                         bool breakLoop = false;
-                        for (int i = 0; i < Tilegen.Tilemap.Count; i++)
+                        for (int i = 0; i < GenTile.Tilemap.Count; i++)
                         {
                             foreach (var roomType in RoomType)
                             {
                                 Vector3Int pos = new Vector3Int(x, y, 0);
-                                TryCreateRoom(Tilegen.Tilemap[i], pos, roomType);
-                                TileRoom room = TryCreateRoom(Tilegen.Tilemap[i], pos, roomType);
+                                TryCreateRoom(GenTile.Tilemap[i], pos, roomType);
+                                GenTileRoom room = TryCreateRoom(GenTile.Tilemap[i], pos, roomType);
                                 if (room != null)
                                 {
                                     PlacedRooms.Add(room);

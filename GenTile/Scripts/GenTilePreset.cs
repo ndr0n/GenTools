@@ -7,12 +7,12 @@ namespace GenTools
     [System.Serializable]
     public struct TilegenLayer
     {
-        public List<TilegenIteration> Iterations;
+        public List<GenTileIteration> Iterations;
     }
 
     [System.Serializable]
     [CreateAssetMenu(fileName = "TP", menuName = "GenTools/Tilegen/Preset")]
-    public class TilegenPreset : ScriptableObject
+    public class GenTilePreset : ScriptableObject
     {
         public List<TilegenLayer> Layer = new();
     }

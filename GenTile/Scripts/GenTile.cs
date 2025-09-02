@@ -12,20 +12,20 @@ using Random = UnityEngine.Random;
 namespace GenTools
 {
     [System.Serializable]
-    public struct TilegenLayerData
+    public struct GenTileLayerData
     {
         public int Layer;
         public List<byte[,]> Map;
 
-        public TilegenLayerData(int layer, int width, int height)
+        public GenTileLayerData(int layer, int width, int height)
         {
             Layer = layer;
             Map = new();
-            for (int i = 0; i < Enum.GetNames(typeof(TilegenType)).Length; i++) Map.Add(new byte[width, height]);
+            for (int i = 0; i < Enum.GetNames(typeof(GenTileType)).Length; i++) Map.Add(new byte[width, height]);
         }
     }
 
-    public class Tilegen : MonoBehaviour
+    public class GenTile : MonoBehaviour
     {
         public List<Tilemap> Tilemap = new();
 
@@ -35,18 +35,18 @@ namespace GenTools
         public bool RandomSeed = false;
         public int Seed = 0;
 
-        public TileRoomPlacer TileRoomPlacer;
+        public GenTileRoomPlacer GenTileRoomPlacer;
 
-        public List<TilegenPreset> Presets = new();
+        public List<GenTilePreset> Presets = new();
 
         public bool ShowPresetEditor = false;
 
         public List<byte[,]> Map = new();
         public bool[,] CollisionMap = new bool[0, 0];
         readonly List<TileBase> tiles = new();
-        readonly List<TilegenLayerData> layerData = new();
+        readonly List<GenTileLayerData> layerData = new();
 
-        TilegenPreset preset;
+        GenTilePreset preset;
         System.Random random;
 
         public void Clear()
@@ -76,14 +76,14 @@ namespace GenTools
             Map.Clear();
             layerData.Clear();
 
-            for (int i = 0; i < Enum.GetNames(typeof(TilegenType)).Length; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(GenTileType)).Length; i++)
             {
                 Map.Add(new byte[Width, Height]);
             }
 
             for (int layer = 0; layer < preset.Layer.Count; layer++)
             {
-                layerData.Add(new TilegenLayerData((layer + 1), Width, Height));
+                layerData.Add(new GenTileLayerData((layer + 1), Width, Height));
             }
         }
 
@@ -101,29 +101,29 @@ namespace GenTools
                     {
                         switch (algorithm.Algorithm)
                         {
-                            case TilegenAlgorithmType.Fill:
-                                layerData[layer].Map[type] = TilegenAlgorithm.Fill(layerData[layer].Map[type], value, seed, algorithm.FillPercentage);
+                            case GenTileAlgorithmType.Fill:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Fill(layerData[layer].Map[type], value, seed, algorithm.FillPercentage);
                                 break;
-                            case TilegenAlgorithmType.Degrade:
-                                layerData[layer].Map[type] = TilegenAlgorithm.Degrade(layerData[layer].Map[type], value, seed, algorithm.DegradePercentage);
+                            case GenTileAlgorithmType.Degrade:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Degrade(layerData[layer].Map[type], value, seed, algorithm.DegradePercentage);
                                 break;
-                            case TilegenAlgorithmType.RandomWalk:
-                                layerData[layer].Map[type] = TilegenAlgorithm.RandomWalk(layerData[layer].Map[type], value, seed, algorithm.Size);
+                            case GenTileAlgorithmType.RandomWalk:
+                                layerData[layer].Map[type] = GenTileAlgorithm.RandomWalk(layerData[layer].Map[type], value, seed, algorithm.Size);
                                 break;
-                            case TilegenAlgorithmType.PerlinNoise:
-                                layerData[layer].Map[type] = TilegenAlgorithm.PerlinNoise(layerData[layer].Map[type], value, seed, algorithm.PerlinNoiseModifier);
+                            case GenTileAlgorithmType.PerlinNoise:
+                                layerData[layer].Map[type] = GenTileAlgorithm.PerlinNoise(layerData[layer].Map[type], value, seed, algorithm.PerlinNoiseModifier);
                                 break;
-                            case TilegenAlgorithmType.Tunnel:
-                                layerData[layer].Map[type] = TilegenAlgorithm.Tunnel(layerData[layer].Map[type], value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
+                            case GenTileAlgorithmType.Tunnel:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Tunnel(layerData[layer].Map[type], value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
                                 break;
-                            case TilegenAlgorithmType.Rooms:
-                                layerData[layer].Map[type] = TilegenAlgorithm.Rooms(layerData[layer].Map[type], value, seed, algorithm.RoomAmount, algorithm.RoomWidth, algorithm.RoomHeight);
+                            case GenTileAlgorithmType.Rooms:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Rooms(layerData[layer].Map[type], value, seed, algorithm.RoomAmount, algorithm.RoomWidth, algorithm.RoomHeight);
                                 break;
-                            case TilegenAlgorithmType.Walls:
-                                layerData[layer].Map[type] = TilegenAlgorithm.Walls(layerData[layer].Map[type], value, seed, algorithm.WallPercentage, algorithm.OuterWall);
+                            case GenTileAlgorithmType.Walls:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Walls(layerData[layer].Map[type], value, seed, algorithm.WallPercentage, algorithm.OuterWall);
                                 break;
-                            case TilegenAlgorithmType.WaveFunctionCollapse:
-                                layerData[layer].Map[type] = TilegenAlgorithm.WFC_Overlapping(layerData[layer].Map[type], value, seed, algorithm.Invert, algorithm.InputTexture, algorithm.N, algorithm.Symmetry, algorithm.Iterations);
+                            case GenTileAlgorithmType.WaveFunctionCollapse:
+                                layerData[layer].Map[type] = GenTileAlgorithm.WFC_Overlapping(layerData[layer].Map[type], value, seed, algorithm.Invert, algorithm.InputTexture, algorithm.N, algorithm.Symmetry, algorithm.Iterations);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -136,7 +136,7 @@ namespace GenTools
         void Draw()
         {
             CollisionMap = new bool[Width, Height];
-            for (int type = 0; type < Enum.GetNames(typeof(TilegenType)).Length; type++)
+            for (int type = 0; type < Enum.GetNames(typeof(GenTileType)).Length; type++)
             {
                 for (int x = 0; x < Map[type].GetUpperBound(0); x++)
                 {
@@ -164,7 +164,7 @@ namespace GenTools
         void Render(List<byte[,]> map)
         {
             Map = map;
-            for (int type = 0; type < Enum.GetNames(typeof(TilegenType)).Length; type++)
+            for (int type = 0; type < Enum.GetNames(typeof(GenTileType)).Length; type++)
             {
                 for (int x = 0; x < map[type].GetUpperBound(0); x++)
                 {
@@ -183,7 +183,7 @@ namespace GenTools
             Iterate();
             Draw();
             Render(Map);
-            if (TileRoomPlacer != null) TileRoomPlacer.Generate();
+            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
             return Map;
         }
 
@@ -198,28 +198,28 @@ namespace GenTools
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(Tilegen))]
+    [CustomEditor(typeof(GenTile))]
     public class Tilegen_Editor : Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            Tilegen tilegen = (Tilegen) target;
-            if (GUILayout.Button("Generate")) tilegen.Generate();
-            if (GUILayout.Button("Clear")) tilegen.Clear();
+            GenTile genTile = (GenTile) target;
+            if (GUILayout.Button("Generate")) genTile.Generate();
+            if (GUILayout.Button("Clear")) genTile.Clear();
 
-            if (tilegen.ShowPresetEditor)
+            if (genTile.ShowPresetEditor)
             {
-                List<TilegenPreset> editorPresets = new();
+                List<GenTilePreset> editorPresets = new();
 
-                for (int i = 0; i < tilegen.Presets.Count; i++)
+                for (int i = 0; i < genTile.Presets.Count; i++)
                 {
-                    if (tilegen.Presets[i] != null && !editorPresets.Contains(tilegen.Presets[i]))
+                    if (genTile.Presets[i] != null && !editorPresets.Contains(genTile.Presets[i]))
                     {
-                        EditorGUILayout.LabelField($"{tilegen.Presets[i].name}", GUI.skin.horizontalSlider);
-                        EditorGUILayout.LabelField($"{tilegen.Presets[i].name}", GUI.skin.label);
-                        editorPresets.Add(tilegen.Presets[i]);
-                        CreateEditor(tilegen.Presets[i]).DrawDefaultInspector();
+                        EditorGUILayout.LabelField($"{genTile.Presets[i].name}", GUI.skin.horizontalSlider);
+                        EditorGUILayout.LabelField($"{genTile.Presets[i].name}", GUI.skin.label);
+                        editorPresets.Add(genTile.Presets[i]);
+                        CreateEditor(genTile.Presets[i]).DrawDefaultInspector();
                     }
                 }
             }

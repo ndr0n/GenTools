@@ -6,12 +6,12 @@ using UnityEngine.Tilemaps;
 namespace GenTools
 {
     [System.Serializable]
-    public struct TileObject
+    public struct GenTileObject
     {
         public TileBase Tile;
         public Vector3Int Position;
 
-        public TileObject(TileBase tile, Vector3Int position)
+        public GenTileObject(TileBase tile, Vector3Int position)
         {
             Tile = tile;
             Position = position;
@@ -19,11 +19,11 @@ namespace GenTools
     }
 
     [System.Serializable]
-    public class TileObjectData
+    public class GenTileObjectData
     {
         public int Amount = 1;
         public int Chance = 100;
         public List<TileBase> Tile = new();
-        public List<TileObjectData> Recursion = new();
+        public List<GenTileObjectData> Recursion = new();
     }
 }

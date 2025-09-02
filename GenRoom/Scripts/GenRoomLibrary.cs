@@ -110,10 +110,10 @@ namespace GenTools
                 {
                     if (outerWall.Position.y == 0)
                     {
-                        if (outerWall.Position.x == 0) possibleWalls[0].Add(outerWall);
-                        if (outerWall.Position.z == 0) possibleWalls[1].Add(outerWall);
-                        if (outerWall.Position.x == (room.GridSize.x - 1)) possibleWalls[2].Add(outerWall);
-                        if (outerWall.Position.z == (room.GridSize.z - 1)) possibleWalls[3].Add(outerWall);
+                        if (outerWall.Position.x == 0 && (outerWall.Position.z > 0 && outerWall.Position.z < (room.GridSize.z - 1))) possibleWalls[0].Add(outerWall);
+                        if (outerWall.Position.z == 0 && (outerWall.Position.x > 0 && outerWall.Position.x < (room.GridSize.x - 1))) possibleWalls[1].Add(outerWall);
+                        if (outerWall.Position.x == (room.GridSize.x - 1) && (outerWall.Position.z > 0 && outerWall.Position.z < (room.GridSize.z - 1))) possibleWalls[2].Add(outerWall);
+                        if (outerWall.Position.z == (room.GridSize.z - 1) && (outerWall.Position.x > 0 && outerWall.Position.x < (room.GridSize.x - 1))) possibleWalls[3].Add(outerWall);
                     }
                 }
                 possibleWalls = possibleWalls.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
@@ -125,8 +125,8 @@ namespace GenTools
                     {
                         GenRoomNode outerWall = possibleWalls[index][random.Next(0, possibleWalls[index].Count)];
 
-                        for (int iter = 0; iter < 4; iter++) possibleWalls[iter].Remove(outerWall);
-                        // possibleWalls[index].Remove(outerWall);
+                        // for (int iter = 0; iter < 4; iter++) possibleWalls[iter].Remove(outerWall);
+                        possibleWalls[index].Remove(outerWall);
 
                         room.OuterWall.Remove(outerWall);
                         GameObject outerDoor = Object.Instantiate(outerDoorPreset, room.Content);

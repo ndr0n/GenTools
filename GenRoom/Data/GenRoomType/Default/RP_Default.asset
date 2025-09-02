@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28820cd86416414dbf7c40803a2bcc94, type: 3}
+  m_Name: RP_Default
+  m_EditorClassIdentifier: Assembly-CSharp::GenTools.GenRoomPreset
+  TileSize: {x: 4, y: 4, z: 4}
+  Floor:
+  - {fileID: 1034900713309635244, guid: b89996f06d4fb8c8e9b5a3fc4708b129, type: 3}
+  OuterWall:
+  - {fileID: 4914792822465268425, guid: 33e2d0550f8c2510d845b6595ecf2511, type: 3}
+  OuterDoor:
+  - {fileID: 4914792822465268425, guid: 465f7af15d9fde2c7951838a08f4aa6b, type: 3}
+  Roof:
+  - {fileID: 1034900713309635244, guid: b89996f06d4fb8c8e9b5a3fc4708b129, type: 3}
+  InnerWall:
+  - {fileID: 4914792822465268425, guid: 33e2d0550f8c2510d845b6595ecf2511, type: 3}
+  InnerDoor:
+  - {fileID: 4914792822465268425, guid: 465f7af15d9fde2c7951838a08f4aa6b, type: 3}
+  Pillar: []
+  Elevator: []
+  Stair: []
+  Rail: []
+  Lamps: []
+  Object: []

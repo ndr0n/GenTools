@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 namespace GenTools
 {
     [System.Serializable]
-    [CreateAssetMenu(fileName = "TR", menuName = "GenTools/Tilegen/TileRoomType")]
+    [CreateAssetMenu(fileName = "TR", menuName = "GenTools/GenTile/GenTileRoomType")]
     public class GenTileRoomType : ScriptableObject
     {
         public List<TileBase> RoomTile = new();

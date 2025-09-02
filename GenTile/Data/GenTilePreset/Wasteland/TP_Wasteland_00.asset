@@ -30,6 +30,7 @@ MonoBehaviour:
         RoomAmount: {x: 0, y: 0}
         RoomWidth: {x: 0, y: 0}
         RoomHeight: {x: 0, y: 0}
+        OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
@@ -52,6 +53,7 @@ MonoBehaviour:
         RoomAmount: {x: 0, y: 0}
         RoomWidth: {x: 0, y: 0}
         RoomHeight: {x: 0, y: 0}
+        OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
@@ -74,6 +76,7 @@ MonoBehaviour:
         RoomAmount: {x: 0, y: 0}
         RoomWidth: {x: 0, y: 0}
         RoomHeight: {x: 0, y: 0}
+        OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
@@ -93,6 +96,7 @@ MonoBehaviour:
         RoomAmount: {x: 0, y: 0}
         RoomWidth: {x: 0, y: 0}
         RoomHeight: {x: 0, y: 0}
+        OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
@@ -100,7 +104,7 @@ MonoBehaviour:
         Iterations: {x: 0, y: 0}
         Invert: 0
   - Iterations:
-    - Tile: {fileID: 11400000, guid: 3251e46d80b8e36918708f2fb74de913, type: 2}
+    - Tile: {fileID: 11400000, guid: e9424670d8594ca8f80f566b4d295f3b, type: 2}
       Type: 0
       Algorithm:
       - Algorithm: 5
@@ -116,13 +120,14 @@ MonoBehaviour:
         RoomAmount: {x: 5, y: 10}
         RoomWidth: {x: 5, y: 10}
         RoomHeight: {x: 5, y: 10}
+        OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
         Symmetry: {x: 1, y: 3}
         Iterations: {x: 0, y: 0}
         Invert: 0
-    - Tile: {fileID: 11400000, guid: 2ded52413a900e9fcb90cfd205e1071a, type: 2}
+    - Tile: {fileID: 11400000, guid: 95f822e5225f58563b75003039dedafe, type: 2}
       Type: 2
       Algorithm:
       - Algorithm: 0
@@ -138,6 +143,7 @@ MonoBehaviour:
         RoomAmount: {x: 5, y: 10}
         RoomWidth: {x: 5, y: 10}
         RoomHeight: {x: 5, y: 10}
+        OuterWall: 0
         WallPercentage: {x: 50, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
@@ -161,6 +167,7 @@ MonoBehaviour:
         RoomAmount: {x: 0, y: 0}
         RoomWidth: {x: 0, y: 0}
         RoomHeight: {x: 0, y: 0}
+        OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}

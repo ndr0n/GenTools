@@ -8,10 +8,10 @@ namespace GenTools
         West = 1,
         North = 2,
         East = 3,
-        NorthEast = 4,
-        SouthEast = 5,
-        SouthWest = 6,
-        NorthWest = 7,
+        SouthWest = 4,
+        NorthWest = 5,
+        NorthEast = 6,
+        SouthEast = 7,
     }
 
     public static class GenTools

@@ -21,12 +21,9 @@ namespace GenTools
 
         public Vector2Int OuterDoorAmount = new Vector2Int(2, 2);
 
-        public readonly List<GenRoomNode> Floor = new();
-        public readonly List<GenRoomNode> OuterWall = new();
-        public readonly List<GenRoomNode> OuterDoor = new();
-        public readonly List<GenRoomNode> Roof = new();
-        public readonly List<GenRoomNode> InnerDoor = new();
-        public readonly List<GenRoomNode> InnerWall = new();
+        public readonly List<List<List<GenRoomNode>>> Node = new();
+        public readonly List<GameObject> OuterDoor = new();
+        public readonly List<GameObject> InnerDoor = new();
 
         GenRoomPreset preset = null;
         System.Random random = null;
@@ -41,17 +38,26 @@ namespace GenTools
                 }
             }
 
-            Floor.Clear();
-            OuterDoor.Clear();
-            OuterWall.Clear();
-            Roof.Clear();
-            InnerDoor.Clear();
-            InnerWall.Clear();
-
             if (Content == null)
             {
                 Content = GenTools.CreateGameObject("Content", transform).transform;
                 Content.transform.localPosition += new Vector3(TileSize.x / 2f, 0, TileSize.z / 2f);
+            }
+            OuterDoor.Clear();
+            InnerDoor.Clear();
+
+            Node.Clear();
+            for (int y = 0; y < GridSize.y; y++)
+            {
+                Node.Add(new());
+                for (int x = 0; x < GridSize.x; x++)
+                {
+                    Node[y].Add(new());
+                    for (int z = 0; z < GridSize.z; z++)
+                    {
+                        Node[y][x].Add(new GenRoomNode(new Vector3Int(x, y, z)));
+                    }
+                }
             }
         }
 
@@ -62,9 +68,9 @@ namespace GenTools
             random = new System.Random(Seed);
             preset = Type.Presets[random.Next(Type.Presets.Count)];
 
-            Floor.AddRange(await GenRoomLibrary.BuildFloor(this, random, preset));
-            OuterWall.AddRange(await GenRoomLibrary.BuildOuterWalls(this, random, preset));
-            OuterDoor.AddRange(await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1)));
+            await GenRoomLibrary.BuildFloor(this, random, preset);
+            await GenRoomLibrary.BuildOuterWalls(this, random, preset);
+            await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
         }
 
         public async Awaitable Await()

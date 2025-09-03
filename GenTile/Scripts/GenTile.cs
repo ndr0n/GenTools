@@ -28,6 +28,7 @@ namespace GenTools
     public class GenTile : MonoBehaviour
     {
         public List<Tilemap> Tilemap = new();
+        public List<TilemapRenderer> TilemapRenderer = new();
 
         public int Width = 100;
         public int Height = 100;
@@ -70,7 +71,7 @@ namespace GenTools
                     }
                 }
             }
-            
+
             if (GenTileRoomPlacer != null) GenTileRoomPlacer.Clear();
         }
 

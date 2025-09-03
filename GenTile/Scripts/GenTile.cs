@@ -53,6 +53,9 @@ namespace GenTools
 
         public void Clear()
         {
+            Map.Clear();
+            layerData.Clear();
+
             foreach (var tilemap in Tilemap) tilemap.ClearAllTiles();
             tiles.Clear();
 
@@ -77,9 +80,6 @@ namespace GenTools
 
         void Initialize()
         {
-            Map.Clear();
-            layerData.Clear();
-
             for (int i = 0; i < Enum.GetNames(typeof(GenTileType)).Length; i++)
             {
                 Map.Add(new byte[Width, Height]);
@@ -167,14 +167,14 @@ namespace GenTools
 
         void Render(List<byte[,]> map)
         {
-            Map = map;
+            Map = map.ToList();
             for (int type = 0; type < Enum.GetNames(typeof(GenTileType)).Length; type++)
             {
                 for (int x = 0; x < map[type].GetUpperBound(0); x++)
                 {
                     for (int y = 0; y < map[type].GetUpperBound(1); y++)
                     {
-                        Tilemap[type].SetTile(new Vector3Int(x, y, 0), tiles[Map[type][x, y]]);
+                        Tilemap[type].SetTile(new Vector3Int(x, y, 0), tiles[map[type][x, y]]);
                     }
                 }
             }
@@ -188,13 +188,20 @@ namespace GenTools
             Draw();
             Render(Map);
             if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
-            return Map;
+            return Map.ToList();
+        }
+
+        public void RenderMap(List<byte[,]> map)
+        {
+            Clear();
+            Render(map);
+            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
         }
     }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(GenTile))]
-    public class Tilegen_Editor : Editor
+    public class GenTile_Editor : Editor
     {
         public override void OnInspectorGUI()
         {
@@ -203,21 +210,21 @@ namespace GenTools
             if (GUILayout.Button("Generate")) genTile.Generate();
             if (GUILayout.Button("Clear")) genTile.Clear();
 
-            if (genTile.ShowPresetEditor)
-            {
-                List<GenTilePreset> editorPresets = new();
-
-                for (int i = 0; i < genTile.Presets.Count; i++)
-                {
-                    if (genTile.Presets[i] != null && !editorPresets.Contains(genTile.Presets[i]))
-                    {
-                        EditorGUILayout.LabelField($"{genTile.Presets[i].name}", GUI.skin.horizontalSlider);
-                        EditorGUILayout.LabelField($"{genTile.Presets[i].name}", GUI.skin.label);
-                        editorPresets.Add(genTile.Presets[i]);
-                        CreateEditor(genTile.Presets[i]).DrawDefaultInspector();
-                    }
-                }
-            }
+            // if (genTile.ShowPresetEditor)
+            // {
+            //     List<GenTilePreset> editorPresets = new();
+            //
+            //     for (int i = 0; i < genTile.Presets.Count; i++)
+            //     {
+            //         if (genTile.Presets[i] != null && !editorPresets.Contains(genTile.Presets[i]))
+            //         {
+            //             EditorGUILayout.LabelField($"{genTile.Presets[i].name}", GUI.skin.horizontalSlider);
+            //             EditorGUILayout.LabelField($"{genTile.Presets[i].name}", GUI.skin.label);
+            //             editorPresets.Add(genTile.Presets[i]);
+            //             CreateEditor(genTile.Presets[i]).DrawDefaultInspector();
+            //         }
+            //     }
+            // }
         }
     }
 #endif

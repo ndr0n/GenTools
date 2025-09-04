@@ -80,12 +80,9 @@ namespace GenTools
                     if (placeInsideRoom)
                     {
                         Vector3Int doorPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
-                        if (availablePositions.Contains(doorPosition))
-                        {
-                            availablePositions.Remove(doorPosition);
-                            tilemap.SetTile(doorPosition, door);
-                            PlacedDoors.Add(new GenTileObject(door, doorPosition));
-                        }
+                        availablePositions.Remove(doorPosition);
+                        tilemap.SetTile(doorPosition, door);
+                        PlacedDoors.Add(new GenTileObject(door, doorPosition));
                     }
                     else
                     {

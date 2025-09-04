@@ -25,6 +25,17 @@ namespace GenTools
             return obj.gameObject;
         }
 
+        public static CardinalDirection GetDirection(Vector2Int point1, Vector2Int point2)
+        {
+            CardinalDirection dir = CardinalDirection.SouthWest;
+            Vector2Int direction = (point2 - point1);
+            if (direction == Vector2Int.up) dir = CardinalDirection.North;
+            else if (direction == Vector2Int.right) dir = CardinalDirection.East;
+            else if (direction == Vector2Int.down) dir = CardinalDirection.South;
+            else if (direction == Vector2Int.left) dir = CardinalDirection.West;
+            return dir;
+        }
+
         public static Vector3 ClosestPointBetween(GenTileRoom origin, GenTileRoom connection)
         {
             float oDistance = float.MaxValue;

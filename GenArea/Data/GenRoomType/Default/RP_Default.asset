@@ -19,7 +19,8 @@ MonoBehaviour:
   - {fileID: 4914792822465268425, guid: 33e2d0550f8c2510d845b6595ecf2511, type: 3}
   OuterDoor:
   - {fileID: 4914792822465268425, guid: 465f7af15d9fde2c7951838a08f4aa6b, type: 3}
-  Roof: []
+  Roof:
+  - {fileID: 1034900713309635244, guid: b89996f06d4fb8c8e9b5a3fc4708b129, type: 3}
   InnerWall:
   - {fileID: 4914792822465268425, guid: 33e2d0550f8c2510d845b6595ecf2511, type: 3}
   InnerDoor:

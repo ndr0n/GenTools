@@ -15,11 +15,8 @@ namespace GenTools
     {
         public GenTile GenTile;
 
-        public int Seed = 0;
-        public bool RandomizeSeed = false;
-
         public List<GenTileRoomType> RoomType = new();
-        public List<GenTileRoom> PlacedRooms = new();
+        public readonly List<GenTileRoom> PlacedRooms = new();
 
         public TileBase TunnelTile;
 
@@ -33,13 +30,9 @@ namespace GenTools
         public void Generate()
         {
             Clear();
-            if (RandomizeSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
-            random = new(Seed);
-
             PlaceRooms();
             PlaceTunnels();
             PopulateRooms(PlacedRooms);
-
             foreach (var tilemap in GenTile.Tilemap) tilemap.RefreshAllTiles();
         }
 

@@ -16,7 +16,7 @@ MonoBehaviour:
   - {fileID: -663168308, guid: a8066c32a87dc11499b55f30c5ae2fa8, type: 3}
   MinSize: {x: 1, y: 1}
   MaxSize: {x: 128, y: 128}
-  MaxTunnels: {x: 2, y: 4}
+  MaxTunnels: {x: 3, y: 3}
   Floor:
   - {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
   Doors:

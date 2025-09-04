@@ -28,6 +28,8 @@ namespace GenTools
         public readonly List<GameObject> InnerDoor = new();
 
         GenRoomPreset preset = null;
+        public GenRoomPreset Preset => preset;
+
         System.Random random = null;
 
         public void Clear()
@@ -71,16 +73,31 @@ namespace GenTools
                 if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
                 random = new System.Random(Seed);
                 preset = Type.Presets[random.Next(Type.Presets.Count)];
-
                 await GenRoomLibrary.BuildFloor(this, random, preset);
                 await GenRoomLibrary.BuildOuterWalls(this, random, preset);
-                await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
+                // await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
                 await GenRoomLibrary.BuildRoof(this, random, preset);
             }
             catch (Exception ex)
             {
                 Debug.LogError($"{ex.Message}\n{ex.StackTrace}");
             }
+        }
+
+        public List<GenRoomNode> GetAllNodes()
+        {
+            List<GenRoomNode> nodes = new();
+            for (int y = 0; y < Node.Count; y++)
+            {
+                for (int x = 0; x < Node[y].Count; x++)
+                {
+                    for (int z = 0; z < Node[y][x].Count; z++)
+                    {
+                        nodes.Add(Node[y][x][z]);
+                    }
+                }
+            }
+            return nodes;
         }
 
         public async Awaitable Await()

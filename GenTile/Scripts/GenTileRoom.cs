@@ -69,7 +69,36 @@ namespace GenTools
             return availablePositions;
         }
 
-        public List<Vector3Int> PlaceWallsAndDoors(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
+        public List<Vector3Int> PlaceDoors(GenTile genTile, List<Vector3Int> availablePositions, System.Random random, bool placeInsideRoom)
+        {
+            if (Type.Doors.Count > 0)
+            {
+                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
+                TileBase door = Type.Doors[random.Next(Type.Doors.Count)];
+                foreach (var tunnel in PlacedTunnels)
+                {
+                    if (placeInsideRoom)
+                    {
+                        Vector3Int doorPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
+                        if (availablePositions.Contains(doorPosition))
+                        {
+                            availablePositions.Remove(doorPosition);
+                            tilemap.SetTile(doorPosition, door);
+                            PlacedDoors.Add(new GenTileObject(door, doorPosition));
+                        }
+                    }
+                    else
+                    {
+                        Vector3Int doorPosition = new Vector3Int(tunnel.Positions[0].x, tunnel.Positions[0].y, 0);
+                        tilemap.SetTile(doorPosition, door);
+                        PlacedDoors.Add(new GenTileObject(door, doorPosition));
+                    }
+                }
+            }
+            return availablePositions;
+        }
+
+        public List<Vector3Int> PlaceWalls(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
         {
             List<Vector3Int> possiblePosition = new();
             for (int x = 0; x < (Size.x); x++)
@@ -91,55 +120,55 @@ namespace GenTools
                 if (availablePositions.Contains(pos2)) possiblePosition.Add(pos2);
             }
 
-            List<GenTileObjectData> doorsToPlace = new();
-            foreach (var door in Type.Doors)
-            {
-                for (int i = 0; i < door.Amount; i++) doorsToPlace.Add(door);
-            }
-            List<Vector3Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
-
-            if (doorsToPlace.Count > 0)
-            {
-                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
-                List<GenTileObjectData> priority = new();
-                foreach (var pos in iterPositions)
-                {
-                    // if (floorTilemap.GetTile(pos) != null) continue;
-
-                    GenTileObjectData door = null;
-                    if (priority.Count > 0)
-                    {
-                        door = priority[0];
-                        priority.RemoveAt(0);
-                    }
-                    else if (doorsToPlace.Count > 0)
-                    {
-                        int index = random.Next(0, doorsToPlace.Count);
-                        door = doorsToPlace[index];
-                        doorsToPlace.RemoveAt(index);
-                    }
-                    if (door != null)
-                    {
-                        if (random.Next(0, 100) < door.Chance)
-                        {
-                            possiblePosition.Remove(pos);
-                            availablePositions.Remove(pos);
-                            TileBase tile = door.Tile[random.Next(door.Tile.Count)];
-                            tilemap.SetTile(pos, tile);
-                            PlacedDoors.Add(new GenTileObject(tile, pos));
-                            priority.AddRange(door.Recursion);
-                            // Tilegen.CollisionMap[pos.x, pos.y] = true;
-                        }
-                    }
-                }
-            }
+            // List<GenTileObjectData> doorsToPlace = new();
+            // foreach (var door in Type.Doors)
+            // {
+            //     for (int i = 0; i < door.Amount; i++) doorsToPlace.Add(door);
+            // }
+            // List<Vector3Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
+            //
+            // if (doorsToPlace.Count > 0)
+            // {
+            //     Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
+            //     List<GenTileObjectData> priority = new();
+            //     foreach (var pos in iterPositions)
+            //     {
+            //         // if (floorTilemap.GetTile(pos) != null) continue;
+            //
+            //         GenTileObjectData door = null;
+            //         if (priority.Count > 0)
+            //         {
+            //             door = priority[0];
+            //             priority.RemoveAt(0);
+            //         }
+            //         else if (doorsToPlace.Count > 0)
+            //         {
+            //             int index = random.Next(0, doorsToPlace.Count);
+            //             door = doorsToPlace[index];
+            //             doorsToPlace.RemoveAt(index);
+            //         }
+            //         if (door != null)
+            //         {
+            //             if (random.Next(0, 100) < door.Chance)
+            //             {
+            //                 possiblePosition.Remove(pos);
+            //                 availablePositions.Remove(pos);
+            //                 TileBase tile = door.Tile[random.Next(door.Tile.Count)];
+            //                 tilemap.SetTile(pos, tile);
+            //                 PlacedDoors.Add(new GenTileObject(tile, pos));
+            //                 priority.AddRange(door.Recursion);
+            //                 // Tilegen.CollisionMap[pos.x, pos.y] = true;
+            //             }
+            //         }
+            //     }
+            // }
 
             List<GenTileObjectData> wallsToPlace = new();
             foreach (var wall in Type.Walls)
             {
                 for (int i = 0; i < (possiblePosition.Count * (wall.Amount / 100)); i++) wallsToPlace.Add(wall);
             }
-            iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
+            List<Vector3Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
 
             if (wallsToPlace.Count > 0)
             {

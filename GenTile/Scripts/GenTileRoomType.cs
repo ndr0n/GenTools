@@ -14,8 +14,8 @@ namespace GenTools
         public Vector2Int MaxSize = new Vector2Int(100, 100);
         public Vector2Int MaxTunnels = new Vector2Int(4, 4);
         public List<TileBase> Floor = new();
+        public List<TileBase> Doors = new();
         public List<GenTileObjectData> Walls = new();
-        public List<GenTileObjectData> Doors = new();
         public List<GenTileObjectData> Stairs = new();
         public List<GenTileObjectData> Objects = new();
     }

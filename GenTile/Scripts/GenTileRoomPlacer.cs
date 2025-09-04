@@ -39,65 +39,10 @@ namespace GenTools
             random = new(Seed);
 
             PlaceRooms();
+            PlaceTunnels();
             PopulateRooms(PlacedRooms);
 
-            PlaceCorridors();
-
             foreach (var tilemap in GenTile.Tilemap) tilemap.RefreshAllTiles();
-        }
-
-        public void PlaceCorridors()
-        {
-            foreach (var origin in PlacedRooms.OrderBy(x => random.Next(int.MinValue, int.MaxValue)))
-            {
-                // List<CardinalDirection> directions = new() {CardinalDirection.South, CardinalDirection.West, CardinalDirection.North, CardinalDirection.East};
-                int tunnelCount = random.Next(origin.Type.MaxTunnels.x, origin.Type.MaxTunnels.y + 1);
-
-                var possibleConnections = PlacedRooms.OrderBy(connection => Vector3.Distance(origin.GetCenter(), connection.GetCenter())).ToList();
-                possibleConnections.Remove(origin);
-                possibleConnections = possibleConnections.Where(connection => !origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == connection)).ToList();
-                for (int i = 0; i < (tunnelCount - origin.PlacedTunnels.Count); i++)
-                {
-                    if (i >= possibleConnections.Count) break;
-                    var connection = possibleConnections[i];
-
-                    List<Vector2Int> tunnelPositions = new();
-                    Vector3 oPoint = GenTools.ClosestPointBetween(origin, connection);
-                    Vector2Int originPoint = new Vector2Int((int) oPoint.x, (int) oPoint.y);
-                    Vector3 cPoint = GenTools.ClosestPointBetween(connection, origin);
-                    Vector2Int connectionPoint = new Vector2Int((int) cPoint.x, (int) cPoint.y);
-                    BresenhamLine.Compute(originPoint, connectionPoint, tunnelPositions);
-
-                    List<Vector2Int> toRemove = new();
-                    for (int ipos = 1; ipos < tunnelPositions.Count; ipos++)
-                    {
-                        if (origin.Contains(tunnelPositions[ipos]))
-                        {
-                            toRemove.Add(tunnelPositions[ipos - 1]);
-                            originPoint = tunnelPositions[ipos];
-                        }
-                        if (connection.Contains(tunnelPositions[ipos]))
-                        {
-                            for (int index = (ipos + 1); index < tunnelPositions.Count; index++) toRemove.Add(tunnelPositions[index]);
-                            connectionPoint = tunnelPositions[ipos];
-                            break;
-                        }
-                    }
-                    foreach (var r in toRemove) tunnelPositions.Remove(r);
-
-                    GenTileRoomTunnel originTunnel = new(origin, originPoint, connection, connectionPoint, tunnelPositions);
-                    origin.PlacedTunnels.Add(originTunnel);
-                    GenTileRoomTunnel connectionTunnel = new(connection, connectionPoint, origin, originPoint, tunnelPositions);
-                    connection.PlacedTunnels.Add(connectionTunnel);
-
-                    foreach (var pos in tunnelPositions)
-                    {
-                        GenTile.Tilemap[0].SetTile(new Vector3Int(pos.x, pos.y, 0), TunnelTile);
-                    }
-                    GenTile.Tilemap[0].SetTile(new Vector3Int(originPoint.x, originPoint.y, 0), TunnelOriginTile);
-                    GenTile.Tilemap[0].SetTile(new Vector3Int(connectionPoint.x, connectionPoint.y, 0), TunnelConnectionTile);
-                }
-            }
         }
 
         public void PlaceRooms()
@@ -216,6 +161,81 @@ namespace GenTools
             return null;
         }
 
+        public void PlaceTunnels()
+        {
+            foreach (var origin in PlacedRooms.OrderBy(x => random.Next(int.MinValue, int.MaxValue)))
+            {
+                int tunnelCount = random.Next(origin.Type.MaxTunnels.x, origin.Type.MaxTunnels.y + 1);
+                var possibleConnections = PlacedRooms.OrderBy(connection => Vector3.Distance(origin.GetCenter(), connection.GetCenter())).ToList();
+                possibleConnections.Remove(origin);
+                possibleConnections = possibleConnections.Where(connection => !origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == connection)).ToList();
+                for (int i = 0; i < (tunnelCount - origin.PlacedTunnels.Count); i++)
+                {
+                    if (i >= possibleConnections.Count) break;
+                    var connection = possibleConnections[i];
+
+                    List<Vector2Int> tunnelPositions = new();
+                    Vector3 oPoint = GenTools.ClosestPointBetween(origin, connection);
+                    Vector2Int originPoint = new Vector2Int((int) oPoint.x, (int) oPoint.y);
+                    Vector3 cPoint = GenTools.ClosestPointBetween(connection, origin);
+                    Vector2Int connectionPoint = new Vector2Int((int) cPoint.x, (int) cPoint.y);
+                    BresenhamLine.Compute(originPoint, connectionPoint, tunnelPositions);
+
+                    List<Vector2Int> toRemove = new();
+                    for (int ipos = 1; ipos < tunnelPositions.Count; ipos++)
+                    {
+                        if (origin.Contains(tunnelPositions[ipos]))
+                        {
+                            toRemove.Add(tunnelPositions[ipos - 1]);
+                            originPoint = tunnelPositions[ipos];
+                        }
+                        if (connection.Contains(tunnelPositions[ipos]))
+                        {
+                            for (int index = (ipos + 1); index < tunnelPositions.Count; index++) toRemove.Add(tunnelPositions[index]);
+                            connectionPoint = tunnelPositions[ipos];
+                            break;
+                        }
+                    }
+                    foreach (var r in toRemove) tunnelPositions.Remove(r);
+
+                    tunnelPositions.Remove(originPoint);
+                    tunnelPositions.Remove(connectionPoint);
+
+                    bool canPlaceTunnel = true;
+                    foreach (var pos in tunnelPositions)
+                    {
+                        foreach (var room in PlacedRooms)
+                        {
+                            if (room.Contains(pos))
+                            {
+                                canPlaceTunnel = false;
+                                break;
+                            }
+                        }
+                        if (canPlaceTunnel == false) break;
+                    }
+
+                    if (canPlaceTunnel)
+                    {
+                        GenTileRoomTunnel originTunnel = new(origin, originPoint, connection, connectionPoint, tunnelPositions);
+                        origin.PlacedTunnels.Add(originTunnel);
+
+                        List<Vector2Int> reversedTunnelPositions = new();
+                        for (int iter = 0; iter < tunnelPositions.Count; iter++) reversedTunnelPositions.Add(tunnelPositions[tunnelPositions.Count - 1 - iter]);
+                        GenTileRoomTunnel connectionTunnel = new(connection, connectionPoint, origin, originPoint, reversedTunnelPositions);
+                        connection.PlacedTunnels.Add(connectionTunnel);
+
+                        foreach (var pos in tunnelPositions)
+                        {
+                            GenTile.Tilemap[0].SetTile(new Vector3Int(pos.x, pos.y, 0), TunnelTile);
+                        }
+                        // GenTile.Tilemap[0].SetTile(new Vector3Int(originPoint.x, originPoint.y, 0), TunnelOriginTile);
+                        // GenTile.Tilemap[0].SetTile(new Vector3Int(connectionPoint.x, connectionPoint.y, 0), TunnelConnectionTile);   
+                    }
+                }
+            }
+        }
+
         void PopulateRooms(List<GenTileRoom> rooms)
         {
             foreach (var room in rooms)
@@ -229,28 +249,10 @@ namespace GenTools
                     }
                 }
                 availablePositions = room.ReplaceFloor(GenTile, availablePositions, random);
-                availablePositions = room.PlaceWallsAndDoors(GenTile, availablePositions, random);
+                availablePositions = room.PlaceDoors(GenTile, availablePositions, random, true);
+                availablePositions = room.PlaceWalls(GenTile, availablePositions, random);
                 // availablePositions = room.PlaceStairs();
                 availablePositions = room.PlaceObjects(GenTile, availablePositions, random);
-            }
-        }
-
-        void PopulateCorridors(List<GenTileRoom> corridors)
-        {
-            foreach (var corridor in corridors)
-            {
-                List<Vector3Int> availablePositions = new();
-                for (int x = 0; x < corridor.Size.x; x++)
-                {
-                    for (int y = 0; y < corridor.Size.y; y++)
-                    {
-                        availablePositions.Add(new Vector3Int(x + corridor.Position.x, y + corridor.Position.y, 0));
-                    }
-                }
-                availablePositions = corridor.ReplaceFloor(GenTile, availablePositions, random);
-                availablePositions = corridor.PlaceWallsAndDoors(GenTile, availablePositions, random);
-                // availablePositions = room.PlaceStairs();
-                availablePositions = corridor.PlaceObjects(GenTile, availablePositions, random);
             }
         }
     }

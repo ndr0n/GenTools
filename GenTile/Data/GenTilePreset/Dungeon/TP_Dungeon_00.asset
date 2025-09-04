@@ -38,7 +38,7 @@ MonoBehaviour:
         Iterations: {x: 0, y: 0}
         Invert: 0
   - Iterations:
-    - Tile: {fileID: 11400000, guid: e5b224ff15c4dd371916fbed3c848648, type: 2}
+    - Tile: {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
       Type: 0
       Algorithm:
       - Algorithm: 7
@@ -56,8 +56,8 @@ MonoBehaviour:
         RoomHeight: {x: 5, y: 10}
         OuterWall: 0
         WallPercentage: {x: 0, y: 100}
-        InputTexture: {fileID: 2800000, guid: d1a5f707f8b508411b44579066e3db54, type: 3}
-        N: {x: 4, y: 4}
-        Symmetry: {x: 1, y: 3}
+        InputTexture: {fileID: 2800000, guid: de1f8968c2327d5e6829e177f88b3282, type: 3}
+        N: {x: 3, y: 3}
+        Symmetry: {x: 2, y: 4}
         Iterations: {x: 0, y: 0}
         Invert: 0

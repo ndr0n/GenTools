@@ -306,15 +306,34 @@ namespace GenTools
             }
 
             int _seed = random.Next(int.MinValue, int.MaxValue);
-            if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n, _symmetry, _iterations)) return map;
-            if (_n > 2)
+
+            for (int i = 0; i < 32; i++)
             {
-                if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n - 1, _symmetry, _iterations)) return map;
-                if (_n > 3)
+                if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n, _symmetry, _iterations))
                 {
-                    if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n - 2, _symmetry, _iterations)) return map;
+                    return map;
                 }
+                else _seed = random.Next(int.MinValue, int.MaxValue);
             }
+
+            // if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n, _symmetry, _iterations))
+            // {
+            //     return map;
+            // }
+            // else if (_n > 2)
+            // {
+            //     if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n - 1, _symmetry, _iterations))
+            //     {
+            //         return map;
+            //     }
+            //     else if (_n > 3)
+            //     {
+            //         if (TryRunWfcOverlappingModel(map, value, _seed, invert, sample, _n - 2, _symmetry, _iterations))
+            //         {
+            //             return map;
+            //         }
+            //     }
+            // }
 
             return map;
         }

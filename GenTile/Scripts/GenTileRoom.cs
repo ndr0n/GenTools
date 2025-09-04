@@ -1,10 +1,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 namespace GenTools
 {
+    [System.Serializable]
+    public struct GenTileRoomTunnel
+    {
+        public GenTileRoom Origin;
+        public Vector2Int OriginPoint;
+        public GenTileRoom Connection;
+        public Vector2Int ConnectionPoint;
+        public List<Vector2Int> Positions;
+
+        public GenTileRoomTunnel(GenTileRoom origin, Vector2Int originPoint, GenTileRoom connection, Vector2Int connectionPoint, List<Vector2Int> positions)
+        {
+            Origin = origin;
+            OriginPoint = originPoint;
+            Connection = connection;
+            ConnectionPoint = connectionPoint;
+            Positions = positions;
+        }
+    }
+
     [System.Serializable]
     public class GenTileRoom
     {
@@ -17,6 +37,7 @@ namespace GenTools
         public List<GenTileObject> PlacedDoors = new();
         public List<GenTileObject> PlacedStairs = new();
         public List<GenTileObject> PlacedObjects = new();
+        public List<GenTileRoomTunnel> PlacedTunnels = new();
 
         public GenTileRoom(GenTileRoomType type, Vector2Int size, Vector2Int position)
         {
@@ -27,6 +48,11 @@ namespace GenTools
             PlacedStairs = new();
             PlacedObjects = new();
         }
+
+        public Vector3 GetCenter() => new Vector3(Position.x + (Size.x / 2f), Position.y + (Size.y / 2f), 0);
+        public Bounds GetBounds() => new Bounds(GetCenter(), new Vector3(Size.x, Size.y, 0));
+        public BoundsInt GetBoundsInt() => new BoundsInt(Vector3Int.RoundToInt(GetCenter()), new Vector3Int(Size.x, Size.y, 0));
+        public bool Contains(Vector2Int point) => point.x >= Position.x && point.x < (Position.x + Size.x) && point.y >= Position.y && point.y < (Position.y + Size.y);
 
         public List<Vector3Int> ReplaceFloor(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
         {

@@ -113,7 +113,7 @@ namespace GenTools
             room.GridSize = new Vector3Int(tileRoom.Size.x, 1, tileRoom.Size.y);
             room.transform.localPosition = new Vector3(tileRoom.Position.x * room.TileSize.x, y * room.TileSize.y, tileRoom.Position.y * room.TileSize.z);
             room.transform.localRotation = Quaternion.identity;
-            room.transform.localPosition += new Vector3(Border.x * MainRoom.TileSize.x, 0, Border.y * MainRoom.TileSize.z);
+            room.transform.localPosition += new Vector3(Border.x * room.TileSize.x, 0, Border.y * room.TileSize.z);
             InnerRoom.Add(room);
 
             await room.Generate();

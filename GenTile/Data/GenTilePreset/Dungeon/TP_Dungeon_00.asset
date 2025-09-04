@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tilegen.TilegenPreset
   Layer:
   - Iterations:
-    - Tile: {fileID: 11400000, guid: 0bd8fa2059c379f10be467db11e0bdfd, type: 2}
+    - Tile: {fileID: 11400000, guid: 1afa52c6ef077b6c38688d878b0210c4, type: 2}
       Type: 0
       Algorithm:
       - Algorithm: 0

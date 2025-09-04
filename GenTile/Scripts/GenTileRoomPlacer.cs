@@ -115,44 +115,44 @@ namespace GenTools
                         else break;
                     }
 
-                    if (min.x != max.x && min.y != max.y)
+                    // if (min.x != max.x && min.y != max.y)
+                    // {
+                    Vector2Int rpos = min;
+                    Vector2Int rsize = new Vector2Int((max.x - min.x) + 1, (max.y - min.y) + 1);
+                    if (rsize.x >= roomType.MinSize.x && rsize.x <= roomType.MaxSize.x && rsize.y >= roomType.MinSize.y && rsize.y <= roomType.MaxSize.y)
                     {
-                        Vector2Int rpos = min;
-                        Vector2Int rsize = new Vector2Int((max.x - min.x) + 1, (max.y - min.y) + 1);
-                        if (rsize.x >= roomType.MinSize.x && rsize.x <= roomType.MaxSize.x && rsize.y >= roomType.MinSize.y && rsize.y <= roomType.MaxSize.y)
+                        bool canCreateRoom = true;
+                        for (int x = min.x; x < max.x; x++)
                         {
-                            bool canCreateRoom = true;
-                            for (int x = min.x; x < max.x; x++)
+                            for (int y = min.y; y < max.y; y++)
                             {
-                                for (int y = min.y; y < max.y; y++)
+                                if (tilemap.GetSprite(new Vector3Int(x, y, 0)) != roomSprite)
                                 {
-                                    if (tilemap.GetSprite(new Vector3Int(x, y, 0)) != roomSprite)
-                                    {
-                                        canCreateRoom = false;
-                                        break;
-                                    }
+                                    canCreateRoom = false;
+                                    break;
                                 }
-                                if (canCreateRoom == false) break;
+                            }
+                            if (canCreateRoom == false) break;
+                        }
+                        if (canCreateRoom)
+                        {
+                            Bounds roomBounds = new Bounds(new Vector3(rpos.x + (rsize.x / 2f), rpos.y + (rsize.y / 2f), 0), new Vector3(rsize.x, rsize.y, 0));
+                            foreach (var placedRoom in PlacedRooms)
+                            {
+                                if (roomBounds.Intersects(placedRoom.GetBounds()))
+                                {
+                                    canCreateRoom = false;
+                                    break;
+                                }
                             }
                             if (canCreateRoom)
                             {
-                                Bounds roomBounds = new Bounds(new Vector3(rpos.x + (rsize.x / 2f), rpos.y + (rsize.y / 2f), 0), new Vector3(rsize.x, rsize.y, 0));
-                                foreach (var placedRoom in PlacedRooms)
-                                {
-                                    if (roomBounds.Intersects(placedRoom.GetBounds()))
-                                    {
-                                        canCreateRoom = false;
-                                        break;
-                                    }
-                                }
-                                if (canCreateRoom)
-                                {
-                                    GenTileRoom room = new GenTileRoom(roomType, rsize, rpos);
-                                    return room;
-                                }
+                                GenTileRoom room = new GenTileRoom(roomType, rsize, rpos);
+                                return room;
                             }
                         }
                     }
+                    // }
                     break;
                 }
             }

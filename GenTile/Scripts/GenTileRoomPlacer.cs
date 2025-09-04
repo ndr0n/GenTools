@@ -22,8 +22,6 @@ namespace GenTools
         public List<GenTileRoom> PlacedRooms = new();
 
         public TileBase TunnelTile;
-        public TileBase TunnelOriginTile;
-        public TileBase TunnelConnectionTile;
 
         System.Random random = new();
 
@@ -225,12 +223,7 @@ namespace GenTools
                         GenTileRoomTunnel connectionTunnel = new(connection, connectionPoint, origin, originPoint, reversedTunnelPositions);
                         connection.PlacedTunnels.Add(connectionTunnel);
 
-                        foreach (var pos in tunnelPositions)
-                        {
-                            GenTile.Tilemap[0].SetTile(new Vector3Int(pos.x, pos.y, 0), TunnelTile);
-                        }
-                        // GenTile.Tilemap[0].SetTile(new Vector3Int(originPoint.x, originPoint.y, 0), TunnelOriginTile);
-                        // GenTile.Tilemap[0].SetTile(new Vector3Int(connectionPoint.x, connectionPoint.y, 0), TunnelConnectionTile);   
+                        foreach (var pos in tunnelPositions) GenTile.Tilemap[0].SetTile(new Vector3Int(pos.x, pos.y, 0), TunnelTile);
                     }
                 }
             }

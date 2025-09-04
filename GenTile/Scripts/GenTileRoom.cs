@@ -120,49 +120,6 @@ namespace GenTools
                 if (availablePositions.Contains(pos2)) possiblePosition.Add(pos2);
             }
 
-            // List<GenTileObjectData> doorsToPlace = new();
-            // foreach (var door in Type.Doors)
-            // {
-            //     for (int i = 0; i < door.Amount; i++) doorsToPlace.Add(door);
-            // }
-            // List<Vector3Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
-            //
-            // if (doorsToPlace.Count > 0)
-            // {
-            //     Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
-            //     List<GenTileObjectData> priority = new();
-            //     foreach (var pos in iterPositions)
-            //     {
-            //         // if (floorTilemap.GetTile(pos) != null) continue;
-            //
-            //         GenTileObjectData door = null;
-            //         if (priority.Count > 0)
-            //         {
-            //             door = priority[0];
-            //             priority.RemoveAt(0);
-            //         }
-            //         else if (doorsToPlace.Count > 0)
-            //         {
-            //             int index = random.Next(0, doorsToPlace.Count);
-            //             door = doorsToPlace[index];
-            //             doorsToPlace.RemoveAt(index);
-            //         }
-            //         if (door != null)
-            //         {
-            //             if (random.Next(0, 100) < door.Chance)
-            //             {
-            //                 possiblePosition.Remove(pos);
-            //                 availablePositions.Remove(pos);
-            //                 TileBase tile = door.Tile[random.Next(door.Tile.Count)];
-            //                 tilemap.SetTile(pos, tile);
-            //                 PlacedDoors.Add(new GenTileObject(tile, pos));
-            //                 priority.AddRange(door.Recursion);
-            //                 // Tilegen.CollisionMap[pos.x, pos.y] = true;
-            //             }
-            //         }
-            //     }
-            // }
-
             List<GenTileObjectData> wallsToPlace = new();
             foreach (var wall in Type.Walls)
             {

@@ -18,14 +18,9 @@ MonoBehaviour:
   MaxSize: {x: 100, y: 100}
   MaxTunnels: {x: 2, y: 2}
   Floor:
-  - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
+  - {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
   Doors:
   - {fileID: 11400000, guid: c2148c659e42c2dc292b009bd695b76f, type: 2}
-  Walls:
-  - Amount: 100
-    Chance: 100
-    Tile:
-    - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
-    Recursion: []
+  Walls: []
   Stairs: []
   Objects: []

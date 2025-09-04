@@ -38,7 +38,7 @@ namespace GenTools
 
         public List<GenTilePreset> Presets = new();
 
-        public bool ShowPresetEditor = false;
+        // public bool ShowPresetEditor = false;
 
         [Header("Extensions")]
         public GenTileRoomPlacer GenTileRoomPlacer;

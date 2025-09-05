@@ -39,6 +39,7 @@ namespace GenTools
         public void Generate()
         {
             Clear();
+            random = new(GenTile.Seed);
             PlaceRooms();
             PlaceTunnels();
             PopulateRooms(PlacedRooms);

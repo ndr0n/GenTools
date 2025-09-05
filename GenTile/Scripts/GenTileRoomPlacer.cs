@@ -426,6 +426,15 @@ namespace GenTools
                         canPlaceTunnel = false;
                         break;
                     }
+                    foreach (var tunnel in room.PlacedTunnels)
+                    {
+                        if (tunnel.OriginPoint == originPoint || tunnel.OriginPoint == connectionPoint || tunnel.ConnectionPoint == originPoint || tunnel.ConnectionPoint == connectionPoint)
+                        {
+                            canPlaceTunnel = false;
+                            break;
+                        }
+                    }
+                    if (canPlaceTunnel == false) break;
                 }
                 if (canPlaceTunnel == false) break;
             }

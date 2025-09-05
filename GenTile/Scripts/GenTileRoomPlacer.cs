@@ -10,6 +10,12 @@ using Random = UnityEngine.Random;
 
 namespace GenTools
 {
+    public enum TunnelingAlgorithm
+    {
+        Directional = 0,
+        BresenhamLine = 1,
+    }
+
     [System.Serializable]
     public class GenTileRoomPlacer : MonoBehaviour
     {
@@ -17,6 +23,9 @@ namespace GenTools
 
         public List<GenTileRoomType> RoomType = new();
         public readonly List<GenTileRoom> PlacedRooms = new();
+
+        public bool PlaceDoorsInsideRoom = true;
+        public TunnelingAlgorithm TunnelingAlgorithm = TunnelingAlgorithm.Directional;
 
         public TileBase TunnelTile;
 
@@ -35,6 +44,8 @@ namespace GenTools
             PopulateRooms(PlacedRooms);
             foreach (var tilemap in GenTile.Tilemap) tilemap.RefreshAllTiles();
         }
+
+        #region Rooms
 
         public void PlaceRooms()
         {
@@ -152,76 +163,6 @@ namespace GenTools
             return null;
         }
 
-        public void PlaceTunnels()
-        {
-            foreach (var origin in PlacedRooms.OrderBy(x => random.Next(int.MinValue, int.MaxValue)))
-            {
-                int tunnelCount = random.Next(origin.Type.MaxTunnels.x, origin.Type.MaxTunnels.y + 1);
-                var possibleConnections = PlacedRooms.OrderBy(connection => Vector3.Distance(origin.GetCenter(), connection.GetCenter())).ToList();
-                possibleConnections.Remove(origin);
-                possibleConnections = possibleConnections.Where(connection => !origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == connection)).ToList();
-                for (int i = 0; i < (tunnelCount - origin.PlacedTunnels.Count); i++)
-                {
-                    if (i >= possibleConnections.Count) break;
-                    var connection = possibleConnections[i];
-
-                    List<Vector2Int> tunnelPositions = new();
-                    Vector3 oPoint = GenTools.ClosestPointBetween(origin, connection);
-                    Vector2Int originPoint = new Vector2Int((int) oPoint.x, (int) oPoint.y);
-                    Vector3 cPoint = GenTools.ClosestPointBetween(connection, origin);
-                    Vector2Int connectionPoint = new Vector2Int((int) cPoint.x, (int) cPoint.y);
-                    BresenhamLine.Compute(originPoint, connectionPoint, tunnelPositions);
-
-                    List<Vector2Int> toRemove = new();
-                    for (int ipos = 1; ipos < tunnelPositions.Count; ipos++)
-                    {
-                        if (origin.Contains(tunnelPositions[ipos]))
-                        {
-                            toRemove.Add(tunnelPositions[ipos - 1]);
-                            originPoint = tunnelPositions[ipos];
-                        }
-                        if (connection.Contains(tunnelPositions[ipos]))
-                        {
-                            for (int index = (ipos + 1); index < tunnelPositions.Count; index++) toRemove.Add(tunnelPositions[index]);
-                            connectionPoint = tunnelPositions[ipos];
-                            break;
-                        }
-                    }
-                    foreach (var r in toRemove) tunnelPositions.Remove(r);
-
-                    tunnelPositions.Remove(originPoint);
-                    tunnelPositions.Remove(connectionPoint);
-
-                    bool canPlaceTunnel = true;
-                    foreach (var pos in tunnelPositions)
-                    {
-                        foreach (var room in PlacedRooms)
-                        {
-                            if (room.Contains(pos))
-                            {
-                                canPlaceTunnel = false;
-                                break;
-                            }
-                        }
-                        if (canPlaceTunnel == false) break;
-                    }
-
-                    if (canPlaceTunnel)
-                    {
-                        GenTileRoomTunnel originTunnel = new(origin, originPoint, connection, connectionPoint, tunnelPositions);
-                        origin.PlacedTunnels.Add(originTunnel);
-
-                        List<Vector2Int> reversedTunnelPositions = new();
-                        for (int iter = 0; iter < tunnelPositions.Count; iter++) reversedTunnelPositions.Add(tunnelPositions[tunnelPositions.Count - 1 - iter]);
-                        GenTileRoomTunnel connectionTunnel = new(connection, connectionPoint, origin, originPoint, reversedTunnelPositions);
-                        connection.PlacedTunnels.Add(connectionTunnel);
-
-                        foreach (var pos in tunnelPositions) GenTile.Tilemap[0].SetTile(new Vector3Int(pos.x, pos.y, 0), TunnelTile);
-                    }
-                }
-            }
-        }
-
         void PopulateRooms(List<GenTileRoom> rooms)
         {
             foreach (var room in rooms)
@@ -235,11 +176,274 @@ namespace GenTools
                     }
                 }
                 availablePositions = room.ReplaceFloor(GenTile, availablePositions, random);
-                availablePositions = room.PlaceDoors(GenTile, availablePositions, random, true);
+                availablePositions = room.PlaceDoors(GenTile, availablePositions, random, PlaceDoorsInsideRoom);
                 availablePositions = room.PlaceWalls(GenTile, availablePositions, random);
                 // availablePositions = room.PlaceStairs();
                 availablePositions = room.PlaceObjects(GenTile, availablePositions, random);
             }
         }
+
+        #endregion
+
+        #region Tunnels
+
+        public void PlaceTunnels()
+        {
+            switch (TunnelingAlgorithm)
+            {
+                case TunnelingAlgorithm.Directional:
+                    PlaceTunnelsDirectional();
+                    break;
+                case TunnelingAlgorithm.BresenhamLine:
+                    PlaceTunnelsBresenhamLine();
+                    break;
+            }
+        }
+
+        public void PlaceTunnelsDirectional()
+        {
+            foreach (var origin in PlacedRooms.OrderBy(x => random.Next(int.MinValue, int.MaxValue)))
+            {
+                int tunnelCount = random.Next(origin.Type.MaxTunnels.x, origin.Type.MaxTunnels.y + 1);
+                var otherRooms = PlacedRooms.ToList();
+                otherRooms.Remove(origin);
+                List<CardinalDirection> directions = new List<CardinalDirection>() {CardinalDirection.South, CardinalDirection.West, CardinalDirection.North, CardinalDirection.East};
+                directions = directions.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
+                foreach (var direction in directions)
+                {
+                    if (origin.PlacedTunnels.Count < tunnelCount)
+                    {
+                        GenTileRoom connection = null;
+                        List<Vector2Int> tunnelPositions = new();
+                        switch (direction)
+                        {
+                            case CardinalDirection.North:
+                                List<int> xitern = GenTools.GetRandomIterArray(origin.Position.x, (origin.Position.x + origin.Size.x), random);
+                                foreach (var x in xitern)
+                                {
+                                    tunnelPositions.Clear();
+                                    for (int y = (origin.Position.y + (origin.Size.y - 1)); y < GenTile.Height; y++)
+                                    {
+                                        Vector2Int pos = new Vector2Int(x, y);
+                                        tunnelPositions.Add(pos);
+                                        foreach (var conn in otherRooms)
+                                        {
+                                            if (!origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == conn))
+                                            {
+                                                if (conn.Contains(pos))
+                                                {
+                                                    connection = conn;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (connection != null) break;
+
+                                        bool hasAdjacentRoom = false;
+                                        foreach (var room in otherRooms)
+                                        {
+                                            if (room.Contains(pos + Vector2Int.left) || room.Contains(pos + Vector2Int.right))
+                                            {
+                                                hasAdjacentRoom = true;
+                                                break;
+                                            }
+                                        }
+                                        if (hasAdjacentRoom) break;
+                                    }
+                                    if (connection != null) break;
+                                }
+                                break;
+                            case CardinalDirection.South:
+                                List<int> xiters = GenTools.GetRandomIterArray(origin.Position.x, (origin.Position.x + origin.Size.x), random);
+                                foreach (var x in xiters)
+                                {
+                                    tunnelPositions.Clear();
+                                    for (int y = origin.Position.y; y >= 0; y--)
+                                    {
+                                        Vector2Int pos = new Vector2Int(x, y);
+                                        tunnelPositions.Add(pos);
+                                        foreach (var conn in otherRooms)
+                                        {
+                                            if (!origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == conn))
+                                            {
+                                                if (conn.Contains(pos))
+                                                {
+                                                    connection = conn;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (connection != null) break;
+
+                                        bool hasAdjacentRoom = false;
+                                        foreach (var room in otherRooms)
+                                        {
+                                            if (room.Contains(pos + Vector2Int.left) || room.Contains(pos + Vector2Int.right))
+                                            {
+                                                hasAdjacentRoom = true;
+                                                break;
+                                            }
+                                        }
+                                        if (hasAdjacentRoom) break;
+                                    }
+                                    if (connection != null) break;
+                                }
+                                break;
+                            case CardinalDirection.East:
+                                List<int> yitere = GenTools.GetRandomIterArray(origin.Position.y, (origin.Position.y + origin.Size.y), random);
+                                foreach (var y in yitere)
+                                {
+                                    tunnelPositions.Clear();
+                                    for (int x = (origin.Position.x + (origin.Size.x - 1)); x < GenTile.Width; x++)
+                                    {
+                                        Vector2Int pos = new Vector2Int(x, y);
+                                        tunnelPositions.Add(pos);
+                                        foreach (var conn in otherRooms)
+                                        {
+                                            if (!origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == conn))
+                                            {
+                                                if (conn.Contains(pos))
+                                                {
+                                                    connection = conn;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (connection != null) break;
+
+                                        bool hasAdjacentRoom = false;
+                                        foreach (var room in otherRooms)
+                                        {
+                                            if (room.Contains(pos + Vector2Int.up) || room.Contains(pos + Vector2Int.down))
+                                            {
+                                                hasAdjacentRoom = true;
+                                                break;
+                                            }
+                                        }
+                                        if (hasAdjacentRoom) break;
+                                    }
+                                    if (connection != null) break;
+                                }
+                                break;
+                            case CardinalDirection.West:
+                                List<int> yiterw = GenTools.GetRandomIterArray(origin.Position.y, (origin.Position.y + origin.Size.y), random);
+                                foreach (var y in yiterw)
+                                {
+                                    tunnelPositions.Clear();
+                                    for (int x = origin.Position.x; x >= 0; x--)
+                                    {
+                                        Vector2Int pos = new Vector2Int(x, y);
+                                        tunnelPositions.Add(pos);
+                                        foreach (var conn in otherRooms)
+                                        {
+                                            if (!origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == conn))
+                                            {
+                                                if (conn.Contains(pos))
+                                                {
+                                                    connection = conn;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (connection != null) break;
+
+                                        bool hasAdjacentRoom = false;
+                                        foreach (var room in otherRooms)
+                                        {
+                                            if (room.Contains(pos + Vector2Int.up) || room.Contains(pos + Vector2Int.down))
+                                            {
+                                                hasAdjacentRoom = true;
+                                                break;
+                                            }
+                                        }
+                                        if (hasAdjacentRoom) break;
+                                    }
+                                    if (connection != null) break;
+                                }
+                                break;
+                        }
+                        if (connection != null) FinishPlacingTunnel(origin, connection, tunnelPositions);
+                    }
+                }
+            }
+        }
+
+        public void PlaceTunnelsBresenhamLine()
+        {
+            foreach (var origin in PlacedRooms.OrderBy(x => random.Next(int.MinValue, int.MaxValue)))
+            {
+                int tunnelCount = random.Next(origin.Type.MaxTunnels.x, origin.Type.MaxTunnels.y + 1);
+                var possibleConnections = PlacedRooms.OrderBy(connection => Vector3.Distance(origin.GetCenter(), connection.GetCenter())).ToList();
+                possibleConnections.Remove(origin);
+                possibleConnections = possibleConnections.Where(connection => !origin.PlacedTunnels.Exists(originTunnel => originTunnel.Connection == connection)).ToList();
+                for (int i = 0; i < (tunnelCount - origin.PlacedTunnels.Count); i++)
+                {
+                    if (i >= possibleConnections.Count) break;
+                    var connection = possibleConnections[i];
+                    List<Vector2Int> tunnelPositions = new();
+                    Vector3 oPoint = GenTools.ClosestPointBetween(origin, connection);
+                    Vector2Int originPoint = new Vector2Int((int) oPoint.x, (int) oPoint.y);
+                    Vector3 cPoint = GenTools.ClosestPointBetween(connection, origin);
+                    Vector2Int connectionPoint = new Vector2Int((int) cPoint.x, (int) cPoint.y);
+                    BresenhamLine.Compute(originPoint, connectionPoint, tunnelPositions);
+                    FinishPlacingTunnel(origin, connection, tunnelPositions);
+                }
+            }
+        }
+
+        void FinishPlacingTunnel(GenTileRoom origin, GenTileRoom connection, List<Vector2Int> tunnelPositions)
+        {
+            Vector2Int originPoint = tunnelPositions[0];
+            Vector2Int connectionPoint = tunnelPositions[^1];
+
+            List<Vector2Int> toRemove = new();
+            for (int ipos = 1; ipos < tunnelPositions.Count; ipos++)
+            {
+                if (origin.Contains(tunnelPositions[ipos]))
+                {
+                    toRemove.Add(tunnelPositions[ipos - 1]);
+                    originPoint = tunnelPositions[ipos];
+                }
+                if (connection.Contains(tunnelPositions[ipos]))
+                {
+                    for (int index = (ipos + 1); index < tunnelPositions.Count; index++) toRemove.Add(tunnelPositions[index]);
+                    connectionPoint = tunnelPositions[ipos];
+                    break;
+                }
+            }
+            foreach (var r in toRemove) tunnelPositions.Remove(r);
+
+            tunnelPositions.Remove(originPoint);
+            tunnelPositions.Remove(connectionPoint);
+
+            bool canPlaceTunnel = true;
+            foreach (var pos in tunnelPositions)
+            {
+                foreach (var room in PlacedRooms)
+                {
+                    if (room.Contains(pos))
+                    {
+                        canPlaceTunnel = false;
+                        break;
+                    }
+                }
+                if (canPlaceTunnel == false) break;
+            }
+
+            if (canPlaceTunnel)
+            {
+                GenTileRoomTunnel originTunnel = new(origin, originPoint, connection, connectionPoint, tunnelPositions);
+                origin.PlacedTunnels.Add(originTunnel);
+
+                List<Vector2Int> reversedTunnelPositions = new();
+                for (int iter = 0; iter < tunnelPositions.Count; iter++) reversedTunnelPositions.Add(tunnelPositions[tunnelPositions.Count - 1 - iter]);
+                GenTileRoomTunnel connectionTunnel = new(connection, connectionPoint, origin, originPoint, reversedTunnelPositions);
+                connection.PlacedTunnels.Add(connectionTunnel);
+
+                foreach (var pos in tunnelPositions) GenTile.Tilemap[0].SetTile(new Vector3Int(pos.x, pos.y, 0), TunnelTile);
+            }
+        }
+
+        #endregion
     }
 }

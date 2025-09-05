@@ -69,7 +69,7 @@ namespace GenTools
             return availablePositions;
         }
 
-        public List<Vector3Int> PlaceDoors(GenTile genTile, List<Vector3Int> availablePositions, System.Random random, bool placeInsideRoom)
+        public List<Vector3Int> PlaceDoors(GenTile genTile, List<Vector3Int> availablePositions, System.Random random, bool placeDoorInsideRoom)
         {
             if (Type.Doors.Count > 0)
             {
@@ -77,10 +77,11 @@ namespace GenTools
                 TileBase door = Type.Doors[random.Next(Type.Doors.Count)];
                 foreach (var tunnel in PlacedTunnels)
                 {
-                    if (placeInsideRoom)
+                    Vector3Int originPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
+                    availablePositions.Remove(originPosition);
+                    if (placeDoorInsideRoom)
                     {
-                        Vector3Int doorPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
-                        availablePositions.Remove(doorPosition);
+                        Vector3Int doorPosition = originPosition;
                         tilemap.SetTile(doorPosition, door);
                         PlacedDoors.Add(new GenTileObject(door, doorPosition));
                     }

@@ -47,7 +47,11 @@ namespace GenTools
             InnerRoom.Clear();
             if (MainRoom != null) DestroyImmediate(MainRoom.gameObject);
 
-            if (tunnelParent != null) DestroyImmediate(tunnelParent.gameObject);
+            if (tunnelParent != null)
+            {
+                DestroyImmediate(tunnelParent.gameObject);
+                tunnelParent = GenTools.CreateGameObject("Tunnel", transform);
+            }
             tunnelFloor.Clear();
             tunnelRoof.Clear();
             tunnelDoor.Clear();
@@ -125,8 +129,6 @@ namespace GenTools
         {
             foreach (var tunnel in tileRoom.PlacedTunnels)
             {
-                if (tunnelParent == null) tunnelParent = GenTools.CreateGameObject("Tunnel", transform);
-
                 GameObject roofPreset = null;
                 if (room.Preset.Roof.Count > 0) roofPreset = room.Preset.Roof[random.Next(0, room.Preset.Roof.Count)];
 
@@ -187,7 +189,7 @@ namespace GenTools
             foreach (var floor in tunnelFloor)
             {
                 Vector3 pos = floor.transform.position;
-                List<GameObject> adjacentFloors = new() {null, null, null, null, null, null, null, null};
+                List<GameObject> adjacentFloors = new() {null, null, null, null};
                 foreach (var adj in tunnelFloor)
                 {
                     if (adj.transform.position == new Vector3(pos.x, pos.y, pos.z + tunnelPreset.TileSize.z))

@@ -56,7 +56,7 @@ MonoBehaviour:
         RoomHeight: {x: 5, y: 10}
         OuterWall: 0
         WallPercentage: {x: 0, y: 100}
-        InputTexture: {fileID: 2800000, guid: de1f8968c2327d5e6829e177f88b3282, type: 3}
+        InputTexture: {fileID: 2800000, guid: 624bf8b056a4db0cfaea3bce7607741c, type: 3}
         N: {x: 3, y: 3}
         Symmetry: {x: 2, y: 4}
         Iterations: {x: 0, y: 0}

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GenTools
@@ -23,6 +25,13 @@ namespace GenTools
             obj.localPosition = Vector3.zero;
             obj.localRotation = Quaternion.identity;
             return obj.gameObject;
+        }
+
+        public static List<int> GetRandomIterArray(int min, int max, System.Random random)
+        {
+            List<int> result = new List<int>();
+            for (int i = min; i < max; i++) result.Add(i);
+            return result.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
         }
 
         public static CardinalDirection GetDirection(Vector2Int point1, Vector2Int point2)

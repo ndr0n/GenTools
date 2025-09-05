@@ -50,7 +50,6 @@ namespace GenTools
             if (tunnelParent != null)
             {
                 DestroyImmediate(tunnelParent.gameObject);
-                tunnelParent = GenTools.CreateGameObject("Tunnel", transform);
             }
             tunnelFloor.Clear();
             tunnelRoof.Clear();
@@ -64,6 +63,7 @@ namespace GenTools
                 Clear();
                 if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
                 random = new(Seed);
+                tunnelParent = GenTools.CreateGameObject("Tunnel", transform);
                 if (GenTile != null)
                 {
                     GenTile.Width = (Size.x - Border.x);

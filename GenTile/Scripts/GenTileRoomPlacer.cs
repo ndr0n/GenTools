@@ -24,7 +24,7 @@ namespace GenTools
         public List<GenTileRoomType> RoomType = new();
         public readonly List<GenTileRoom> PlacedRooms = new();
 
-        public bool PlaceDoorsInsideRoom = true;
+        public bool PlaceDoorsInsideRoom = false;
         public TunnelingAlgorithm TunnelingAlgorithm = TunnelingAlgorithm.Directional;
 
         public TileBase TunnelTile;

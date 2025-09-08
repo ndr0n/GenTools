@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd5ec12218b54d23b5131667b2b74ebe, type: 3}
+  m_Name: GT_Vaults
+  m_EditorClassIdentifier: Assembly-CSharp::GenTools.GenTable
+  Result: 'Entrance: Functioning Escalator
+
+    Tunnels: Lightless and Dank
+
+    Original
+    Function: Military Command Post
+
+'
+  Rows:
+  - Name: Entrance
+    Items:
+    - Steel Blast Doors
+    - Back of Tiny Cave
+    - Enormous Crater
+    - Narrow Fissure in Cliff
+    - Through Old Sewer
+    - Atop Mountain
+    - Opens at Full Moon
+    - Scrawled With Runes
+    - Functioning Lift
+    - Broken Lift
+    - Functioning Escalator
+    - Broken Escalator
+    - Ruined Train Tunnel
+    - Beneath Toxic Water
+    - Air Filtration Vent
+    - Infested with Bats
+    - Barricaded from Inside
+    - Below Arcology
+    - 'Below Settlement '
+    - Below Ruin
+  - Name: Tunnels
+    Items:
+    - Half-Flooded
+    - Filled with Sand
+    - Dusty and Silent
+    - Crystal-encrusted
+    - Blood Red Walls
+    - Decorated Tiles
+    - Fire-Damaged
+    - Winding and Narrow
+    - Descend Into the Urth
+    - Somehow Absorb Sound
+    - Lightless and Dank
+    - Spiralling, Strange
+    - Lit with Bioluminous Moss
+    - Surprisingly Clean
+    - Full of Ancient Corpses
+    - Incredibly Cold
+    - Enormous and Echoing
+    - Battle Damaged
+    - White and Sterile
+    - Filled with Garbage
+  - Name: Original Function
+    Items:
+    - Fallout Shelter
+    - Transport Tunnels
+    - Bioweapon Research
+    - Time Paradox Research
+    - Language Virus Research
+    - Geothermal Power Station
+    - Nuclear Power Station
+    - Hypergeometry Research
+    - Deep Core Mining
+    - Military Command Post
+    - Titan AI Memory Banks
+    - Titan AI Cooling System
+    - Seed Bank
+    - Interrogation Chambers
+    - Synth Production
+    - Illicit Cloning Facility
+    - Spy Network Base
+    - "Autarch\u2019s Hideout"
+    - Hidden Reservoir
+    - Recycling Facility

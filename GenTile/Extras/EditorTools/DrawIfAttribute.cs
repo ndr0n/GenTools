@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEngine;
 using System;
 
@@ -38,3 +40,5 @@ public class DrawIfAttribute : PropertyAttribute
         this.disablingType = disablingType;
     }
 }
+
+#endif

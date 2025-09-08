@@ -12,12 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd5ec12218b54d23b5131667b2b74ebe, type: 3}
   m_Name: GT_Ruins
   m_EditorClassIdentifier: Assembly-CSharp::GenTools.GenTable
-  Result: 'Entrance: Functioning Escalator
+  Result: 'What Was It?: Medical Facility
 
-    Tunnels: Lightless and Dank
-
-    Original
-    Function: Military Command Post
+    And Then?: Bandit Hideout
 
 '
   Rows:
@@ -47,13 +44,13 @@ MonoBehaviour:
     Items:
     - Hermitage
     - Bandit Hideout
+    - Theatre
     - Cultist Compound
     - Barracks
     - Monastery
     - "Creature\u2019s Lair"
     - Brothel
     - Inn
-    - Theatre
     - Gladiator Pit
     - Madhouse
     - Cloning Facility

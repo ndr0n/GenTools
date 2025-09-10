@@ -104,7 +104,7 @@ MonoBehaviour:
         Iterations: {x: 0, y: 0}
         Invert: 0
   - Iterations:
-    - Tile: {fileID: 11400000, guid: e9424670d8594ca8f80f566b4d295f3b, type: 2}
+    - Tile: {fileID: 11400000, guid: df5922690bf900981b65e38007cd0491, type: 2}
       Type: 0
       Algorithm:
       - Algorithm: 5
@@ -122,29 +122,6 @@ MonoBehaviour:
         RoomHeight: {x: 5, y: 10}
         OuterWall: 0
         WallPercentage: {x: 0, y: 100}
-        InputTexture: {fileID: 0}
-        N: {x: 4, y: 4}
-        Symmetry: {x: 1, y: 3}
-        Iterations: {x: 0, y: 0}
-        Invert: 0
-    - Tile: {fileID: 11400000, guid: 95f822e5225f58563b75003039dedafe, type: 2}
-      Type: 2
-      Algorithm:
-      - Algorithm: 0
-        FillPercentage: {x: 5, y: 5}
-        DegradePercentage: {x: 25, y: 75}
-        Size: {x: 0, y: 0}
-        PerlinNoiseModifier: {x: 0, y: 0.25}
-        PathWidth: {x: 0, y: 0}
-        XBeginPercent: {x: 0, y: 0}
-        XFinishPercent: {x: 0, y: 0}
-        YBeginPercent: {x: 0, y: 0}
-        YFinishPercent: {x: 0, y: 0}
-        RoomAmount: {x: 5, y: 10}
-        RoomWidth: {x: 5, y: 10}
-        RoomHeight: {x: 5, y: 10}
-        OuterWall: 0
-        WallPercentage: {x: 50, y: 100}
         InputTexture: {fileID: 0}
         N: {x: 4, y: 4}
         Symmetry: {x: 1, y: 3}

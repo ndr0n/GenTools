@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 namespace GenTools
@@ -10,6 +11,7 @@ namespace GenTools
         RandomWalk,
         PerlinNoise,
         Tunnel,
+        BinarySpacePartition,
         Rooms,
         Walls,
         WaveFunctionCollapse
@@ -40,13 +42,13 @@ namespace GenTools
         public static byte[,] Degrade(byte[,] map, byte value, int seed, Vector2Int chance)
         {
             System.Random random = new(seed);
-            int _chance = random.Next(chance.x, chance.y);
             for (int x = 0; x < map.GetUpperBound(0); x++)
             {
                 for (int y = 0; y < map.GetUpperBound(1); y++)
                 {
                     if (map[x, y] == value)
                     {
+                        int _chance = random.Next(chance.x, chance.y);
                         if (random.Next(0, 100) < _chance) map[x, y] = 0;
                     }
                 }
@@ -187,18 +189,40 @@ namespace GenTools
 
         public static byte[,] Rooms(byte[,] map, byte value, int seed, Vector2Int roomAmount, Vector2Int roomWidth, Vector2Int roomHeight)
         {
+            // RANDOM PLACEMENT
             System.Random random = new System.Random(seed);
             int count = random.Next(roomAmount.x, roomAmount.y + 1);
             for (int i = 0; i < count; i++)
             {
-                int w = random.Next(roomWidth.x, roomWidth.y + 1);
-                int h = random.Next(roomHeight.x, roomHeight.y + 1);
-                Vector2Int pos = new Vector2Int(random.Next(0, map.GetUpperBound(0) - w + 1), random.Next(0, map.GetUpperBound(1) - h + 1));
-                for (int x = 0; x < w; x++)
+                Vector2Int size = new Vector2Int(random.Next(roomWidth.x, roomWidth.y + 1), random.Next(roomHeight.x, roomHeight.y + 1));
+                Vector2Int pos = new Vector2Int(random.Next(0, map.GetUpperBound(0) - size.x + 1), random.Next(0, map.GetUpperBound(1) - size.y + 1));
+                for (int x = 0; x < size.x; x++)
                 {
-                    for (int y = 0; y < h; y++)
+                    for (int y = 0; y < size.y; y++)
                     {
                         map[pos.x + x, pos.y + y] = value;
+                    }
+                }
+            }
+            return map;
+        }
+
+        public static byte[,] BinarySpacePartition(byte[,] map, byte value, int seed, Vector2Int chance, Vector2Int offset, Vector2Int minWidth, Vector2Int minHeight)
+        {
+            System.Random random = new(seed);
+            int of7 = random.Next(offset.x, offset.y + 1);
+            BoundsInt bounds = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(map.GetLength(0), map.GetLength(1), 0));
+            List<BoundsInt> rooms = GenTileLibrary.BinarySpacePartition(random, bounds, random.Next(minWidth.x, minWidth.y), random.Next(minHeight.x, minHeight.y));
+            foreach (var room in rooms)
+            {
+                if (random.Next(0, 100) < random.Next(chance.x, chance.y))
+                {
+                    for (int x = (room.position.x + of7); x < ((room.position.x + room.size.x) - of7 - 1); x++)
+                    {
+                        for (int y = (room.position.y + of7); y < ((room.position.y + room.size.y) - of7 - 1); y++)
+                        {
+                            map[x, y] = value;
+                        }
                     }
                 }
             }

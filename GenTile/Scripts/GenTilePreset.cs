@@ -15,5 +15,6 @@ namespace GenTools
     public class GenTilePreset : ScriptableObject
     {
         public List<TilegenLayer> Layer = new();
+        public List<GenTileRoomType> RoomTypes = new();
     }
 }

@@ -6,17 +6,25 @@ using UnityEngine.Tilemaps;
 namespace GenTools
 {
     [System.Serializable]
-    [CreateAssetMenu(fileName = "TR", menuName = "GenTools/GenTile/GenTileRoomType")]
+    [CreateAssetMenu(fileName = "RT", menuName = "GenTools/GenTile/GenTileRoomType")]
     public class GenTileRoomType : ScriptableObject
     {
+        [Header("Tagging")]
         public List<Sprite> RoomSprite = new();
         public Vector2Int MinSize = new Vector2Int(1, 1);
         public Vector2Int MaxSize = new Vector2Int(100, 100);
-        public Vector2Int MaxTunnels = new Vector2Int(4, 4);
+
+        [Header("Building")]
         public List<TileBase> Floor = new();
         public List<TileBase> Doors = new();
         public List<GenTileObjectData> Walls = new();
         public List<GenTileObjectData> Stairs = new();
         public List<GenTileObjectData> Objects = new();
+
+        [Header("Tunneling")]
+        public TileBase TunnelTile;
+        public bool PlaceDoorsInsideRoom = false;
+        public Vector2Int TunnelAmount = new Vector2Int(4, 4);
+        public TunnelingAlgorithm TunnelingAlgorithm = TunnelingAlgorithm.Directional;
     }
 }

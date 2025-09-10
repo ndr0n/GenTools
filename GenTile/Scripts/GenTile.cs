@@ -48,7 +48,7 @@ namespace GenTools
         readonly List<TileBase> tiles = new();
         readonly List<GenTileLayerData> layerData = new();
 
-        GenTilePreset preset;
+        [HideInInspector] public GenTilePreset Preset;
         System.Random random;
 
         public void Clear()
@@ -61,12 +61,12 @@ namespace GenTools
 
             if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
             random = new(Seed);
-            preset = Presets[random.Next(Presets.Count)];
+            Preset = Presets[random.Next(Presets.Count)];
 
             tiles.Add(null);
-            for (int i = 0; i < preset.Layer.Count; i++)
+            for (int i = 0; i < Preset.Layer.Count; i++)
             {
-                foreach (var iter in preset.Layer[i].Iterations)
+                foreach (var iter in Preset.Layer[i].Iterations)
                 {
                     if (!tiles.Contains(iter.Tile))
                     {
@@ -85,7 +85,7 @@ namespace GenTools
                 Map.Add(new byte[Width, Height]);
             }
 
-            for (int layer = 0; layer < preset.Layer.Count; layer++)
+            for (int layer = 0; layer < Preset.Layer.Count; layer++)
             {
                 layerData.Add(new GenTileLayerData((layer + 1), Width, Height));
             }
@@ -93,9 +93,9 @@ namespace GenTools
 
         void Iterate()
         {
-            for (int layer = 0; layer < preset.Layer.Count; layer++)
+            for (int layer = 0; layer < Preset.Layer.Count; layer++)
             {
-                foreach (var iter in preset.Layer[layer].Iterations)
+                foreach (var iter in Preset.Layer[layer].Iterations)
                 {
                     byte value = (byte) tiles.IndexOf(iter.Tile);
                     int seed = random.Next(int.MinValue, int.MaxValue);
@@ -119,6 +119,9 @@ namespace GenTools
                                 break;
                             case GenTileAlgorithmType.Tunnel:
                                 layerData[layer].Map[type] = GenTileAlgorithm.Tunnel(layerData[layer].Map[type], value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
+                                break;
+                            case GenTileAlgorithmType.BinarySpacePartition:
+                                layerData[layer].Map[type] = GenTileAlgorithm.BinarySpacePartition(layerData[layer].Map[type], value, seed, algorithm.Percentage, algorithm.Offset, algorithm.MinRoomWidth, algorithm.MinRoomHeight);
                                 break;
                             case GenTileAlgorithmType.Rooms:
                                 layerData[layer].Map[type] = GenTileAlgorithm.Rooms(layerData[layer].Map[type], value, seed, algorithm.RoomAmount, algorithm.RoomWidth, algorithm.RoomHeight);

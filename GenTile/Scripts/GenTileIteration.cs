@@ -83,6 +83,26 @@ namespace GenTools
 #endif
         public Vector2Int RoomHeight = new Vector2Int(5, 10);
 
+        // BINARY SPACE PARTITION
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
+#endif
+        public Vector2Int Percentage = new Vector2Int(100, 100);
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
+#endif
+        public Vector2Int Offset = new Vector2Int(1, 1);
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
+#endif
+        public Vector2Int MinRoomWidth = new Vector2Int(5, 10);
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
+#endif
+        public Vector2Int MinRoomHeight = new Vector2Int(5, 10);
+
         // WALLS
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Walls)]

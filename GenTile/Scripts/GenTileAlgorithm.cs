@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using UnityEngine;
 
 namespace GenTools
@@ -213,7 +214,7 @@ namespace GenTools
             int of7 = random.Next(offset.x, offset.y + 1);
             BoundsInt bounds = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(map.GetLength(0), map.GetLength(1), 0));
             List<BoundsInt> rooms = GenTileLibrary.BinarySpacePartition(random, bounds, random.Next(minWidth.x, minWidth.y), random.Next(minHeight.x, minHeight.y));
-            foreach (var room in rooms)
+            foreach (var room in rooms.OrderBy(x => random.Next()))
             {
                 if (random.Next(0, 100) < random.Next(chance.x, chance.y))
                 {

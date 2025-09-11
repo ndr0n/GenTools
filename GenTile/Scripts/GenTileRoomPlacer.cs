@@ -173,7 +173,7 @@ namespace GenTools
                 availablePositions = room.PlaceDoors(GenTile, availablePositions, random, room.Type.PlaceDoorsInsideRoom);
                 availablePositions = room.PlaceWalls(GenTile, availablePositions, random);
                 // availablePositions = room.PlaceStairs();
-                availablePositions = room.PlaceObjects(GenTile, availablePositions, random);
+                availablePositions = room.PlaceObjects(GenTile, availablePositions, room, random);
             }
         }
 

@@ -17,8 +17,8 @@ namespace GenTools
         [Header("Building")]
         public List<TileBase> Floor = new();
         public List<TileBase> Doors = new();
-        public List<GenTileObjectData> Walls = new();
-        public List<GenTileObjectData> Stairs = new();
+        public List<GenTileWallData> Walls = new();
+        // public List<GenTileObjectData> Stairs = new();
         public List<GenTileObjectData> Objects = new();
 
         [Header("Tunneling")]

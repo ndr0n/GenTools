@@ -5,6 +5,13 @@ using UnityEngine.Tilemaps;
 
 namespace GenTools
 {
+    public enum GenTilePlacementRules
+    {
+        Any = 0,
+        Inner = 1,
+        Outer = 2,
+    }
+
     [System.Serializable]
     public struct GenTileObject
     {
@@ -19,10 +26,18 @@ namespace GenTools
     }
 
     [System.Serializable]
+    public class GenTileWallData
+    {
+        public int Chance = 100;
+        public List<TileBase> Tile = new();
+    }
+
+    [System.Serializable]
     public class GenTileObjectData
     {
         public int Amount = 1;
         public int Chance = 100;
+        public GenTilePlacementRules PlacementRules;
         public List<TileBase> Tile = new();
         public List<GenTileObjectData> Recursion = new();
     }

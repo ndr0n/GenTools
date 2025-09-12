@@ -55,14 +55,17 @@ namespace GenTools
         {
             Map.Clear();
             layerData.Clear();
-
             foreach (var tilemap in Tilemap) tilemap.ClearAllTiles();
-            tiles.Clear();
+            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Clear();
+        }
 
+        void Init()
+        {
             if (RandomSeed) Seed = Random.Range(int.MinValue, int.MaxValue);
             random = new(Seed);
             Preset = Presets[random.Next(Presets.Count)];
 
+            tiles.Clear();
             tiles.Add(null);
             for (int i = 0; i < Preset.Layer.Count; i++)
             {
@@ -74,8 +77,6 @@ namespace GenTools
                     }
                 }
             }
-
-            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Clear();
         }
 
         void Initialize()
@@ -186,6 +187,7 @@ namespace GenTools
         public List<byte[,]> Generate()
         {
             Clear();
+            Init();
             Initialize();
             Iterate();
             Draw();
@@ -197,6 +199,7 @@ namespace GenTools
         public void RenderMap(List<byte[,]> map)
         {
             Clear();
+            Init();
             Render(map);
             if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
         }

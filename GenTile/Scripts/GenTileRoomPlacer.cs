@@ -399,12 +399,11 @@ namespace GenTools
             {
                 if (i >= possibleConnections.Count) break;
                 var connection = possibleConnections[i];
-                List<Vector2Int> tunnelPositions = new();
                 Vector3 oPoint = GenTools.ClosestPointBetween(origin, connection);
                 Vector2Int originPoint = new Vector2Int((int) oPoint.x, (int) oPoint.y);
                 Vector3 cPoint = GenTools.ClosestPointBetween(connection, origin);
                 Vector2Int connectionPoint = new Vector2Int((int) cPoint.x, (int) cPoint.y);
-                BresenhamLine.Compute(originPoint, connectionPoint, tunnelPositions);
+                List<Vector2Int> tunnelPositions = BresenhamLine.Compute(originPoint, connectionPoint);
                 FinishPlacingTunnel(origin, connection, tunnelPositions);
             }
         }

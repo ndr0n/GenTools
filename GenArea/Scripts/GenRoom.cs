@@ -21,8 +21,7 @@ namespace GenTools
         public Vector3 TileSize = new Vector3(4, 4, 4);
         public Vector3 TileScale = new Vector3(1, 1, 1);
         public Vector3Int GridSize = new Vector3Int(5, 1, 5);
-
-        public Vector2Int OuterDoorAmount = new Vector2Int(2, 2);
+        public Vector2Int OuterDoorAmount = new Vector2Int(0, 0);
 
         public readonly List<List<List<GenRoomNode>>> Node = new();
         public readonly List<GameObject> OuterDoor = new();
@@ -76,7 +75,7 @@ namespace GenTools
                 preset = Type.Presets[random.Next(Type.Presets.Count)];
                 await GenRoomLibrary.BuildFloor(this, random, preset);
                 await GenRoomLibrary.BuildOuterWalls(this, random, preset);
-                // await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
+                await GenRoomLibrary.BuildOuterDoors(this, random, preset, random.Next(OuterDoorAmount.x, OuterDoorAmount.y + 1));
                 await GenRoomLibrary.BuildRoof(this, random, preset);
             }
             catch (Exception ex)

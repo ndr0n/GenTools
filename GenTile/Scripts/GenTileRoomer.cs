@@ -15,7 +15,6 @@ namespace GenTools
         List<BoundsInt> rooms = new();
         List<Vector3Int> existingPositions = new();
         List<Vector3Int> possibleDirections = new List<Vector3Int>() {Vector3Int.down, Vector3Int.left, Vector3Int.up, Vector3Int.right};
-        List<Vector3Int> checkedPositions = new();
 
         public List<BoundsInt> Execute(int seed, BoundsInt _bounds, Vector2Int _chance, Vector2Int _width, Vector2Int _height, List<Vector3Int> _existingPositions, List<BoundsInt> _rooms)
         {
@@ -26,7 +25,6 @@ namespace GenTools
             width = _width;
             height = _height;
             existingPositions = _existingPositions.ToList();
-            checkedPositions = new();
             rooms = _rooms.ToList();
             rooms = TryPlaceRooms();
             return rooms;
@@ -44,6 +42,7 @@ namespace GenTools
             // }
             // sizeiter = sizeiter.OrderBy(x => random.Next()).ToList();
 
+            List<Vector3Int> checkedPositions = new();
             foreach (var pos in existingPositions)
             {
                 if (random.Next(0, 100) < (random.Next(chance.x, chance.y)))
@@ -51,26 +50,25 @@ namespace GenTools
                     foreach (var dir in possibleDirections.OrderBy(x => random.Next()))
                     {
                         bool breakLoop = false;
-                        for (int i = 0; i < Mathf.Max(bounds.max.x, bounds.max.y); i++)
+                        Vector3Int position = pos + dir;
+                        if (checkedPositions.Contains(position)) continue;
+                        checkedPositions.Add(position);
+                        for (int sizex = width.y; sizex >= width.x; sizex--)
                         {
-                            for (int sizex = width.y; sizex >= width.x; sizex--)
+                            for (int sizey = height.y; sizey >= height.x; sizey--)
                             {
-                                for (int sizey = height.y; sizey >= height.x; sizey--)
+                                Vector3Int size = new Vector3Int(sizex, sizey, 0);
+                                if (CanPlaceRoom(size, position))
                                 {
-                                    Vector3Int size = new Vector3Int(sizex, sizey, 0);
-                                    Vector3Int position = pos + dir;
-                                    if (CanPlaceRoom(size, position))
-                                    {
-                                        rooms = PlaceRoom(size, position);
-                                        breakLoop = true;
-                                        Debug.Log($"ROOMER: Placed Room - pos: {position} | size: {size}");
-                                        break;
-                                    }
+                                    rooms = PlaceRoom(size, position);
+                                    breakLoop = true;
+                                    Debug.Log($"ROOMER: Placed Room - pos: {position} | size: {size}");
+                                    break;
                                 }
-                                if (breakLoop) break;
                             }
                             if (breakLoop) break;
                         }
+                        if (breakLoop) break;
                     }
                 }
             }

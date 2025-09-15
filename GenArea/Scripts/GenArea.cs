@@ -12,25 +12,22 @@ namespace GenTools
     [System.Serializable]
     public class GenArea : MonoBehaviour
     {
-        public Vector3Int Size = new Vector3Int(20, 1, 20);
-        public Vector2Int Border = new Vector2Int(1, 1);
-
         public int Seed = 0;
         public bool RandomSeed = false;
 
+        public Vector3Int Size = new Vector3Int(20, 1, 20);
+        public Vector2Int Border = new Vector2Int(1, 1);
+
+        public GenTile GenTile;
         public GenRoom GenRoomPrefab;
         public GenRoomType InnerRoomType;
         public List<GenRoomPreset> TunnelPreset;
 
-        [Header("Source")]
-        public GenTile GenTile;
-
         [Header("Runtime")]
-        public GenRoom MainRoom;
         public GenTunnel GenTunnel = new();
         public List<GenRoom> InnerRoom = new();
 
-        System.Random random;
+        System.Random random;   
 
         public bool GenerateNewTile = true;
 
@@ -41,7 +38,6 @@ namespace GenTools
                 if (room != null) DestroyImmediate(room.gameObject);
             }
             InnerRoom.Clear();
-            if (MainRoom != null) DestroyImmediate(MainRoom.gameObject);
             if (GenTunnel != null) GenTunnel.Clear();
         }
 

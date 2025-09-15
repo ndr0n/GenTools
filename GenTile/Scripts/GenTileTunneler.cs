@@ -44,34 +44,34 @@ namespace GenTools
             switch (random.Next(0, 4))
             {
                 case 0:
-                    initPosition = new Vector3Int(random.Next(bounds.min.x, bounds.max.x), bounds.min.y);
+                    initPosition = new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(bounds.max.x, bounds.min.x, 0.5f)), bounds.min.y);
                     // finalPosition = new Vector3Int(bounds.max.x - initPosition.x, bounds.max.y - 1);
                     targetPositions.Add(new Vector3Int(bounds.max.x - initPosition.x, bounds.max.y - 1));
-                    targetPositions.Add(new Vector3Int(bounds.min.x, random.Next(bounds.min.y, bounds.max.y)));
+                    targetPositions.Add(new Vector3Int(bounds.min.x, Mathf.RoundToInt(Mathf.Lerp(bounds.max.y, bounds.min.y, 0.5f))));
                     targetPositions.Add(new Vector3Int(bounds.max.x - targetPositions[^1].x, bounds.min.y));
                     initDirection = Vector3Int.up;
                     break;
                 case 1:
-                    initPosition = new Vector3Int(random.Next(bounds.min.x, bounds.max.x), bounds.max.y - 1);
+                    initPosition = new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(bounds.max.x, bounds.min.x, 0.5f)), bounds.max.y - 1);
                     // finalPosition = new Vector3Int(bounds.max.x - initPosition.x, bounds.min.y);
                     targetPositions.Add(new Vector3Int(bounds.max.x - initPosition.x, bounds.min.y));
-                    targetPositions.Add(new Vector3Int(bounds.min.x, random.Next(bounds.min.y, bounds.max.y)));
+                    targetPositions.Add(new Vector3Int(bounds.min.x, Mathf.RoundToInt(Mathf.Lerp(bounds.max.y, bounds.min.y, 0.5f))));
                     targetPositions.Add(new Vector3Int(bounds.max.x - targetPositions[^1].x, bounds.min.y));
                     initDirection = Vector3Int.down;
                     break;
                 case 2:
-                    initPosition = new Vector3Int(bounds.min.x, random.Next(bounds.min.y, bounds.max.y));
+                    initPosition = new Vector3Int(bounds.min.x, Mathf.RoundToInt(Mathf.Lerp(bounds.max.y, bounds.min.y, 0.5f)));
                     // finalPosition = new Vector3Int(bounds.max.x - 1, bounds.max.y - initPosition.y);
                     targetPositions.Add(new Vector3Int(bounds.max.x - 1, bounds.max.y - initPosition.y));
-                    targetPositions.Add(new Vector3Int(random.Next(bounds.min.x, bounds.max.x), bounds.min.y));
+                    targetPositions.Add(new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(bounds.max.x, bounds.min.x, 0.5f)), bounds.min.y));
                     targetPositions.Add(new Vector3Int(bounds.max.x - targetPositions[^1].x, bounds.max.y - 1));
                     initDirection = Vector3Int.right;
                     break;
                 case 3:
-                    initPosition = new Vector3Int(bounds.max.x - 1, random.Next(bounds.min.y, bounds.max.y));
+                    initPosition = new Vector3Int(bounds.max.x - 1, Mathf.RoundToInt(Mathf.Lerp(bounds.max.y, bounds.min.y, 0.5f)));
                     // finalPosition = new Vector3Int(bounds.min.x, bounds.max.y - initPosition.y);
                     targetPositions.Add(new Vector3Int(bounds.min.x, bounds.max.y - initPosition.y));
-                    targetPositions.Add(new Vector3Int(random.Next(bounds.min.x, bounds.max.x), bounds.min.y));
+                    targetPositions.Add(new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(bounds.max.x, bounds.min.x, 0.5f)), bounds.min.y));
                     targetPositions.Add(new Vector3Int(bounds.max.x - targetPositions[^1].x, bounds.max.y - 1));
                     initDirection = Vector3Int.left;
                     break;

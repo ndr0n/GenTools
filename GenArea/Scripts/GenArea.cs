@@ -94,36 +94,33 @@ namespace GenTools
                 preset = MainRoom.Preset;
             }
 
-            for (int y = 0; y < Size.y; y++)
+            // Generate Tile Data
+            GenTile.RandomSeed = false;
+            GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
+            GenTile.Generate();
+
+            // Build Tunnels
+            GameObject roofPreset = null;
+            if (preset.Roof.Count > 0) roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
+            GameObject floorPreset = preset.Floor[random.Next(0, preset.Floor.Count)];
+            foreach (var position in GenTile.GenTileRoomPlacer.PlacedTunnels)
             {
-                // Generate Tile Data
-                GenTile.RandomSeed = false;
-                GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
-                GenTile.Generate();
-
-                // Build Tunnels
-                GameObject roofPreset = null;
-                if (preset.Roof.Count > 0) roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
-                GameObject floorPreset = preset.Floor[random.Next(0, preset.Floor.Count)];
-                foreach (var position in GenTile.GenTileRoomPlacer.PlacedTunnels)
+                Vector3 pos = new Vector3(position.x * preset.TileSize.x, 0, position.y * preset.TileSize.z);
+                pos += new Vector3(preset.TileSize.x / 2, 0, preset.TileSize.z / 2);
+                if (!tunnelFloor.Exists(x => x.transform.position == pos))
                 {
-                    Vector3 pos = new Vector3(position.x * preset.TileSize.x, y * preset.TileSize.y, position.y * preset.TileSize.z);
-                    pos += new Vector3(preset.TileSize.x / 2, 0, preset.TileSize.z / 2);
-                    if (!tunnelFloor.Exists(x => x.transform.position == pos))
-                    {
-                        BuildTunnelFloorAndRoof(floorPreset, roofPreset, Vector3Int.RoundToInt(pos), preset.TileSize);
-                        Debug.Log($"TUNNEL FLOOR INIT COUNT: {tunnelFloor.Count} | pos: {pos}");
-                        // await MainRoom.Await();
-                    }
-                }
-
-                // Build Inner Rooms
-                foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
-                {
-                    await BuildRoomFromTileRoom(tileRoom, y);
+                    BuildTunnelFloorAndRoof(floorPreset, roofPreset, Vector3Int.RoundToInt(pos), preset.TileSize);
+                    Debug.Log($"TUNNEL FLOOR INIT COUNT: {tunnelFloor.Count} | pos: {pos}");
+                    // await MainRoom.Await();
                 }
             }
-            BuildTunnelWalls();
+
+            // Build Inner Rooms
+            foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
+            {
+                await BuildRoomFromTileRoom(tileRoom, 0);
+            }
+            BuildTunnelWalls(preset.TileSize);
         }
 
         public async Awaitable BuildRoomFromTileRoom(GenTileRoom tileRoom, int y)
@@ -133,7 +130,7 @@ namespace GenTools
             room.Type = InnerRoomType;
             room.RandomSeed = false;
             room.Seed = random.Next(int.MinValue, int.MaxValue);
-            room.GridSize = new Vector3Int(tileRoom.Size.x, 1, tileRoom.Size.y);
+            room.GridSize = new Vector3Int(tileRoom.Size.x, Size.y, tileRoom.Size.y);
             room.transform.localPosition = new Vector3(tileRoom.Position.x * room.TileSize.x, y * room.TileSize.y, tileRoom.Position.y * room.TileSize.z);
             room.transform.localRotation = Quaternion.identity;
             room.transform.localPosition += new Vector3(Border.x * room.TileSize.x, 0, Border.y * room.TileSize.z);
@@ -188,7 +185,7 @@ namespace GenTools
             {
                 // Build Roof
                 GameObject roof = Instantiate(roofPreset, tunnelParent.transform);
-                roof.transform.position = floor.transform.position + new Vector3(0, size.y, 0);
+                roof.transform.position = floor.transform.position + new Vector3(0, size.y * (Size.y), 0);
                 roof.transform.rotation = Quaternion.identity;
                 tunnelRoof.Add(roof);
             }
@@ -237,7 +234,7 @@ namespace GenTools
             }
         }
 
-        public void BuildTunnelWalls()
+        public void BuildTunnelWalls(Vector3 tileSize)
         {
             GenRoomPreset tunnelPreset = MainRoomType.Presets[random.Next(MainRoomType.Presets.Count)];
             GameObject wallPreset = tunnelPreset.OuterWall[random.Next(tunnelPreset.OuterWall.Count)];
@@ -269,9 +266,12 @@ namespace GenTools
                     Vector3 position = floor.transform.position + new Vector3(0, 0, tunnelPreset.TileSize.z / 2f);
                     if (!tunnelDoor.Exists(x => x.transform.position == position))
                     {
-                        GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
-                        wall.transform.position = position;
-                        wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
+                        for (int y = 0; y < Size.y; y++)
+                        {
+                            GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
+                            wall.transform.position = position + (new Vector3(0, tileSize.y, 0) * y);
+                            wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
+                        }
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.South] == null)
@@ -279,9 +279,12 @@ namespace GenTools
                     Vector3 position = floor.transform.position + new Vector3(0, 0, -tunnelPreset.TileSize.z / 2f);
                     if (!tunnelDoor.Exists(x => x.transform.position == position))
                     {
-                        GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
-                        wall.transform.position = position;
-                        wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
+                        for (int y = 0; y < Size.y; y++)
+                        {
+                            GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
+                            wall.transform.position = position + (new Vector3(0, tileSize.y, 0) * y);
+                            wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
+                        }
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.East] == null)
@@ -289,9 +292,12 @@ namespace GenTools
                     Vector3 position = floor.transform.position + new Vector3(tunnelPreset.TileSize.x / 2f, 0, 0);
                     if (!tunnelDoor.Exists(x => x.transform.position == position))
                     {
-                        GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
-                        wall.transform.position = position;
-                        wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
+                        for (int y = 0; y < Size.y; y++)
+                        {
+                            GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
+                            wall.transform.position = position + (new Vector3(0, tileSize.y, 0) * y);
+                            wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
+                        }
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.West] == null)
@@ -299,9 +305,12 @@ namespace GenTools
                     Vector3 position = floor.transform.position + new Vector3(-tunnelPreset.TileSize.x / 2f, 0, 0);
                     if (!tunnelDoor.Exists(x => x.transform.position == position))
                     {
-                        GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
-                        wall.transform.position = position;
-                        wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.West * 90, 0);
+                        for (int y = 0; y < Size.y; y++)
+                        {
+                            GameObject wall = Instantiate(wallPreset, tunnelParent.transform);
+                            wall.transform.position = position + (new Vector3(0, tileSize.y, 0) * y);
+                            wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.West * 90, 0);
+                        }
                     }
                 }
             }

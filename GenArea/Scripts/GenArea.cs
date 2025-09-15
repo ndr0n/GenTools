@@ -79,6 +79,7 @@ namespace GenTools
 
         public async Awaitable GenerateFromGenTile()
         {
+            GenRoomPreset preset = MainRoomType.Presets[random.Next(MainRoomType.Presets.Count)];
             if (BuildMainRoom)
             {
                 // Generate Main Room
@@ -90,6 +91,7 @@ namespace GenTools
                 MainRoom.GridSize = Size;
                 MainRoom.OuterDoorAmount = Vector2Int.zero;
                 await MainRoom.Generate();
+                preset = MainRoom.Preset;
             }
 
             for (int y = 0; y < Size.y; y++)
@@ -98,7 +100,24 @@ namespace GenTools
                 GenTile.RandomSeed = false;
                 GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
                 GenTile.Generate();
-                // Generate Inner Rooms
+
+                // Build Tunnels
+                GameObject roofPreset = null;
+                if (preset.Roof.Count > 0) roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
+                GameObject floorPreset = preset.Floor[random.Next(0, preset.Floor.Count)];
+                foreach (var position in GenTile.GenTileRoomPlacer.PlacedTunnels)
+                {
+                    Vector3 pos = new Vector3(position.x * preset.TileSize.x, y * preset.TileSize.y, position.y * preset.TileSize.z);
+                    pos += new Vector3(preset.TileSize.x / 2, 0, preset.TileSize.z / 2);
+                    if (!tunnelFloor.Exists(x => x.transform.position == pos))
+                    {
+                        BuildTunnelFloorAndRoof(floorPreset, roofPreset, Vector3Int.RoundToInt(pos), preset.TileSize);
+                        Debug.Log($"TUNNEL FLOOR INIT COUNT: {tunnelFloor.Count} | pos: {pos}");
+                        // await MainRoom.Await();
+                    }
+                }
+
+                // Build Inner Rooms
                 foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
                 {
                     await BuildRoomFromTileRoom(tileRoom, y);
@@ -122,7 +141,57 @@ namespace GenTools
 
             await room.Generate();
 
+            await BuildDoorsFromTileRoom(room, tileRoom, y);
             await BuildTunnelsFromTileRoom(room, tileRoom, y);
+        }
+
+        async Awaitable BuildDoorsFromTileRoom(GenRoom room, GenTileRoom tileRoom, int y)
+        {
+            foreach (var door in tileRoom.PlacedDoors)
+            {
+                // Build Doors
+                GameObject outerDoorPreset = room.Preset.OuterDoor[random.Next(0, room.Preset.OuterDoor.Count)];
+                Vector3 doorPosition = new Vector3(door.Position.x * room.TileSize.x, y * room.TileSize.y, door.Position.y * room.TileSize.z);
+                doorPosition += room.Content.localPosition;
+                List<GenRoomNode> nodes = room.GetAllNodes();
+                GenRoomNode node = nodes.FirstOrDefault(x => x.Floor.transform.position == doorPosition);
+                if (node != null)
+                {
+                    for (int direction = 0; direction < 4; direction++)
+                    {
+                        GameObject wall = node.Wall[direction];
+                        if (wall != null)
+                        {
+                            GameObject outerDoor = Instantiate(outerDoorPreset, room.Content);
+                            outerDoor.transform.position = wall.transform.position;
+                            outerDoor.transform.rotation = wall.transform.rotation;
+                            room.OuterDoor.Add(outerDoor);
+                            tunnelDoor.Add(outerDoor);
+                            DestroyImmediate(wall);
+                            await room.Await();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        void BuildTunnelFloorAndRoof(GameObject floorPreset, GameObject roofPreset, Vector3Int position, Vector3 size)
+        {
+            // Build Floor
+            GameObject floor = Instantiate(floorPreset, tunnelParent.transform);
+            floor.transform.position = position;
+            floor.transform.rotation = Quaternion.identity;
+            tunnelFloor.Add(floor);
+
+            if (roofPreset != null)
+            {
+                // Build Roof
+                GameObject roof = Instantiate(roofPreset, tunnelParent.transform);
+                roof.transform.position = floor.transform.position + new Vector3(0, size.y, 0);
+                roof.transform.rotation = Quaternion.identity;
+                tunnelRoof.Add(roof);
+            }
         }
 
         public async Awaitable BuildTunnelsFromTileRoom(GenRoom room, GenTileRoom tileRoom, int y)
@@ -139,21 +208,7 @@ namespace GenTools
                     pos += room.Content.localPosition;
                     if (!tunnelFloor.Exists(x => x.transform.position == pos))
                     {
-                        // Build Floor
-                        GameObject floor = Instantiate(floorPreset, tunnelParent.transform);
-                        floor.transform.position = pos;
-                        floor.transform.rotation = Quaternion.identity;
-                        tunnelFloor.Add(floor);
-
-                        if (roofPreset != null)
-                        {
-                            // Build Roof
-                            GameObject roof = Instantiate(roofPreset, tunnelParent.transform);
-                            roof.transform.position = floor.transform.position + new Vector3(0, room.TileSize.y, 0);
-                            roof.transform.rotation = Quaternion.identity;
-                            tunnelRoof.Add(roof);
-                        }
-
+                        BuildTunnelFloorAndRoof(floorPreset, roofPreset, Vector3Int.RoundToInt(pos), room.TileSize);
                         await room.Await();
                     }
                 }

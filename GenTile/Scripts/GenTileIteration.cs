@@ -67,21 +67,40 @@ namespace GenTools
 #endif
         public Vector2 YFinishPercent = new Vector2(0, 100);
 
-        // ROOMS 
+        // TUNNELER
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Rooms)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
 #endif
-        public Vector2Int RoomAmount = new Vector2Int(5, 20);
+        public Vector2Int TunnelerLifetime = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Rooms)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
 #endif
-        public Vector2Int RoomWidth = new Vector2Int(5, 10);
+        public Vector2Int TunnelerChangePercentage = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Rooms)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
 #endif
-        public Vector2Int RoomHeight = new Vector2Int(5, 10);
+        public Vector2Int TunnelerWidth = new Vector2Int(3, 3);
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
+#endif
+        public bool TunnelerOverlap = false;
+
+        // ROOMER
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Roomer)]
+#endif
+        public Vector2Int RoomerChance = new Vector2Int(100, 100);
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Roomer)]
+#endif
+        public Vector2Int RoomerWidth = new Vector2Int(5, 10);
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Roomer)]
+#endif
+        public Vector2Int RoomerHeight = new Vector2Int(5, 10);
 
         // BINARY SPACE PARTITION
 #if UNITY_EDITOR

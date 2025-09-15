@@ -10,7 +10,7 @@ namespace GenTools
     public class GenTileRoomType : ScriptableObject
     {
         [Header("Tagging")]
-        public List<Sprite> RoomSprite = new();
+        public List<TileBase> RoomTile = new();
         public Vector2Int MinSize = new Vector2Int(1, 1);
         public Vector2Int MaxSize = new Vector2Int(100, 100);
 

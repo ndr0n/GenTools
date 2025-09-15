@@ -12,8 +12,9 @@ namespace GenTools
         RandomWalk,
         PerlinNoise,
         Tunnel,
+        Tunneler,
+        Roomer,
         BinarySpacePartition,
-        Rooms,
         Walls,
         WaveFunctionCollapse
     }
@@ -26,9 +27,9 @@ namespace GenTools
         {
             System.Random random = new(seed);
             int _percentage = random.Next(percentage.x, percentage.y);
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < map.GetLength(1); y++)
                 {
                     if (random.Next(0, 100) < _percentage) map[x, y] = value;
                 }
@@ -43,9 +44,9 @@ namespace GenTools
         public static byte[,] Degrade(byte[,] map, byte value, int seed, Vector2Int chance)
         {
             System.Random random = new(seed);
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < map.GetLength(1); y++)
                 {
                     if (map[x, y] == value)
                     {
@@ -64,11 +65,11 @@ namespace GenTools
         public static byte[,] RandomWalk(byte[,] map, byte value, int seed, Vector2Int size)
         {
             System.Random random = new(seed);
-            int x = random.Next(0, map.GetUpperBound(0));
-            int y = random.Next(0, map.GetUpperBound(1));
+            int x = random.Next(0, map.GetLength(0));
+            int y = random.Next(0, map.GetLength(1));
             int _size = random.Next(size.x, size.y);
 
-            int count = ((map.GetUpperBound(1) * map.GetUpperBound(0)) * _size) / 100;
+            int count = ((map.GetLength(1) * map.GetLength(0)) * _size) / 100;
 
             map[x, y] = value;
 
@@ -78,7 +79,7 @@ namespace GenTools
                 switch (randomDirection)
                 {
                     case 0: // Up
-                        if (y < (map.GetUpperBound(1) - 1))
+                        if (y < (map.GetLength(1) - 1))
                         {
                             y++;
                             map[x, y] = value;
@@ -92,7 +93,7 @@ namespace GenTools
                         }
                         break;
                     case 2: //Right
-                        if (x < (map.GetUpperBound(0) - 1))
+                        if (x < (map.GetLength(0) - 1))
                         {
                             x++;
                             map[x, y] = value;
@@ -118,9 +119,9 @@ namespace GenTools
         {
             System.Random random = new(seed);
             float _modifier = random.Next(Mathf.RoundToInt(modifier.x * int.MaxValue), Mathf.RoundToInt(modifier.y * int.MaxValue)) / (float) int.MaxValue;
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < map.GetLength(1); y++)
                 {
                     int newPoint = Mathf.RoundToInt(Mathf.PerlinNoise(x * _modifier, y * _modifier));
                     if (newPoint > 0) map[x, y] = value;
@@ -142,17 +143,17 @@ namespace GenTools
             int _yBeginPercent = random.Next((int) yBeginPercent.x, (int) yBeginPercent.y + 1);
             int _yFinishPercent = random.Next((int) yFinishPercent.x, (int) yFinishPercent.y + 1);
 
-            int xBegin = Mathf.RoundToInt(map.GetUpperBound(0) * (_xBeginPercent / 100f));
-            int xEnd = Mathf.RoundToInt(map.GetUpperBound(0) * (_xFinishPercent / 100f));
-            int yBegin = Mathf.RoundToInt(map.GetUpperBound(1) * (_yBeginPercent / 100f));
-            int yEnd = Mathf.RoundToInt(map.GetUpperBound(1) * (_yFinishPercent / 100f));
+            int xBegin = Mathf.RoundToInt(map.GetLength(0) * (_xBeginPercent / 100f));
+            int xEnd = Mathf.RoundToInt(map.GetLength(0) * (_xFinishPercent / 100f));
+            int yBegin = Mathf.RoundToInt(map.GetLength(1) * (_yBeginPercent / 100f));
+            int yEnd = Mathf.RoundToInt(map.GetLength(1) * (_yFinishPercent / 100f));
 
             Vector2 pos = new Vector2Int(xBegin, yBegin);
             Vector2 destination = new Vector2Int(xEnd, yEnd);
 
             map = Tunnel_Dig(map, value, random, pathWidth, pos);
 
-            for (int i = 0; i < (map.GetUpperBound(0) + map.GetUpperBound(1)); i++)
+            for (int i = 0; i < (map.GetLength(0) + map.GetLength(1)); i++)
             {
                 if (Vector2.Distance(pos, destination) > 1)
                 {
@@ -171,14 +172,14 @@ namespace GenTools
             for (int widthIterator = -tunnelWidth; widthIterator <= tunnelWidth; widthIterator++)
             {
                 Vector2Int p = new Vector2Int(Mathf.RoundToInt(pos.x + widthIterator), Mathf.RoundToInt(pos.y));
-                if (p.x < 0 || p.y < 0 || p.x >= map.GetUpperBound(0) || p.y >= map.GetUpperBound(1)) continue;
+                if (p.x < 0 || p.y < 0 || p.x >= map.GetLength(0) || p.y >= map.GetLength(1)) continue;
                 map[p.x, p.y] = value;
             }
             tunnelWidth = random.Next(pathWidth.x, pathWidth.y + 1);
             for (int heightIterator = -tunnelWidth; heightIterator <= tunnelWidth; heightIterator++)
             {
                 Vector2Int p = new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y + heightIterator));
-                if (p.x < 0 || p.y < 0 || p.x >= map.GetUpperBound(0) || p.y >= map.GetUpperBound(1)) continue;
+                if (p.x < 0 || p.y < 0 || p.x >= map.GetLength(0) || p.y >= map.GetLength(1)) continue;
                 map[p.x, p.y] = value;
             }
             return map;
@@ -186,34 +187,88 @@ namespace GenTools
 
         #endregion
 
-        #region Rooms
+        #region Tunneler
 
-        public static byte[,] Rooms(byte[,] map, byte value, int seed, Vector2Int roomAmount, Vector2Int roomWidth, Vector2Int roomHeight)
+        public static byte[,] Tunneler(byte[,] map, byte value, int seed, Vector2Int fill, Vector2Int changePercentage, Vector2Int tunnelWidth, bool overlap)
         {
-            // RANDOM PLACEMENT
-            System.Random random = new System.Random(seed);
-            int count = random.Next(roomAmount.x, roomAmount.y + 1);
-            for (int i = 0; i < count; i++)
+            System.Random random = new(seed);
+            BoundsInt bounds = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(map.GetLength(0), map.GetLength(1), 0));
+            float _fill = random.Next(fill.x, fill.y) / 100f;
+            int _lifetime = Mathf.RoundToInt(_fill * (bounds.size.x * bounds.size.y));
+            int _changePercentage = random.Next(changePercentage.x, changePercentage.y);
+
+            List<Vector3Int> overlapPositions = new();
+            if (overlap == false)
             {
-                Vector2Int size = new Vector2Int(random.Next(roomWidth.x, roomWidth.y + 1), random.Next(roomHeight.x, roomHeight.y + 1));
-                Vector2Int pos = new Vector2Int(random.Next(0, map.GetUpperBound(0) - size.x + 1), random.Next(0, map.GetUpperBound(1) - size.y + 1));
-                for (int x = 0; x < size.x; x++)
+                for (int x = 0; x < map.GetLength(0); x++)
                 {
-                    for (int y = 0; y < size.y; y++)
+                    for (int y = 0; y < map.GetLength(1); y++)
                     {
-                        map[pos.x + x, pos.y + y] = value;
+                        if (map[x, y] > 0) overlapPositions.Add(new Vector3Int(x, y, 0));
                     }
                 }
             }
+
+            GenTileTunneler tunneler = new();
+            List<Vector3Int> tunnelPositions = tunneler.Init(random.Next(int.MinValue, int.MaxValue), bounds, _lifetime, _changePercentage, tunnelWidth, overlapPositions);
+            foreach (var overlapPosition in overlapPositions) tunnelPositions.Remove(overlapPosition);
+            foreach (var pos in tunnelPositions) map[pos.x, pos.y] = value;
+            // foreach (var b in tunneler.roomPlacements)
+            // {
+            // for (int x = b.min.x; x < b.max.x; x++)
+            // {
+            // for (int y = b.min.y; y < b.max.y; y++)
+            // {
+            // map[x, y] = value;
+            // }
+            // }
+            // }
             return map;
         }
 
-        public static byte[,] BinarySpacePartition(byte[,] map, byte value, int seed, Vector2Int chance, Vector2Int offset, Vector2Int minWidth, Vector2Int minHeight)
+        #endregion
+
+        #region Roomer
+
+        public static byte[,] Roomer(byte[,] map, byte value, int seed, Vector2Int chance, Vector2Int width, Vector2Int height)
+        {
+            System.Random random = new(seed);
+            BoundsInt bounds = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(map.GetLength(0), map.GetLength(1), 0));
+            List<Vector3Int> existingPositions = new();
+            for (int x = 0; x < map.GetLength(0); x++)
+            {
+                for (int y = 0; y < map.GetLength(1); y++)
+                {
+                    if (map[x, y] > 0) existingPositions.Add(new Vector3Int(x, y, 0));
+                }
+            }
+
+            GenTileRoomer roomer = new();
+            List<BoundsInt> rooms = roomer.Execute(random.Next(int.MinValue, int.MaxValue), bounds, chance, width, height, existingPositions, new());
+            foreach (var room in rooms)
+            {
+                for (int x = room.min.x; x < room.max.x; x++)
+                {
+                    for (int y = room.min.y; y < room.max.y; y++)
+                    {
+                        map[x, y] = value;
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        #endregion
+
+        #region BinarySpacePartition
+
+        public static byte[,] BinarySpacePartition(byte[,] map, byte value, int seed, Vector2Int chance, Vector2Int offset, Vector2Int minWidth, Vector2Int minHeight, List<BoundsInt> rooms = null)
         {
             System.Random random = new(seed);
             int of7 = random.Next(offset.x, offset.y + 1);
             BoundsInt bounds = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(map.GetLength(0), map.GetLength(1), 0));
-            List<BoundsInt> rooms = GenTileLibrary.BinarySpacePartition(random, bounds, random.Next(minWidth.x, minWidth.y), random.Next(minHeight.x, minHeight.y));
+            rooms = GenTileLibrary.BinarySpacePartition(random, bounds, minWidth, minHeight);
             foreach (var room in rooms.OrderBy(x => random.Next()))
             {
                 if (random.Next(0, 100) < random.Next(chance.x, chance.y))
@@ -239,10 +294,10 @@ namespace GenTools
             System.Random random = new(seed);
             int _percentage = random.Next(percentage.x, percentage.y);
 
-            byte[,] fill = new byte[map.GetUpperBound(0), map.GetUpperBound(1)];
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            byte[,] fill = new byte[map.GetLength(0), map.GetLength(1)];
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < map.GetLength(1); y++)
                 {
                     fill[x, y] = map[x, y];
                     bool placeWall = false;
@@ -250,7 +305,7 @@ namespace GenTools
                     {
                         if (map[x, y] == 0)
                         {
-                            if (x == 0 || y == 0 || x == (map.GetUpperBound(0) - 1) || y == (map.GetUpperBound(1) - 1))
+                            if (x == 0 || y == 0 || x == (map.GetLength(0) - 1) || y == (map.GetLength(1) - 1))
                             {
                                 placeWall = true;
                             }
@@ -271,7 +326,7 @@ namespace GenTools
                     {
                         if (map[x, y] > 0)
                         {
-                            if (x == 0 || y == 0 || x == (map.GetUpperBound(0) - 1) || y == (map.GetUpperBound(1) - 1))
+                            if (x == 0 || y == 0 || x == (map.GetLength(0) - 1) || y == (map.GetLength(1) - 1))
                             {
                                 placeWall = true;
                             }
@@ -295,9 +350,9 @@ namespace GenTools
                 }
             }
 
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < map.GetLength(1); y++)
                 {
                     map[x, y] = fill[x, y];
                 }
@@ -319,9 +374,9 @@ namespace GenTools
             int _iterations = random.Next(iterations.x, iterations.y);
 
             byte[,] sample = new byte[inputTexture.width, inputTexture.height];
-            for (int x = 0; x < sample.GetUpperBound(0); x++)
+            for (int x = 0; x < sample.GetLength(0); x++)
             {
-                for (int y = 0; y < sample.GetUpperBound(1); y++)
+                for (int y = 0; y < sample.GetLength(1); y++)
                 {
                     Color32 color = inputTexture.GetPixel(x, y);
                     byte v = 0;
@@ -365,8 +420,8 @@ namespace GenTools
 
         static bool TryRunWfcOverlappingModel(byte[,] map, byte value, int seed, bool invert, byte[,] sample, int n, int symmetry, int iterations)
         {
-            int width = map.GetUpperBound(0) + 2;
-            int height = map.GetUpperBound(1) + 2;
+            int width = map.GetLength(0) + 2;
+            int height = map.GetLength(1) + 2;
             OverlappingModel model = new(sample, n, width, height, false, false, symmetry, 0);
             if (model.Run(seed, iterations))
             {
@@ -380,9 +435,9 @@ namespace GenTools
                         else m[x, y] = 0;
                     }
                 }
-                for (int x = 0; x < map.GetUpperBound(0); x++)
+                for (int x = 0; x < map.GetLength(0); x++)
                 {
-                    for (int y = 0; y < map.GetUpperBound(1); y++)
+                    for (int y = 0; y < map.GetLength(1); y++)
                     {
                         if (m[x, y] == 0)
                         {

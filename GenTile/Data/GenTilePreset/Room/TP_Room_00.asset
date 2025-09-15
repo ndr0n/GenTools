@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tilegen.TilegenPreset
   Layer:
   - Iterations:
-    - Tile: {fileID: 11400000, guid: e1071f04d8d640dbba3040839f18f723, type: 2}
+    - Tile: {fileID: 11400000, guid: 283dbb6371a6609999f97c2020f77e1d, type: 2}
       Type: 0
       Algorithm:
       - Algorithm: 0
@@ -27,9 +27,17 @@ MonoBehaviour:
         XFinishPercent: {x: 0, y: 0}
         YBeginPercent: {x: 0, y: 0}
         YFinishPercent: {x: 0, y: 0}
-        RoomAmount: {x: 0, y: 0}
-        RoomWidth: {x: 0, y: 0}
-        RoomHeight: {x: 0, y: 0}
+        TunnelerLifetime: {x: 0, y: 100}
+        TunnelerChangePercentage: {x: 0, y: 100}
+        TunnelerWidth: {x: 3, y: 3}
+        TunnelerOverlap: 0
+        RoomerChance: {x: 100, y: 100}
+        RoomerWidth: {x: 5, y: 10}
+        RoomerHeight: {x: 5, y: 10}
+        Percentage: {x: 100, y: 100}
+        Offset: {x: 1, y: 1}
+        MinRoomWidth: {x: 5, y: 10}
+        MinRoomHeight: {x: 5, y: 10}
         OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 2800000, guid: d1a5f707f8b508411b44579066e3db54, type: 3}
@@ -38,11 +46,11 @@ MonoBehaviour:
         Iterations: {x: 0, y: 0}
         Invert: 0
   - Iterations:
-    - Tile: {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
+    - Tile: {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
       Type: 0
       Algorithm:
       - Algorithm: 7
-        FillPercentage: {x: 100, y: 100}
+        FillPercentage: {x: 50, y: 50}
         DegradePercentage: {x: 25, y: 75}
         Size: {x: 0, y: 0}
         PerlinNoiseModifier: {x: 0, y: 0.25}
@@ -51,9 +59,17 @@ MonoBehaviour:
         XFinishPercent: {x: 0, y: 0}
         YBeginPercent: {x: 0, y: 0}
         YFinishPercent: {x: 0, y: 0}
-        RoomAmount: {x: 5, y: 10}
-        RoomWidth: {x: 5, y: 10}
-        RoomHeight: {x: 5, y: 10}
+        TunnelerLifetime: {x: 25, y: 25}
+        TunnelerChangePercentage: {x: 10, y: 10}
+        TunnelerWidth: {x: 3, y: 3}
+        TunnelerOverlap: 0
+        RoomerChance: {x: 0, y: 0}
+        RoomerWidth: {x: 3, y: 10}
+        RoomerHeight: {x: 3, y: 10}
+        Percentage: {x: 0, y: 0}
+        Offset: {x: 1, y: 1}
+        MinRoomWidth: {x: 6, y: 12}
+        MinRoomHeight: {x: 6, y: 12}
         OuterWall: 0
         WallPercentage: {x: 0, y: 100}
         InputTexture: {fileID: 2800000, guid: 624bf8b056a4db0cfaea3bce7607741c, type: 3}
@@ -61,3 +77,67 @@ MonoBehaviour:
         Symmetry: {x: 1, y: 1}
         Iterations: {x: 0, y: 0}
         Invert: 0
+    - Tile: {fileID: 11400000, guid: bbb4b5a53d3e5ed2495fc5adec4eb950, type: 2}
+      Type: 0
+      Algorithm:
+      - Algorithm: 5
+        FillPercentage: {x: 50, y: 50}
+        DegradePercentage: {x: 25, y: 75}
+        Size: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0.25}
+        PathWidth: {x: 0, y: 0}
+        XBeginPercent: {x: 0, y: 0}
+        XFinishPercent: {x: 0, y: 0}
+        YBeginPercent: {x: 0, y: 0}
+        YFinishPercent: {x: 0, y: 0}
+        TunnelerLifetime: {x: 40, y: 40}
+        TunnelerChangePercentage: {x: 10, y: 10}
+        TunnelerWidth: {x: 3, y: 3}
+        TunnelerOverlap: 0
+        RoomerChance: {x: 100, y: 100}
+        RoomerWidth: {x: 5, y: 10}
+        RoomerHeight: {x: 5, y: 10}
+        Percentage: {x: 100, y: 100}
+        Offset: {x: 1, y: 1}
+        MinRoomWidth: {x: 5, y: 15}
+        MinRoomHeight: {x: 5, y: 15}
+        OuterWall: 0
+        WallPercentage: {x: 0, y: 100}
+        InputTexture: {fileID: 2800000, guid: 624bf8b056a4db0cfaea3bce7607741c, type: 3}
+        N: {x: 3, y: 3}
+        Symmetry: {x: 1, y: 1}
+        Iterations: {x: 0, y: 0}
+        Invert: 0
+    - Tile: {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
+      Type: 0
+      Algorithm:
+      - Algorithm: 6
+        FillPercentage: {x: 50, y: 50}
+        DegradePercentage: {x: 25, y: 75}
+        Size: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0.25}
+        PathWidth: {x: 0, y: 0}
+        XBeginPercent: {x: 0, y: 0}
+        XFinishPercent: {x: 0, y: 0}
+        YBeginPercent: {x: 0, y: 0}
+        YFinishPercent: {x: 0, y: 0}
+        TunnelerLifetime: {x: 25, y: 25}
+        TunnelerChangePercentage: {x: 10, y: 10}
+        TunnelerWidth: {x: 3, y: 3}
+        TunnelerOverlap: 0
+        RoomerChance: {x: 100, y: 100}
+        RoomerWidth: {x: 3, y: 10}
+        RoomerHeight: {x: 3, y: 10}
+        Percentage: {x: 100, y: 100}
+        Offset: {x: 1, y: 1}
+        MinRoomWidth: {x: 6, y: 12}
+        MinRoomHeight: {x: 6, y: 12}
+        OuterWall: 0
+        WallPercentage: {x: 0, y: 100}
+        InputTexture: {fileID: 2800000, guid: 624bf8b056a4db0cfaea3bce7607741c, type: 3}
+        N: {x: 3, y: 3}
+        Symmetry: {x: 1, y: 1}
+        Iterations: {x: 0, y: 0}
+        Invert: 0
+  RoomTypes:
+  - {fileID: 11400000, guid: 6182ce2cbb3d37687bc10b960e75f691, type: 2}

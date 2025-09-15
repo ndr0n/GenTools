@@ -1,11 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using UnityEngine;
 
 namespace GenTools
 {
     public static class GenTileLibrary
     {
-        public static List<BoundsInt> BinarySpacePartition(System.Random random, BoundsInt spaceToSplit, int minWidth, int minHeight)
+        #region BinarySpacePartition
+
+        public static List<BoundsInt> BinarySpacePartition(System.Random random, BoundsInt spaceToSplit, Vector2Int width, Vector2Int height)
         {
             Queue<BoundsInt> roomsQueue = new();
             List<BoundsInt> roomsList = new();
@@ -13,6 +17,8 @@ namespace GenTools
             while (roomsQueue.Count > 0)
             {
                 var room = roomsQueue.Dequeue();
+                int minWidth = random.Next(width.x, width.y);
+                int minHeight = random.Next(height.x, height.y);
                 if (room.size.x >= minWidth && room.size.y >= minHeight)
                 {
                     bool splitHorizontal = (random.Next(0, 2) == 0);
@@ -50,5 +56,11 @@ namespace GenTools
             roomsQueue.Enqueue(room1);
             roomsQueue.Enqueue(room2);
         }
+
+        #endregion
+
+        #region Tunneler
+
+        #endregion
     }
 }

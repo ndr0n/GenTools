@@ -121,11 +121,14 @@ namespace GenTools
                             case GenTileAlgorithmType.Tunnel:
                                 layerData[layer].Map[type] = GenTileAlgorithm.Tunnel(layerData[layer].Map[type], value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
                                 break;
+                            case GenTileAlgorithmType.Tunneler:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Tunneler(layerData[layer].Map[type], value, seed, algorithm.TunnelerLifetime, algorithm.TunnelerChangePercentage, algorithm.TunnelerWidth, algorithm.TunnelerOverlap);
+                                break;
+                            case GenTileAlgorithmType.Roomer:
+                                layerData[layer].Map[type] = GenTileAlgorithm.Roomer(layerData[layer].Map[type], value, seed, algorithm.RoomerChance, algorithm.RoomerWidth, algorithm.RoomerHeight);
+                                break;
                             case GenTileAlgorithmType.BinarySpacePartition:
                                 layerData[layer].Map[type] = GenTileAlgorithm.BinarySpacePartition(layerData[layer].Map[type], value, seed, algorithm.Percentage, algorithm.Offset, algorithm.MinRoomWidth, algorithm.MinRoomHeight);
-                                break;
-                            case GenTileAlgorithmType.Rooms:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Rooms(layerData[layer].Map[type], value, seed, algorithm.RoomAmount, algorithm.RoomWidth, algorithm.RoomHeight);
                                 break;
                             case GenTileAlgorithmType.Walls:
                                 layerData[layer].Map[type] = GenTileAlgorithm.Walls(layerData[layer].Map[type], value, seed, algorithm.WallPercentage, algorithm.OuterWall);
@@ -146,9 +149,9 @@ namespace GenTools
             CollisionMap = new bool[Width, Height];
             for (int type = 0; type < Enum.GetNames(typeof(GenTileType)).Length; type++)
             {
-                for (int x = 0; x < Map[type].GetUpperBound(0); x++)
+                for (int x = 0; x < Map[type].GetLength(0); x++)
                 {
-                    for (int y = 0; y < Map[type].GetUpperBound(1); y++)
+                    for (int y = 0; y < Map[type].GetLength(1); y++)
                     {
                         if (CollisionMap[x, y] == false)
                         {
@@ -174,9 +177,9 @@ namespace GenTools
             Map = map.ToList();
             for (int type = 0; type < Enum.GetNames(typeof(GenTileType)).Length; type++)
             {
-                for (int x = 0; x < map[type].GetUpperBound(0); x++)
+                for (int x = 0; x < map[type].GetLength(0); x++)
                 {
-                    for (int y = 0; y < map[type].GetUpperBound(1); y++)
+                    for (int y = 0; y < map[type].GetLength(1); y++)
                     {
                         Tilemap[type].SetTile(new Vector3Int(x, y, 0), tiles[map[type][x, y]]);
                     }

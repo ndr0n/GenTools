@@ -239,7 +239,7 @@ namespace GenTools
                 {
                     case CardinalDirection.South:
                         bool breakLoop1 = false;
-                        for (int x1 = origin.Position.x + 1; x1 < origin.Position.x + origin.Size.x; x1++)
+                        for (int x1 = origin.Position.x + 1; x1 < origin.Position.x + origin.Size.x - 1; x1++)
                         {
                             int y1 = origin.Position.y;
                             Vector3Int doorPosition1 = new Vector3Int(x1, y1, 0);
@@ -258,7 +258,7 @@ namespace GenTools
                         break;
                     case CardinalDirection.West:
                         bool breakLoop2 = false;
-                        for (int y2 = origin.Position.y + 1; y2 < origin.Position.y + origin.Size.y; y2++)
+                        for (int y2 = origin.Position.y + 1; y2 < origin.Position.y + origin.Size.y - 1; y2++)
                         {
                             int x2 = origin.Position.x;
                             Vector3Int doorPosition2 = new Vector3Int(x2, y2, 0);
@@ -277,7 +277,7 @@ namespace GenTools
                         break;
                     case CardinalDirection.North:
                         bool breakLoop3 = false;
-                        for (int x3 = origin.Position.x + 1; x3 < origin.Position.x + origin.Size.x; x3++)
+                        for (int x3 = origin.Position.x + 1; x3 < origin.Position.x + origin.Size.x - 1; x3++)
                         {
                             int y3 = origin.Position.y + origin.Size.y - 1;
                             Vector3Int doorPosition3 = new Vector3Int(x3, y3, 0);
@@ -296,7 +296,7 @@ namespace GenTools
                         break;
                     case CardinalDirection.East:
                         bool breakLoop4 = false;
-                        for (int y4 = origin.Position.y + 1; y4 < origin.Position.y + origin.Size.y; y4++)
+                        for (int y4 = origin.Position.y + 1; y4 < origin.Position.y + origin.Size.y - 1; y4++)
                         {
                             int x4 = origin.Position.x + origin.Size.x - 1;
                             Vector3Int doorPosition4 = new Vector3Int(x4, y4, 0);

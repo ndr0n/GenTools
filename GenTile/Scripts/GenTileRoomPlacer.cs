@@ -264,7 +264,7 @@ namespace GenTools
                             Vector3Int doorPosition2 = new Vector3Int(x2, y2, 0);
                             foreach (var tunnelTile in TunnelTile)
                             {
-                                if (tunnelTilemap.GetTile(doorPosition2 - Vector3Int.left) == tunnelTile)
+                                if (tunnelTilemap.GetTile(doorPosition2 + Vector3Int.left) == tunnelTile)
                                 {
                                     doorTilemap.SetTile(doorPosition2, door);
                                     origin.PlacedDoors.Add(new GenTileObject(door, doorPosition2));

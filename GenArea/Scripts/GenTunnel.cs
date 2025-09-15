@@ -42,6 +42,7 @@ namespace GenTools
     {
         public Transform Parent;
         public int Height = 2;
+        public GenRoomPreset Preset;
         public List<GenTunnelNode> Node = new();
         public List<GameObject> TunnelDoors = new();
 
@@ -60,24 +61,30 @@ namespace GenTools
             TunnelDoors.Clear();
         }
 
-        public void Build(System.Random random, GenTile genTile, GenRoomPreset preset)
+        public void Init(Transform parent, GenRoomPreset preset)
+        {
+            Parent = GenTools.CreateGameObject("Tunnel", parent).transform;
+            Preset = preset;
+        }
+
+        public void Build(System.Random random, GenTile genTile)
         {
             // Build Tunnels
             GameObject roofPreset = null;
-            if (preset.Roof.Count > 0) roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
+            if (Preset.Roof.Count > 0) roofPreset = Preset.Roof[random.Next(0, Preset.Roof.Count)];
             GameObject pillarPreset = null;
-            if (preset.Pillar.Count > 0) pillarPreset = preset.Pillar[random.Next(0, preset.Pillar.Count)];
-            GameObject floorPreset = preset.Floor[random.Next(0, preset.Floor.Count)];
+            if (Preset.Pillar.Count > 0) pillarPreset = Preset.Pillar[random.Next(0, Preset.Pillar.Count)];
+            GameObject floorPreset = Preset.Floor[random.Next(0, Preset.Floor.Count)];
             foreach (var position in genTile.GenTileRoomPlacer.PlacedTunnels)
             {
-                Vector3 pos = new Vector3(position.x * preset.TileSize.x, 0, position.y * preset.TileSize.z);
-                pos += new Vector3(preset.TileSize.x / 2, 0, preset.TileSize.z / 2);
+                Vector3 pos = new Vector3(position.x * Preset.TileSize.x, 0, position.y * Preset.TileSize.z);
+                pos += new Vector3(Preset.TileSize.x / 2, 0, Preset.TileSize.z / 2);
                 GenTunnelNode node = Node.FirstOrDefault(x => x.Position == pos);
                 if (node == null)
                 {
                     node = new GenTunnelNode(pos);
                     Node.Add(node);
-                    BuildTunnelFloorAndRoof(random, node, floorPreset, roofPreset, pillarPreset, pos, preset.TileSize);
+                    BuildTunnelFloorAndRoof(random, node, floorPreset, roofPreset, pillarPreset, pos, Preset.TileSize);
                     Debug.Log($"TUNNEL FLOOR INIT COUNT: {Node.Count} | pos: {pos}");
                 }
             }
@@ -168,80 +175,80 @@ namespace GenTools
             }
         }
 
-        public void BuildTunnelWalls(System.Random random, GenRoomPreset preset)
+        public void BuildTunnelWalls(System.Random random)
         {
-            GameObject wallPreset = preset.OuterWall[random.Next(preset.OuterWall.Count)];
+            GameObject wallPreset = Preset.OuterWall[random.Next(Preset.OuterWall.Count)];
             foreach (var node in Node)
             {
                 Vector3 pos = node.Position;
                 List<GenTunnelNode> adjacentFloors = new() {null, null, null, null};
                 foreach (var adj in Node)
                 {
-                    if (adj.Position == new Vector3(pos.x, pos.y, pos.z + preset.TileSize.z))
+                    if (adj.Position == new Vector3(pos.x, pos.y, pos.z + Preset.TileSize.z))
                     {
                         adjacentFloors[(int) CardinalDirection.North] = adj;
                     }
-                    else if (adj.Position == new Vector3(pos.x, pos.y, pos.z - preset.TileSize.z))
+                    else if (adj.Position == new Vector3(pos.x, pos.y, pos.z - Preset.TileSize.z))
                     {
                         adjacentFloors[(int) CardinalDirection.South] = adj;
                     }
-                    else if (adj.Position == new Vector3(pos.x - preset.TileSize.x, pos.y, pos.z))
+                    else if (adj.Position == new Vector3(pos.x - Preset.TileSize.x, pos.y, pos.z))
                     {
                         adjacentFloors[(int) CardinalDirection.West] = adj;
                     }
-                    else if (adj.Position == new Vector3(pos.x + preset.TileSize.x, pos.y, pos.z))
+                    else if (adj.Position == new Vector3(pos.x + Preset.TileSize.x, pos.y, pos.z))
                     {
                         adjacentFloors[(int) CardinalDirection.East] = adj;
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.North] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(0, 0, preset.TileSize.z / 2f);
+                    Vector3 position = node.Position + new Vector3(0, 0, Preset.TileSize.z / 2f);
                     if (!TunnelDoors.Exists(x => x.transform.position == position))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, preset.TileSize.y, 0) * y);
+                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
                         }
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.South] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(0, 0, -preset.TileSize.z / 2f);
+                    Vector3 position = node.Position + new Vector3(0, 0, -Preset.TileSize.z / 2f);
                     if (!TunnelDoors.Exists(x => x.transform.position == position))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, preset.TileSize.y, 0) * y);
+                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
                         }
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.East] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(preset.TileSize.x / 2f, 0, 0);
+                    Vector3 position = node.Position + new Vector3(Preset.TileSize.x / 2f, 0, 0);
                     if (!TunnelDoors.Exists(x => x.transform.position == position))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, preset.TileSize.y, 0) * y);
+                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
                         }
                     }
                 }
                 if (adjacentFloors[(int) CardinalDirection.West] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(-preset.TileSize.x / 2f, 0, 0);
+                    Vector3 position = node.Position + new Vector3(-Preset.TileSize.x / 2f, 0, 0);
                     if (!TunnelDoors.Exists(x => x.transform.position == position))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, preset.TileSize.y, 0) * y);
+                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.West * 90, 0);
                         }
                     }

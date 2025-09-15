@@ -19,10 +19,11 @@ namespace GenTools
         public bool RandomSeed = false;
 
         [FormerlySerializedAs("Type")]
-        public bool BuildMainRoom = false;
-        public GenRoomType MainRoomType;
         public GenRoom GenRoomPrefab;
         public GenRoomType InnerRoomType;
+        [FormerlySerializedAs("TunnelPreest")]
+        [FormerlySerializedAs("TunnelRoomPreset")]
+        public List<GenRoomPreset> TunnelPreset;
 
         [Header("Source")]
         public GenTile GenTile;
@@ -69,21 +70,6 @@ namespace GenTools
 
         public async Awaitable GenerateFromGenTile()
         {
-            GenRoomPreset preset = MainRoomType.Presets[random.Next(MainRoomType.Presets.Count)];
-            if (BuildMainRoom)
-            {
-                // Generate Main Room
-                MainRoom = Instantiate(GenRoomPrefab.gameObject, transform).GetComponent<GenRoom>();
-                MainRoom.name = "MainRoom";
-                MainRoom.Type = MainRoomType;
-                MainRoom.RandomSeed = false;
-                MainRoom.Seed = random.Next(int.MinValue, int.MaxValue);
-                MainRoom.GridSize = Size;
-                MainRoom.OuterDoorAmount = Vector2Int.zero;
-                await MainRoom.Generate();
-                preset = MainRoom.Preset;
-            }
-
             if (GenerateNewTile)
             {
                 // Generate Tile Data
@@ -92,15 +78,23 @@ namespace GenTools
                 GenTile.Generate();
             }
 
-            GenTunnel.Parent = GenTools.CreateGameObject("Tunnel", transform).transform;
-            GenTunnel.Build(random, GenTile, preset);
+            if (TunnelPreset.Count > 0)
+            {
+                GenRoomPreset tunnelPreset = TunnelPreset[random.Next(TunnelPreset.Count)];
+                GenTunnel.Init(transform, tunnelPreset);
+                GenTunnel.Build(random, GenTile);
+            }
 
             // Build Inner Rooms
             foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
             {
                 await BuildRoomFromTileRoom(tileRoom, 0);
             }
-            GenTunnel.BuildTunnelWalls(random, preset);
+
+            if (TunnelPreset.Count > 0)
+            {
+                GenTunnel.BuildTunnelWalls(random);
+            }
         }
 
         public async Awaitable BuildRoomFromTileRoom(GenTileRoom tileRoom, int y)

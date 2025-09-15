@@ -78,26 +78,30 @@ namespace GenTools
                 GenTile.Generate();
             }
 
+            // Init Tunnel
             if (TunnelPreset.Count > 0)
             {
                 GenRoomPreset tunnelPreset = TunnelPreset[random.Next(TunnelPreset.Count)];
                 GenTunnel.Init(transform, tunnelPreset);
-                GenTunnel.Build(random, GenTile);
             }
 
             // Build Inner Rooms
             foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
             {
-                await BuildRoomFromTileRoom(tileRoom, 0);
+                GenRoom room = await BuildRoomFromTileRoom(tileRoom, 0);
+                await BuildDoorsFromTileRoom(room, tileRoom, 0);
+                await GenTunnel.BuildTunnelsFromTileRoom(random, room, tileRoom, 0);
             }
 
+            // Build Tunnel
             if (TunnelPreset.Count > 0)
             {
+                GenTunnel.Build(random, GenTile);
                 GenTunnel.BuildTunnelWalls(random);
             }
         }
 
-        public async Awaitable BuildRoomFromTileRoom(GenTileRoom tileRoom, int y)
+        public async Awaitable<GenRoom> BuildRoomFromTileRoom(GenTileRoom tileRoom, int y)
         {
             GenRoom room = Instantiate(GenRoomPrefab.gameObject, transform).GetComponent<GenRoom>();
             room.name = $"InnerRoom-{room.transform.parent.childCount}";
@@ -111,9 +115,7 @@ namespace GenTools
             InnerRoom.Add(room);
 
             await room.Generate();
-
-            await BuildDoorsFromTileRoom(room, tileRoom, y);
-            await GenTunnel.BuildTunnelsFromTileRoom(random, room, tileRoom, y);
+            return room;
         }
 
         async Awaitable BuildDoorsFromTileRoom(GenRoom room, GenTileRoom tileRoom, int y)
@@ -137,6 +139,7 @@ namespace GenTools
                             outerDoor.transform.position = wall.transform.position;
                             outerDoor.transform.rotation = wall.transform.rotation;
                             room.OuterDoor.Add(outerDoor);
+                            GenTunnel.TunnelDoors.Add(outerDoor);
                             DestroyImmediate(wall);
                             await room.Await();
                             break;

@@ -37,6 +37,10 @@ namespace GenTools
         readonly List<GameObject> tunnelFloor = new();
         readonly List<GameObject> tunnelRoof = new();
         readonly List<GameObject> tunnelDoor = new();
+        readonly List<GameObject> tunnelPillar = new();
+        public readonly List<Vector3> tunnelPositions = new();
+
+        public bool GenerateNewTile = true;
 
         public void Clear()
         {
@@ -54,6 +58,7 @@ namespace GenTools
             tunnelFloor.Clear();
             tunnelRoof.Clear();
             tunnelDoor.Clear();
+            tunnelPositions.Clear();
         }
 
         public async Awaitable Generate()
@@ -94,14 +99,19 @@ namespace GenTools
                 preset = MainRoom.Preset;
             }
 
-            // Generate Tile Data
-            GenTile.RandomSeed = false;
-            GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
-            GenTile.Generate();
+            if (GenerateNewTile)
+            {
+                // Generate Tile Data
+                GenTile.RandomSeed = false;
+                GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
+                GenTile.Generate();
+            }
 
             // Build Tunnels
             GameObject roofPreset = null;
             if (preset.Roof.Count > 0) roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
+            GameObject pillarPreset = null;
+            if (preset.Pillar.Count > 0) pillarPreset = preset.Pillar[random.Next(0, preset.Pillar.Count)];
             GameObject floorPreset = preset.Floor[random.Next(0, preset.Floor.Count)];
             foreach (var position in GenTile.GenTileRoomPlacer.PlacedTunnels)
             {
@@ -109,7 +119,7 @@ namespace GenTools
                 pos += new Vector3(preset.TileSize.x / 2, 0, preset.TileSize.z / 2);
                 if (!tunnelFloor.Exists(x => x.transform.position == pos))
                 {
-                    BuildTunnelFloorAndRoof(floorPreset, roofPreset, Vector3Int.RoundToInt(pos), preset.TileSize);
+                    BuildTunnelFloorAndRoof(floorPreset, roofPreset, pillarPreset, Vector3Int.RoundToInt(pos), preset.TileSize);
                     Debug.Log($"TUNNEL FLOOR INIT COUNT: {tunnelFloor.Count} | pos: {pos}");
                     // await MainRoom.Await();
                 }
@@ -173,8 +183,11 @@ namespace GenTools
             }
         }
 
-        void BuildTunnelFloorAndRoof(GameObject floorPreset, GameObject roofPreset, Vector3Int position, Vector3 size)
+        public int PillarChance = 10;
+
+        void BuildTunnelFloorAndRoof(GameObject floorPreset, GameObject roofPreset, GameObject pillarPreset, Vector3Int position, Vector3 size)
         {
+            tunnelPositions.Add(position);
             // Build Floor
             GameObject floor = Instantiate(floorPreset, tunnelParent.transform);
             floor.transform.position = position;
@@ -189,6 +202,21 @@ namespace GenTools
                 roof.transform.rotation = Quaternion.identity;
                 tunnelRoof.Add(roof);
             }
+
+            if (pillarPreset != null)
+            {
+                // Try Build Pillar
+                if (random.Next(0, 100) < PillarChance)
+                {
+                    for (int y = 0; y < Size.y; y++)
+                    {
+                        GameObject pillar = Instantiate(pillarPreset, tunnelParent.transform);
+                        pillar.transform.position = floor.transform.position + new Vector3(size.x / 2f, 0, size.z / 2f) + new Vector3(0, y * size.y, 0);
+                        pillar.transform.rotation = Quaternion.identity;
+                        tunnelPillar.Add(pillar);
+                    }
+                }
+            }
         }
 
         public async Awaitable BuildTunnelsFromTileRoom(GenRoom room, GenTileRoom tileRoom, int y)
@@ -197,7 +225,8 @@ namespace GenTools
             {
                 GameObject roofPreset = null;
                 if (room.Preset.Roof.Count > 0) roofPreset = room.Preset.Roof[random.Next(0, room.Preset.Roof.Count)];
-
+                GameObject pillarPreset = null;
+                if (room.Preset.Pillar.Count > 0) pillarPreset = room.Preset.Pillar[random.Next(0, room.Preset.Pillar.Count)];
                 GameObject floorPreset = room.Preset.Floor[random.Next(0, room.Preset.Floor.Count)];
                 foreach (var position in tunnel.Positions)
                 {
@@ -205,7 +234,7 @@ namespace GenTools
                     pos += room.Content.localPosition;
                     if (!tunnelFloor.Exists(x => x.transform.position == pos))
                     {
-                        BuildTunnelFloorAndRoof(floorPreset, roofPreset, Vector3Int.RoundToInt(pos), room.TileSize);
+                        BuildTunnelFloorAndRoof(floorPreset, roofPreset, pillarPreset, Vector3Int.RoundToInt(pos), room.TileSize);
                         await room.Await();
                     }
                 }

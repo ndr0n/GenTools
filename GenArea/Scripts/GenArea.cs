@@ -18,11 +18,8 @@ namespace GenTools
         public int Seed = 0;
         public bool RandomSeed = false;
 
-        [FormerlySerializedAs("Type")]
         public GenRoom GenRoomPrefab;
         public GenRoomType InnerRoomType;
-        [FormerlySerializedAs("TunnelPreest")]
-        [FormerlySerializedAs("TunnelRoomPreset")]
         public List<GenRoomPreset> TunnelPreset;
 
         [Header("Source")]

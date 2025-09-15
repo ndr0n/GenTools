@@ -19,6 +19,7 @@ namespace GenTools
         public int Seed = 0;
 
         public Vector3 TileSize = new Vector3(4, 4, 4);
+        public Vector3 TileScale = new Vector3(1, 1, 1);
         public Vector3Int GridSize = new Vector3Int(5, 1, 5);
 
         public Vector2Int OuterDoorAmount = new Vector2Int(2, 2);

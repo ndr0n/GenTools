@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace GenerativeTools
+namespace Modules.GenTools.GenArea.Scripts
 {
     [System.Serializable]
     public enum GenObjectType
@@ -29,29 +31,34 @@ namespace GenerativeTools
     }
 
     [System.Serializable]
-    public struct GenObject
+    public struct GenObjectIteration
     {
-        public GameObject Prefab;
         public Vector2Int Amount;
+        public List<GenObject> Objects;
+    }
+
+    [System.Serializable]
+    public struct GenObjectData
+    {
+        public List<GameObject> Prefabs;
         public GenObjectType Type;
         public GenObjectPosition Position;
         public GenObjectRotation Rotation;
         public Vector3 RandomPositionOffset;
+        public Vector3 Size;
+    }
 
-        public GenObject(GameObject prefab, Vector2Int amount, GenObjectType type, GenObjectPosition position, GenObjectRotation rotation, Vector3 randomPositionOffset)
-        {
-            Prefab = prefab;
-            Amount = amount;
-            Type = type;
-            Position = position;
-            Rotation = rotation;
-            RandomPositionOffset = randomPositionOffset;
-        }
+    [System.Serializable]
+    [CreateAssetMenu(fileName = "GO", menuName = "GenTools/GenObject")]
+    public class GenObject : ScriptableObject
+    {
+        public GenObjectData Object;
+        public List<GenObjectData> Nearby = new();
 
         public Vector3 GetRandomPositionOffset(System.Random random)
         {
             Unity.Mathematics.Random rand = new((uint) random.Next(0, int.MaxValue));
-            return new Vector3(rand.NextFloat(-RandomPositionOffset.x, RandomPositionOffset.x), rand.NextFloat(-RandomPositionOffset.y, RandomPositionOffset.y), rand.NextFloat(-RandomPositionOffset.z, RandomPositionOffset.z));
+            return new Vector3(rand.NextFloat(-Object.RandomPositionOffset.x, Object.RandomPositionOffset.x), rand.NextFloat(-Object.RandomPositionOffset.y, Object.RandomPositionOffset.y), rand.NextFloat(-Object.RandomPositionOffset.z, Object.RandomPositionOffset.z));
         }
     }
 }

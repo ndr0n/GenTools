@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GenerativeTools;
+using Modules.GenTools.GenArea.Scripts;
 using UnityEngine;
 
 namespace GenTools
@@ -25,7 +25,7 @@ namespace GenTools
         public List<GenRoomRail> Rail = new();
 
         public List<GameObject> Lamps = new();
-        public List<GenObject> Object = new();
+        public List<GenObjectIteration> Object = new();
     }
 
     [System.Serializable]

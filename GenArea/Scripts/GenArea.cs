@@ -92,6 +92,7 @@ namespace GenTools
                 GenTunnel.Build(random, GenTile);
                 GenTunnel.BuildTunnelWalls(random);
                 await GenTunnel.PlaceTunnelObjects(random);
+                GenTunnel.BuildTunnelPillars(random);
             }
         }
 
@@ -134,6 +135,7 @@ namespace GenTools
                             outerDoor.transform.rotation = wall.transform.rotation;
                             room.OuterDoor.Add(outerDoor);
                             GenTunnel.TunnelDoors.Add(outerDoor);
+                            node.Object = outerDoor;
                             DestroyImmediate(wall);
                             await room.Await();
                             break;

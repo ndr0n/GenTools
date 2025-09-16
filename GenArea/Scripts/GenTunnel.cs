@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityGameObject;
-using GenerativeTools;
 using Modules.GenTools.GenArea.Scripts;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,13 +10,13 @@ namespace GenTools
     [System.Serializable]
     public class GenTunnelNode
     {
-        public Vector3 Position = Vector3.zero;
+        public Vector3Int Position = Vector3Int.zero;
         public GameObject Floor = null;
         public GameObject Roof = null;
         public GameObject Object = null;
         public List<GameObject> Wall = new() {null, null, null, null};
 
-        public GenTunnelNode(Vector3 position)
+        public GenTunnelNode(Vector3Int position)
         {
             Position = position;
             Floor = null;
@@ -28,7 +27,7 @@ namespace GenTools
 
         public void Clear()
         {
-            Position = Vector3.zero;
+            Position = Vector3Int.zero;
             if (Floor != null) UnityEngine.Object.DestroyImmediate(Floor);
             if (Roof != null) UnityEngine.Object.DestroyImmediate(Floor);
             if (Object != null) UnityEngine.Object.DestroyImmediate(Floor);
@@ -80,27 +79,24 @@ namespace GenTools
             // Build Tunnels
             GameObject roofPreset = null;
             if (Preset.Roof.Count > 0) roofPreset = Preset.Roof[random.Next(0, Preset.Roof.Count)];
-            GameObject pillarPreset = null;
-            if (Preset.Pillar.Count > 0) pillarPreset = Preset.Pillar[random.Next(0, Preset.Pillar.Count)];
             GameObject floorPreset = Preset.Floor[random.Next(0, Preset.Floor.Count)];
             foreach (var position in genTile.GenTileRoomPlacer.PlacedTunnels)
             {
-                Vector3 pos = new Vector3(position.x * Preset.TileSize.x, 0, position.y * Preset.TileSize.z);
-                pos += new Vector3(Preset.TileSize.x / 2, 0, Preset.TileSize.z / 2);
-                GenTunnelNode node = Node.FirstOrDefault(x => x.Position == pos);
+                Vector3Int nodePosition = new Vector3Int(position.x, 0, position.y);
+                GenTunnelNode node = Node.FirstOrDefault(x => x.Position == nodePosition);
                 if (node == null)
                 {
-                    node = new GenTunnelNode(pos);
+                    node = new GenTunnelNode(nodePosition);
                     Node.Add(node);
-                    BuildTunnelFloorAndRoof(random, node, floorPreset, roofPreset, pillarPreset, pos, Preset.TileSize);
-                    Debug.Log($"TUNNEL FLOOR INIT COUNT: {Node.Count} | pos: {pos}");
+                    Vector3 pos = new Vector3(position.x * Preset.TileSize.x, 0, position.y * Preset.TileSize.z);
+                    pos += new Vector3(Preset.TileSize.x / 2, 0, Preset.TileSize.z / 2);
+                    BuildTunnelFloorAndRoof(node, floorPreset, roofPreset, pos, Preset.TileSize);
+                    // Debug.Log($"TUNNEL FLOOR INIT COUNT: {Node.Count} | pos: {pos}");
                 }
             }
         }
 
-        public int PillarChance = 10;
-
-        void BuildTunnelFloorAndRoof(System.Random random, GenTunnelNode node, GameObject floorPreset, GameObject roofPreset, GameObject pillarPreset, Vector3 position, Vector3 size)
+        void BuildTunnelFloorAndRoof(GenTunnelNode node, GameObject floorPreset, GameObject roofPreset, Vector3 position, Vector3 size)
         {
             // Build Floor
             GameObject floor = Object.Instantiate(floorPreset, Parent.transform);
@@ -116,24 +112,6 @@ namespace GenTools
                 roof.transform.rotation = Quaternion.identity;
                 node.Roof = roof;
             }
-
-            if (pillarPreset != null)
-            {
-                if (node.Object == null)
-                {
-                    // Try Build Pillar
-                    if (random.Next(0, 100) < PillarChance)
-                    {
-                        for (int y = 0; y < Height; y++)
-                        {
-                            GameObject pillar = Object.Instantiate(pillarPreset, Parent.transform);
-                            pillar.transform.position = floor.transform.position + new Vector3(size.x / 2f, 0, size.z / 2f) + new Vector3(0, y * size.y, 0);
-                            pillar.transform.rotation = Quaternion.identity;
-                            node.Object = pillar;
-                        }
-                    }
-                }
-            }
         }
 
         public async Awaitable BuildTunnelsFromTileRoom(System.Random random, GenRoom room, GenTileRoom tileRoom, int y)
@@ -142,20 +120,19 @@ namespace GenTools
             {
                 GameObject roofPreset = null;
                 if (room.Preset.Roof.Count > 0) roofPreset = room.Preset.Roof[random.Next(0, room.Preset.Roof.Count)];
-                GameObject pillarPreset = null;
-                if (room.Preset.Pillar.Count > 0) pillarPreset = room.Preset.Pillar[random.Next(0, room.Preset.Pillar.Count)];
                 GameObject floorPreset = room.Preset.Floor[random.Next(0, room.Preset.Floor.Count)];
                 foreach (var position in tunnel.Positions)
                 {
-                    Vector3 pos = new Vector3(position.x * room.Preset.TileSize.x, 0, position.y * room.Preset.TileSize.z);
-                    pos += new Vector3(room.Preset.TileSize.x / 2, 0, room.Preset.TileSize.z / 2);
-                    GenTunnelNode tunnelNode = Node.FirstOrDefault(x => x.Position == pos);
+                    Vector3Int nodePosition = new Vector3Int(position.x, 0, position.y);
+                    GenTunnelNode tunnelNode = Node.FirstOrDefault(x => x.Position == nodePosition);
                     if (tunnelNode == null)
                     {
-                        tunnelNode = new GenTunnelNode(pos);
+                        tunnelNode = new GenTunnelNode(nodePosition);
                         Node.Add(tunnelNode);
-                        BuildTunnelFloorAndRoof(random, tunnelNode, floorPreset, roofPreset, pillarPreset, pos, room.Preset.TileSize);
-                        Debug.Log($"TUNNEL FLOOR INIT COUNT: {Node.Count} | pos: {pos}");
+                        Vector3 pos = new Vector3(position.x * room.Preset.TileSize.x, 0, position.y * room.Preset.TileSize.z);
+                        pos += new Vector3(room.Preset.TileSize.x / 2, 0, room.Preset.TileSize.z / 2);
+                        BuildTunnelFloorAndRoof(tunnelNode, floorPreset, roofPreset, pos, room.Preset.TileSize);
+                        // Debug.Log($"TUNNEL FLOOR INIT COUNT: {Node.Count} | pos: {pos}");
                     }
                 }
 
@@ -176,6 +153,7 @@ namespace GenTools
                         outerDoor.transform.rotation = wall.transform.rotation;
                         room.OuterDoor.Add(outerDoor);
                         TunnelDoors.Add(outerDoor);
+                        roomNode.Object = outerDoor;
                         Object.DestroyImmediate(wall);
                         await room.Await();
                     }
@@ -188,36 +166,38 @@ namespace GenTools
             GameObject wallPreset = Preset.OuterWall[random.Next(Preset.OuterWall.Count)];
             foreach (var node in Node)
             {
-                Vector3 pos = node.Position;
                 List<GenTunnelNode> adjacentFloors = new() {null, null, null, null};
                 foreach (var adj in Node)
                 {
-                    if (adj.Position == new Vector3(pos.x, pos.y, pos.z + Preset.TileSize.z))
+                    if (adj.Position == new Vector3(node.Position.x, node.Position.y, node.Position.z + 1))
                     {
                         adjacentFloors[(int) CardinalDirection.North] = adj;
                     }
-                    else if (adj.Position == new Vector3(pos.x, pos.y, pos.z - Preset.TileSize.z))
+                    else if (adj.Position == new Vector3(node.Position.x, node.Position.y, node.Position.z - 1))
                     {
                         adjacentFloors[(int) CardinalDirection.South] = adj;
                     }
-                    else if (adj.Position == new Vector3(pos.x - Preset.TileSize.x, pos.y, pos.z))
+                    else if (adj.Position == new Vector3(node.Position.x - 1, node.Position.y, node.Position.z))
                     {
                         adjacentFloors[(int) CardinalDirection.West] = adj;
                     }
-                    else if (adj.Position == new Vector3(pos.x + Preset.TileSize.x, pos.y, pos.z))
+                    else if (adj.Position == new Vector3(node.Position.x + 1, node.Position.y, node.Position.z))
                     {
                         adjacentFloors[(int) CardinalDirection.East] = adj;
                     }
                 }
+
+                Vector3 position = new Vector3(node.Position.x * Preset.TileSize.x, node.Position.y * Preset.TileSize.y, node.Position.z * Preset.TileSize.z);
+                position += new Vector3(Preset.TileSize.x / 2f, 0, Preset.TileSize.z / 2f);
                 if (adjacentFloors[(int) CardinalDirection.North] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(0, 0, Preset.TileSize.z / 2f);
-                    if (!TunnelDoors.Exists(x => x.transform.position == position))
+                    Vector3 pos = position + new Vector3(0, 0, Preset.TileSize.z / 2f);
+                    if (!TunnelDoors.Exists(x => x.transform.position == pos))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
+                            wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
                             node.Wall[(int) CardinalDirection.South] = wall;
                         }
@@ -225,13 +205,13 @@ namespace GenTools
                 }
                 if (adjacentFloors[(int) CardinalDirection.South] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(0, 0, -Preset.TileSize.z / 2f);
-                    if (!TunnelDoors.Exists(x => x.transform.position == position))
+                    Vector3 pos = position + new Vector3(0, 0, -Preset.TileSize.z / 2f);
+                    if (!TunnelDoors.Exists(x => x.transform.position == pos))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
+                            wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
                             node.Wall[(int) CardinalDirection.North] = wall;
                         }
@@ -239,13 +219,13 @@ namespace GenTools
                 }
                 if (adjacentFloors[(int) CardinalDirection.East] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(Preset.TileSize.x / 2f, 0, 0);
-                    if (!TunnelDoors.Exists(x => x.transform.position == position))
+                    Vector3 pos = position + new Vector3(Preset.TileSize.x / 2f, 0, 0);
+                    if (!TunnelDoors.Exists(x => x.transform.position == pos))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
+                            wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
                             node.Wall[(int) CardinalDirection.West] = wall;
                         }
@@ -253,17 +233,59 @@ namespace GenTools
                 }
                 if (adjacentFloors[(int) CardinalDirection.West] == null)
                 {
-                    Vector3 position = node.Position + new Vector3(-Preset.TileSize.x / 2f, 0, 0);
-                    if (!TunnelDoors.Exists(x => x.transform.position == position))
+                    Vector3 pos = position + new Vector3(-Preset.TileSize.x / 2f, 0, 0);
+                    if (!TunnelDoors.Exists(x => x.transform.position == pos))
                     {
                         for (int y = 0; y < Height; y++)
                         {
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
-                            wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
+                            wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.West * 90, 0);
                             node.Wall[(int) CardinalDirection.East] = wall;
                         }
                     }
+                }
+            }
+        }
+
+        public int PillarChance = 10;
+
+        public void BuildTunnelPillars(System.Random random)
+        {
+            GameObject pillarPreset = null;
+            if (Preset.Pillar.Count > 0) pillarPreset = Preset.Pillar[random.Next(0, Preset.Pillar.Count)];
+            if (pillarPreset != null)
+            {
+                List<GenTunnelNode> pillars = new();
+                foreach (var node in Node)
+                {
+                    if (random.Next(0, 100) < PillarChance)
+                    {
+                        if (node.Object == null && !node.Wall.Exists(wall => wall != null))
+                        {
+                            Quaternion rotation = Quaternion.Euler(0, random.Next(0, 4) * 90, 0);
+                            for (int y = 0; y < Height; y++)
+                            {
+                                GameObject pillar = Object.Instantiate(pillarPreset, Parent.transform);
+                                pillar.transform.position = node.Floor.transform.position + new Vector3(0, y * Preset.TileSize.y, 0);
+                                pillar.transform.rotation = rotation;
+                                node.Object = pillar;
+                                pillars.Add(node);
+                            }
+                        }
+                    }
+                }
+                // Build Balcony
+                GameObject floorPreset = Preset.Floor[random.Next(0, Preset.Floor.Count)];
+                foreach (var pillar in pillars)
+                {
+                    // BresenhamLine
+                    // GenTunnelNode node = new(new Vector3Int());
+                    // Node.Add(node);
+                    // GameObject floor = Object.Instantiate(floorPreset, Parent.transform);
+                    // floor.transform.position = pillar.transform.position;
+                    // floor.transform.rotation = Quaternion.identity;
+                    // node.Floor = floor;
                 }
             }
         }

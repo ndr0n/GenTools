@@ -49,6 +49,8 @@ namespace GenTools
         public List<GenTunnelNode> Node = new();
         public List<GameObject> TunnelDoors = new();
         public List<GameObject> TunnelObjects = new();
+        public int PillarChance = 10;
+        public bool BuildPillarBalcony = false;
 
         public void Clear()
         {
@@ -250,8 +252,6 @@ namespace GenTools
             }
         }
 
-        public int PillarChance = 10;
-
         public void BuildTunnelPillars(System.Random random)
         {
             GameObject pillarPreset = null;
@@ -277,6 +277,8 @@ namespace GenTools
                         }
                     }
                 }
+
+                if (BuildPillarBalcony == false) return;
 
                 // Build Balcony
                 if (pillars.Count == 0) return;

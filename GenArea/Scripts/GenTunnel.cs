@@ -304,7 +304,7 @@ namespace GenTools
                         foreach (var pos in targetPositions)
                         {
                             GenTunnelNode checkNode = Node.FirstOrDefault(x => x.Position == new Vector3Int(pos.x, 0, pos.y));
-                            if (checkNode == null || checkNode.Wall.Exists(wall => wall != null)) break;
+                            if (checkNode == null) break;
                             nodePosition = new Vector3Int(pos.x, node.Position.y, pos.y);
                             node = Node.FirstOrDefault(x => x.Position == nodePosition);
                             if (node == null)

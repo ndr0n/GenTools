@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityGameObject;
 using Modules.GenTools.GenArea.Scripts;
+using Pathfinding.Graphs.Grid.Jobs;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -263,29 +265,59 @@ namespace GenTools
                     {
                         if (node.Object == null && !node.Wall.Exists(wall => wall != null))
                         {
-                            Quaternion rotation = Quaternion.Euler(0, random.Next(0, 4) * 90, 0);
+                            // Quaternion rotation = Quaternion.Euler(0, random.Next(0, 4) * 90, 0);
                             for (int y = 0; y < Height; y++)
                             {
                                 GameObject pillar = Object.Instantiate(pillarPreset, Parent.transform);
-                                pillar.transform.position = node.Floor.transform.position + new Vector3(0, y * Preset.TileSize.y, 0);
-                                pillar.transform.rotation = rotation;
+                                pillar.transform.position = node.Floor.transform.position + new Vector3(Preset.TileSize.x / 2f, 0, Preset.TileSize.z / 2f) + new Vector3(0, y * Preset.TileSize.y, 0);
+                                // pillar.transform.rotation = rotation;
                                 node.Object = pillar;
                                 pillars.Add(node);
                             }
                         }
                     }
                 }
+
                 // Build Balcony
+                if (pillars.Count == 0) return;
+                pillars = pillars.OrderBy(x => Vector3.Distance(x.Floor.transform.position, pillars[0].Floor.transform.position)).ToList();
                 GameObject floorPreset = Preset.Floor[random.Next(0, Preset.Floor.Count)];
-                foreach (var pillar in pillars)
+                for (int i = 0; i < pillars.Count; i++)
                 {
-                    // BresenhamLine
-                    // GenTunnelNode node = new(new Vector3Int());
-                    // Node.Add(node);
-                    // GameObject floor = Object.Instantiate(floorPreset, Parent.transform);
-                    // floor.transform.position = pillar.transform.position;
-                    // floor.transform.rotation = Quaternion.identity;
-                    // node.Floor = floor;
+                    Vector3Int nodePosition = pillars[i].Position + new Vector3Int(0, 1, 0);
+                    GenTunnelNode node = Node.FirstOrDefault(x => x.Position == nodePosition);
+                    if (node == null)
+                    {
+                        node = new(nodePosition);
+                        Node.Add(node);
+                        GameObject floor = Object.Instantiate(floorPreset, Parent.transform);
+                        floor.transform.position = new Vector3(node.Position.x * Preset.TileSize.x, node.Position.y * Preset.TileSize.y, node.Position.z * Preset.TileSize.z) + new Vector3(Preset.TileSize.x / 2f, 0, Preset.TileSize.z / 2f);
+                        floor.transform.rotation = Quaternion.identity;
+                        node.Floor = floor;
+                    }
+                    GenTunnelNode target = pillars.Where(x => x != pillars[i]).OrderBy(x => Vector3.Distance(x.Floor.transform.position, pillars[i].Floor.transform.position)).FirstOrDefault();
+                    if (target != null)
+                    {
+                        Vector2Int startingPosition = new Vector2Int(pillars[i].Position.x, pillars[i].Position.z);
+                        Vector2Int finalPosition = new Vector2Int(target.Position.x, target.Position.z);
+                        List<Vector2Int> targetPositions = BresenhamLine.ComputeNoDiagonal(startingPosition, finalPosition);
+                        foreach (var pos in targetPositions)
+                        {
+                            GenTunnelNode checkNode = Node.FirstOrDefault(x => x.Position == new Vector3Int(pos.x, 0, pos.y));
+                            if (checkNode == null || checkNode.Wall.Exists(wall => wall != null)) break;
+                            nodePosition = new Vector3Int(pos.x, node.Position.y, pos.y);
+                            node = Node.FirstOrDefault(x => x.Position == nodePosition);
+                            if (node == null)
+                            {
+                                node = new(nodePosition);
+                                Node.Add(node);
+                                GameObject floor = Object.Instantiate(floorPreset, Parent.transform);
+                                floor.transform.position = new Vector3(node.Position.x * Preset.TileSize.x, node.Position.y * Preset.TileSize.y, node.Position.z * Preset.TileSize.z) + new Vector3(Preset.TileSize.x / 2f, 0, Preset.TileSize.z / 2f);
+                                floor.transform.rotation = Quaternion.identity;
+                                node.Floor = floor;
+                            }
+                        }
+                    }
                 }
             }
         }

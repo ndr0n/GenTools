@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GenerativeTools;
 using UnityEngine;
 
 namespace GenTools
@@ -24,7 +25,7 @@ namespace GenTools
         public List<GenRoomRail> Rail = new();
 
         public List<GameObject> Lamps = new();
-        public List<GameObject> Object = new();
+        public List<GenObject> Object = new();
     }
 
     [System.Serializable]

@@ -27,7 +27,7 @@ namespace GenTools
         public GenTunnel GenTunnel = new();
         public List<GenRoom> InnerRoom = new();
 
-        System.Random random;   
+        System.Random random;
 
         public bool GenerateNewTile = true;
 
@@ -91,6 +91,7 @@ namespace GenTools
             {
                 GenTunnel.Build(random, GenTile);
                 GenTunnel.BuildTunnelWalls(random);
+                await GenTunnel.PlaceTunnelObjects(random);
             }
         }
 

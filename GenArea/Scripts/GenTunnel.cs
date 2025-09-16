@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using BehaviorDesigner.Runtime.Tasks.Unity.UnityGameObject;
+using GenerativeTools;
+using Modules.GenTools.GenArea.Scripts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -45,6 +47,7 @@ namespace GenTools
         public GenRoomPreset Preset;
         public List<GenTunnelNode> Node = new();
         public List<GameObject> TunnelDoors = new();
+        public List<GameObject> TunnelObjects = new();
 
         public void Clear()
         {
@@ -52,13 +55,18 @@ namespace GenTools
             {
                 if (node != null) node.Clear();
             }
+            Node.Clear();
+            foreach (var obj in TunnelObjects)
+            {
+                if (obj != null) Object.DestroyImmediate(obj);
+            }
+            TunnelObjects.Clear();
             foreach (var door in TunnelDoors)
             {
                 if (door != null) Object.DestroyImmediate(door.gameObject);
             }
-            if (Parent != null) Object.DestroyImmediate(Parent.gameObject);
-            Node.Clear();
             TunnelDoors.Clear();
+            if (Parent != null) Object.DestroyImmediate(Parent.gameObject);
         }
 
         public void Init(Transform parent, GenRoomPreset preset)
@@ -211,6 +219,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
+                            node.Wall[(int) CardinalDirection.South] = wall;
                         }
                     }
                 }
@@ -224,6 +233,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
+                            node.Wall[(int) CardinalDirection.North] = wall;
                         }
                     }
                 }
@@ -237,6 +247,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
+                            node.Wall[(int) CardinalDirection.West] = wall;
                         }
                     }
                 }
@@ -250,9 +261,19 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = position + (new Vector3(0, Preset.TileSize.y, 0) * y);
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.West * 90, 0);
+                            node.Wall[(int) CardinalDirection.East] = wall;
                         }
                     }
                 }
+            }
+        }
+
+        public async Awaitable PlaceTunnelObjects(System.Random random)
+        {
+            foreach (var obj in Preset.Object)
+            {
+                List<GameObject> spawn = GenObjectLibrary.PlaceInTunnel(this, obj, random);
+                // if (spawn == null) return;
             }
         }
     }

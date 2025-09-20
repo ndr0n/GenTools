@@ -27,6 +27,14 @@ namespace GenTools
         }
     }
 
+    public enum GenTileRoomObjectType
+    {
+        Door,
+        Wall,
+        Balcony,
+        Object,
+    }
+
     [System.Serializable]
     public class GenTileRoom
     {
@@ -38,6 +46,7 @@ namespace GenTools
         public List<GenTileObject> PlacedWalls = new();
         public List<GenTileObject> PlacedDoors = new();
         public List<GenTileObject> PlacedStairs = new();
+        public List<GenTileObject> PlacedBalcony = new();
         public List<GenTileObject> PlacedObjects = new();
         public List<GenTileRoomTunnel> PlacedTunnels = new();
 
@@ -46,9 +55,6 @@ namespace GenTools
             Type = type;
             Size = size;
             Position = position;
-            PlacedDoors = new();
-            PlacedStairs = new();
-            PlacedObjects = new();
         }
 
         public Vector3 GetCenter() => new Vector3(Position.x + (Size.x / 2f), Position.y + (Size.y / 2f), 0);
@@ -56,22 +62,63 @@ namespace GenTools
         public BoundsInt GetBoundsInt() => new BoundsInt(Vector3Int.RoundToInt(GetCenter()), new Vector3Int(Size.x, Size.y, 0));
         public bool Contains(Vector2Int point) => point.x >= Position.x && point.x < (Position.x + Size.x) && point.y >= Position.y && point.y < (Position.y + Size.y);
 
-        public List<Vector3Int> ReplaceFloor(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
+        public List<Vector2Int> PlaceTileRoom(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
+        {
+            availablePositions = ReplaceFloor(genTile, availablePositions, random);
+            availablePositions = PlaceDoors(genTile, availablePositions, random);
+            foreach (var wallAlgo in Type.Walls) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, availablePositions, random);
+            foreach (var wallAlgo in Type.Balcony) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Balcony, wallAlgo, genTile, availablePositions, random);
+            availablePositions = PlaceObjects(genTile, availablePositions, random);
+            return availablePositions;
+        }
+
+        public List<Vector2Int> PlaceAlgorithm(GenTileRoomObjectType type, GenTileAlgorithm algorithm, GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
+        {
+            byte value = 1;
+            byte[,] map = new byte[Size.x, Size.y];
+            map = algorithm.Execute(map, value, random.Next(int.MinValue, int.MaxValue));
+            List<Vector2Int> worldPositions = availablePositions.ToList();
+            foreach (var worldPosition in worldPositions)
+            {
+                Vector2Int roomPosition = worldPosition - new Vector2Int(Position.x, Position.y);
+                if (map[roomPosition.x, roomPosition.y] == value)
+                {
+                    availablePositions.Remove(roomPosition);
+                    genTile.Tilemap[(int) algorithm.Type].SetTile(new Vector3Int(worldPosition.x, worldPosition.y, 0), algorithm.Tile);
+                    switch (type)
+                    {
+                        case GenTileRoomObjectType.Door:
+                            PlacedDoors.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            break;
+                        case GenTileRoomObjectType.Wall:
+                            PlacedWalls.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            break;
+                        case GenTileRoomObjectType.Balcony:
+                            PlacedBalcony.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            break;
+                        case GenTileRoomObjectType.Object:
+                            PlacedObjects.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                    }
+                }
+            }
+            return availablePositions;
+        }
+
+        public List<Vector2Int> ReplaceFloor(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
             if (Type.Floor.Count > 0)
             {
                 Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Terrain];
                 TileBase floor = Type.Floor[random.Next(Type.Floor.Count)];
-                foreach (var pos in availablePositions)
-                {
-                    tilemap.SetTile(pos, floor);
-                }
+                foreach (var pos in availablePositions) tilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), floor);
             }
-
             return availablePositions;
         }
 
-        public List<Vector3Int> PlaceDoors(GenTile genTile, List<Vector3Int> availablePositions, System.Random random, bool placeDoorInsideRoom)
+        public List<Vector2Int> PlaceDoors(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
             if (Type.Doors.Count > 0)
             {
@@ -79,41 +126,18 @@ namespace GenTools
                 TileBase door = Type.Doors[random.Next(Type.Doors.Count)];
                 foreach (var tunnel in PlacedTunnels)
                 {
-                    Vector3Int originPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
-                    availablePositions.Remove(originPosition);
-                    if (placeDoorInsideRoom)
+                    availablePositions.Remove(tunnel.OriginPoint);
+                    if (Type.PlaceDoorsInsideRoom)
                     {
-                        Vector3Int doorPosition = originPosition;
+                        Vector3Int doorPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
                         tilemap.SetTile(doorPosition, door);
-                        PlacedDoors.Add(new GenTileObject(door, doorPosition));
+                        PlacedDoors.Add(new GenTileObject(door, tunnel.OriginPoint));
                     }
                     else
                     {
                         Vector3Int doorPosition = new Vector3Int(tunnel.Positions[0].x, tunnel.Positions[0].y, 0);
                         tilemap.SetTile(doorPosition, door);
-                        PlacedDoors.Add(new GenTileObject(door, doorPosition));
-                    }
-                }
-            }
-            return availablePositions;
-        }
-
-        public List<Vector3Int> PlaceWalls(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
-        {
-            byte value = 1;
-            byte[,] map = new byte[Size.x, Size.y];
-            foreach (var algo in Type.Walls)
-            {
-                map = algo.Execute(map, value, random.Next(int.MinValue, int.MaxValue));
-                List<Vector3Int> worldPositions = availablePositions.ToList();
-                foreach (var worldPosition in worldPositions)
-                {
-                    Vector3Int roomPosition = worldPosition - new Vector3Int(Position.x, Position.y, 0);
-                    if (map[roomPosition.x, roomPosition.y] == value)
-                    {
-                        availablePositions.Remove(roomPosition);
-                        genTile.Tilemap[(int) algo.Type].SetTile(worldPosition, algo.Tile);
-                        PlacedWalls.Add(new GenTileObject(algo.Tile, roomPosition));
+                        PlacedDoors.Add(new GenTileObject(door, tunnel.Positions[0]));
                     }
                 }
             }
@@ -125,10 +149,10 @@ namespace GenTools
             List<GenTileObjectData> toPlace = new();
         }
 
-        public List<Vector3Int> PlaceObjects(GenTile genTile, List<Vector3Int> availablePositions, GenTileRoom room, System.Random random)
+        public List<Vector2Int> PlaceObjects(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
             List<GenTileObjectData> toPlace = new();
-            List<Vector3Int> possiblePosition = new();
+            List<Vector2Int> possiblePosition = new();
 
             if (Type.Objects.Count > 0)
             {
@@ -148,31 +172,29 @@ namespace GenTools
                         obj = priority[0];
                         priority.RemoveAt(0);
                     }
-                    List<Vector3Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
+                    List<Vector2Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
                     switch (obj.PlacementRules)
                     {
                         case GenTilePlacementRules.Any:
                             break;
                         case GenTilePlacementRules.Inner:
-                            iterPositions = iterPositions.Where(x => x.x != room.Position.x && x.x != (room.Position.x + room.Size.x - 1) && x.y != room.Position.y && x.y != (room.Position.y + room.Size.y - 1)).ToList();
+                            iterPositions = iterPositions.Where(x => x.x != Position.x && x.x != (Position.x + Size.x - 1) && x.y != Position.y && x.y != (Position.y + Size.y - 1)).ToList();
                             break;
                         case GenTilePlacementRules.Outer:
-                            iterPositions = iterPositions.Where(x => x.x == room.Position.x || x.x == (room.Position.x + room.Size.x - 1) || x.y == room.Position.y || x.y == (room.Position.y + room.Size.y - 1)).ToList();
+                            iterPositions = iterPositions.Where(x => x.x == Position.x || x.x == (Position.x + Size.x - 1) || x.y == Position.y || x.y == (Position.y + Size.y - 1)).ToList();
                             break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
                     }
                     if (iterPositions.Count == 0) continue;
 
-                    Vector3Int pos = iterPositions[0];
+                    Vector3Int pos = new Vector3Int(iterPositions[0].x, iterPositions[0].y, 0);
                     if (tilemap.GetTile(pos) != null) continue;
                     if (random.Next(0, 100) < obj.Chance)
                     {
-                        possiblePosition.Remove(pos);
-                        availablePositions.Remove(pos);
+                        possiblePosition.Remove(iterPositions[0]);
+                        availablePositions.Remove(iterPositions[0]);
                         TileBase tile = obj.Tile[random.Next(obj.Tile.Count)];
                         tilemap.SetTile(pos, tile);
-                        PlacedObjects.Add(new GenTileObject(tile, pos));
+                        PlacedObjects.Add(new GenTileObject(tile, iterPositions[0]));
                         priority.AddRange(obj.Recursion);
                         // Tilegen.CollisionMap[pos.x, pos.y] = true;
                     }

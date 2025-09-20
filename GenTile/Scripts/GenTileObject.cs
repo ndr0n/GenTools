@@ -16,9 +16,9 @@ namespace GenTools
     public struct GenTileObject
     {
         public TileBase Tile;
-        public Vector3Int Position;
+        public Vector2Int Position;
 
-        public GenTileObject(TileBase tile, Vector3Int position)
+        public GenTileObject(TileBase tile, Vector2Int position)
         {
             Tile = tile;
             Position = position;

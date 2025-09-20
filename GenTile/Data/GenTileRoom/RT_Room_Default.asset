@@ -23,7 +23,7 @@ MonoBehaviour:
   Walls:
   - Tile: {fileID: 11400000, guid: 1afa52c6ef077b6c38688d878b0210c4, type: 2}
     Type: 2
-    Offset: {x: 1, y: 1}
+    Offset: {x: 0, y: 0}
     Algorithm:
     - Algorithm: 9
       FillPercentage: {x: 0, y: 0}
@@ -52,9 +52,69 @@ MonoBehaviour:
       N: {x: 3, y: 3}
       Symmetry: {x: 1, y: 1}
       Iterations: {x: 100, y: 100}
+      Invert: 1
+  Balcony:
+  - Tile: {fileID: 11400000, guid: 035e368e07182c14da14a2f6bf47d486, type: 2}
+    Type: 1
+    Offset: {x: 0, y: 0}
+    Algorithm:
+    - Algorithm: 8
+      FillPercentage: {x: 25, y: 25}
+      DegradePercentage: {x: 0, y: 0}
+      Size: {x: 50, y: 50}
+      PerlinNoiseModifier: {x: 1, y: 100}
+      PathWidth: {x: 0, y: 0}
+      XBeginPercent: {x: 0, y: 0}
+      XFinishPercent: {x: 0, y: 0}
+      YBeginPercent: {x: 0, y: 0}
+      YFinishPercent: {x: 0, y: 0}
+      TunnelerLifetime: {x: 50, y: 50}
+      TunnelerChangePercentage: {x: 25, y: 25}
+      TunnelerWidth: {x: 1, y: 1}
+      TunnelerOverlap: 0
+      RoomerChance: {x: 0, y: 0}
+      RoomerWidth: {x: 0, y: 0}
+      RoomerHeight: {x: 0, y: 0}
+      Percentage: {x: 100, y: 100}
+      Offset: {x: 0, y: 0}
+      MinRoomWidth: {x: 1, y: 2}
+      MinRoomHeight: {x: 1, y: 2}
+      OuterWall: 1
+      WallPercentage: {x: 0, y: 0}
+      InputTexture: {fileID: 0}
+      N: {x: 0, y: 0}
+      Symmetry: {x: 0, y: 0}
+      Iterations: {x: 0, y: 0}
+      Invert: 0
+    - Algorithm: 5
+      FillPercentage: {x: 25, y: 25}
+      DegradePercentage: {x: 0, y: 0}
+      Size: {x: 50, y: 50}
+      PerlinNoiseModifier: {x: 1, y: 100}
+      PathWidth: {x: 0, y: 0}
+      XBeginPercent: {x: 0, y: 0}
+      XFinishPercent: {x: 0, y: 0}
+      YBeginPercent: {x: 0, y: 0}
+      YFinishPercent: {x: 0, y: 0}
+      TunnelerLifetime: {x: 50, y: 50}
+      TunnelerChangePercentage: {x: 25, y: 25}
+      TunnelerWidth: {x: 1, y: 1}
+      TunnelerOverlap: 1
+      RoomerChance: {x: 0, y: 0}
+      RoomerWidth: {x: 0, y: 0}
+      RoomerHeight: {x: 0, y: 0}
+      Percentage: {x: 100, y: 100}
+      Offset: {x: 0, y: 0}
+      MinRoomWidth: {x: 1, y: 2}
+      MinRoomHeight: {x: 1, y: 2}
+      OuterWall: 1
+      WallPercentage: {x: 100, y: 100}
+      InputTexture: {fileID: 0}
+      N: {x: 0, y: 0}
+      Symmetry: {x: 0, y: 0}
+      Iterations: {x: 0, y: 0}
       Invert: 0
   Objects: []
-  ObjectsAlgorithm: []
   TunnelTile: {fileID: 11400000, guid: bbb4b5a53d3e5ed2495fc5adec4eb950, type: 2}
   PlaceDoorsInsideRoom: 1
   TunnelAmount: {x: 4, y: 4}

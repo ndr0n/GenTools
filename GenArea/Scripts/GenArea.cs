@@ -85,7 +85,8 @@ namespace GenTools
                 GenRoom room = await BuildRoomFromTileRoom(tileRoom, 0);
                 await BuildDoorsFromTileRoom(room, tileRoom, 0);
                 await GenTunnel.BuildTunnelsFromTileRoom(random, room, tileRoom, 0);
-                await BuildWallsFromTileRoom(room, tileRoom, Size.y);
+                await BuildWallsFromTileRoom(room, tileRoom, 1);
+                await BuildBalconyFromTileRoom(room, tileRoom);
             }
 
             // Build Tunnel
@@ -124,7 +125,7 @@ namespace GenTools
             foreach (var wall in tileRoom.PlacedWalls)
             {
                 Vector3Int pos = new Vector3Int(wall.Position.x, 0, wall.Position.y);
-                GenRoomNode node = nodes.FirstOrDefault(x => x.Floor != null && x.Position == pos);
+                GenRoomNode node = nodes.FirstOrDefault(x => x.Floor != null && x.Position == pos && x.Object == null && x.Wall.Where(w => w != null).ToList().Count < 2);
                 if (node != null)
                 {
                     dirIter = dirIter.OrderBy(x => random.Next()).ToList();
@@ -143,6 +144,26 @@ namespace GenTools
                             break;
                         }
                     }
+                }
+            }
+        }
+
+        async Awaitable BuildBalconyFromTileRoom(GenRoom room, GenTileRoom tileRoom)
+        {
+            List<GenRoomNode> nodes = room.GetAllNodes();
+            GameObject floorPreset = room.Preset.Floor[random.Next(0, room.Preset.Floor.Count)];
+            foreach (var balcony in tileRoom.PlacedBalcony)
+            {
+                Vector3Int pos = new Vector3Int(balcony.Position.x, 1, balcony.Position.y);
+                GenRoomNode node = nodes.FirstOrDefault(x => x.Floor == null && x.Position == pos);
+                if (node != null)
+                {
+                    Vector3 worldPosition = new Vector3(pos.x * room.Preset.TileSize.x, pos.y * room.Preset.TileSize.y, pos.z * room.Preset.TileSize.z);
+                    GameObject spawn = Instantiate(floorPreset, room.Content);
+                    spawn.transform.localPosition = worldPosition;
+                    spawn.transform.rotation = Quaternion.identity;
+                    node.Floor = spawn;
+                    await room.Await();
                 }
             }
         }

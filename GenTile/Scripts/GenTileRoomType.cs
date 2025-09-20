@@ -18,8 +18,8 @@ namespace GenTools
         public List<TileBase> Floor = new();
         public List<TileBase> Doors = new();
         public List<GenTileAlgorithm> Walls = new();
+        public List<GenTileAlgorithm> Balcony = new();
         public List<GenTileObjectData> Objects = new();
-        public List<GenTileAlgorithm> ObjectsAlgorithm = new();
 
         [Header("Tunneling")]
         public TileBase TunnelTile;

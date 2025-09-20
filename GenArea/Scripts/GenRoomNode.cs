@@ -12,7 +12,7 @@ namespace GenTools
         public GameObject Roof;
         public GameObject Object;
         public List<GameObject> Wall = new() {null, null, null, null};
-
+        
         public GenRoomNode(Vector3Int position)
         {
             Position = position;

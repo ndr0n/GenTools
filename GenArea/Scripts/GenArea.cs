@@ -173,6 +173,7 @@ namespace GenTools
         public async Awaitable BuildBalconyWallsFromTileRoom(GenRoom room, GenTileRoom tileRoom)
         {
             GameObject wallPreset = room.Preset.InnerWall[random.Next(room.Preset.InnerWall.Count)];
+            GameObject railPreset = room.Preset.Rail[random.Next(0, room.Preset.Rail.Count)];
             List<GenRoomNode> nodes = room.GetAllNodes().OrderBy(y => random.Next()).ToList();
             List<GenRoomNode> balconyNodes = nodes.Where(x => x.Position.y > 0 && x.Floor != null).OrderBy(y => random.Next()).ToList();
             foreach (var node in balconyNodes)
@@ -210,8 +211,16 @@ namespace GenTools
                             if (iterNode == null) continue;
                             Vector3 position = new Vector3(iterNode.Position.x * room.Preset.TileSize.x, iterNode.Position.y * room.Preset.TileSize.y, iterNode.Position.z * room.Preset.TileSize.z);
                             Vector3 pos = position + (directions[direction] / 2f);
-                            if (CanBuildWall(room, iterNode, direction) == false) continue;
-                            GameObject wall = Instantiate(wallPreset, room.Content.transform);
+                            GameObject preset = wallPreset;
+                            if (y == 0)
+                            {
+                                if (CanBuildWall(room, iterNode, direction) == false) continue;
+                            }
+                            else
+                            {
+                                if (CanBuildWall(room, iterNode, direction) == false) preset = railPreset;
+                            }
+                            GameObject wall = Instantiate(preset, room.Content.transform);
                             wall.transform.localPosition = pos;
                             wall.transform.localRotation = Quaternion.Euler(0, direction * 90, 0);
                             iterNode.Wall[direction] = wall;
@@ -224,47 +233,39 @@ namespace GenTools
 
         public bool CanBuildWall(GenRoom room, GenRoomNode node, int direction)
         {
-            // List<GenRoomNode> nodes = room.GetAllNodes().OrderBy(y => random.Next()).ToList();
-            // if (nodes.FirstOrDefault(n => n.Wall.Exists(wall => wall.transform.position == wallPosition)) != null) return false;
-            // if (room.Node.Where(n => ))
-            // {
-
-            // }
             if (node.Wall[direction] != null) return false;
             int count = 0;
             for (int d = 0; d < node.Wall.Count; d++)
             {
                 if (node.Wall[d] != null) count++;
             }
+
             if (node.Position.x > 0)
             {
-                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x - 1][node.Position.z];
-                if (testNode.Wall[(int) CardinalDirection.West] != null) count++;
+                GenRoomNode westNode = room.Node[node.Position.y][node.Position.x - 1][node.Position.z];
+                if (westNode.Wall[(int) CardinalDirection.East] != null) count++;
             }
-            // else count++;
 
             if (node.Position.x < room.Node[0].Count - 1)
             {
-                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x + 1][node.Position.z];
-                if (testNode.Wall[(int) CardinalDirection.East] != null) count++;
+                GenRoomNode eastNode = room.Node[node.Position.y][node.Position.x + 1][node.Position.z];
+                if (eastNode.Wall[(int) CardinalDirection.West] != null) count++;
             }
-            // else count++;
 
             if (node.Position.z > 0)
             {
-                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x][node.Position.z - 1];
-                if (testNode.Wall[(int) CardinalDirection.South] != null) count++;
+                GenRoomNode southNode = room.Node[node.Position.y][node.Position.x][node.Position.z - 1];
+                if (southNode.Wall[(int) CardinalDirection.North] != null) count++;
             }
-            // else count++;
 
             if (node.Position.z < room.Node[0][0].Count - 1)
             {
-                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x][node.Position.z + 1];
-                if (testNode.Wall[(int) CardinalDirection.North] != null) count++;
+                GenRoomNode northNode = room.Node[node.Position.y][node.Position.x][node.Position.z + 1];
+                if (northNode.Wall[(int) CardinalDirection.South] != null) count++;
             }
-            // else count++;
 
-            if (count >= 2) return false;
+            if (count >= 1) return false;
+
             return true;
         }
 

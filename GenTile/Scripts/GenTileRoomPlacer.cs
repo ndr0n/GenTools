@@ -175,8 +175,8 @@ namespace GenTools
                 availablePositions = room.ReplaceFloor(GenTile, availablePositions, random);
                 availablePositions = room.PlaceDoors(GenTile, availablePositions, random, room.Type.PlaceDoorsInsideRoom);
                 availablePositions = room.PlaceWalls(GenTile, availablePositions, random);
-                // availablePositions = room.PlaceStairs();
                 availablePositions = room.PlaceObjects(GenTile, availablePositions, room, random);
+                // availablePositions = room.PlaceStairs();
             }
         }
 

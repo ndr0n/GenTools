@@ -45,7 +45,7 @@ namespace GenTools
 
         public List<byte[,]> Map = new();
         public bool[,] CollisionMap = new bool[0, 0];
-        readonly List<TileBase> tiles = new();
+        public readonly List<TileBase> tiles = new();
         readonly List<GenTileLayerData> layerData = new();
 
         [HideInInspector] public GenTilePreset Preset;
@@ -101,45 +101,7 @@ namespace GenTools
                     byte value = (byte) tiles.IndexOf(iter.Tile);
                     int seed = random.Next(int.MinValue, int.MaxValue);
                     int type = (int) iter.Type;
-
-                    foreach (var algorithm in iter.Algorithm)
-                    {
-                        switch (algorithm.Algorithm)
-                        {
-                            case GenTileAlgorithmType.Fill:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Fill(layerData[layer].Map[type], value, seed, algorithm.FillPercentage);
-                                break;
-                            case GenTileAlgorithmType.Degrade:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Degrade(layerData[layer].Map[type], value, seed, algorithm.DegradePercentage);
-                                break;
-                            case GenTileAlgorithmType.RandomWalk:
-                                layerData[layer].Map[type] = GenTileAlgorithm.RandomWalk(layerData[layer].Map[type], value, seed, algorithm.Size);
-                                break;
-                            case GenTileAlgorithmType.PerlinNoise:
-                                layerData[layer].Map[type] = GenTileAlgorithm.PerlinNoise(layerData[layer].Map[type], value, seed, algorithm.PerlinNoiseModifier);
-                                break;
-                            case GenTileAlgorithmType.Tunnel:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Tunnel(layerData[layer].Map[type], value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
-                                break;
-                            case GenTileAlgorithmType.Tunneler:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Tunneler(layerData[layer].Map[type], value, seed, algorithm.TunnelerLifetime, algorithm.TunnelerChangePercentage, algorithm.TunnelerWidth, algorithm.TunnelerOverlap);
-                                break;
-                            case GenTileAlgorithmType.Roomer:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Roomer(layerData[layer].Map[type], value, seed, algorithm.RoomerChance, algorithm.RoomerWidth, algorithm.RoomerHeight);
-                                break;
-                            case GenTileAlgorithmType.BinarySpacePartition:
-                                layerData[layer].Map[type] = GenTileAlgorithm.BinarySpacePartition(layerData[layer].Map[type], value, seed, algorithm.Percentage, algorithm.Offset, algorithm.MinRoomWidth, algorithm.MinRoomHeight);
-                                break;
-                            case GenTileAlgorithmType.Walls:
-                                layerData[layer].Map[type] = GenTileAlgorithm.Walls(layerData[layer].Map[type], value, seed, algorithm.WallPercentage, algorithm.OuterWall);
-                                break;
-                            case GenTileAlgorithmType.WaveFunctionCollapse:
-                                layerData[layer].Map[type] = GenTileAlgorithm.WFC_Overlapping(layerData[layer].Map[type], value, seed, algorithm.Invert, algorithm.InputTexture, algorithm.N, algorithm.Symmetry, algorithm.Iterations);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
+                    layerData[layer].Map[type] = iter.Execute(layerData[layer].Map[type], value, seed);
                 }
             }
         }

@@ -7,7 +7,7 @@ namespace GenTools
     [System.Serializable]
     public struct TilegenLayer
     {
-        public List<GenTileIteration> Iterations;
+        public List<GenTileAlgorithm> Iterations;
     }
 
     [System.Serializable]

@@ -28,8 +28,8 @@ namespace GenTools
     [System.Serializable]
     public class GenTileWallData
     {
-        public int Chance = 100;
-        public List<TileBase> Tile = new();
+        // public int Chance = 100;
+        public List<GenTileAlgorithm> Algorithm = new();
     }
 
     [System.Serializable]

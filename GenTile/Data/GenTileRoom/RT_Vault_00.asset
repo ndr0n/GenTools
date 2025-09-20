@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 758cf2ccf13a4ae6a34a37b0288688e1, type: 3}
   m_Name: RT_Vault_00
   m_EditorClassIdentifier: Assembly-CSharp::GenTools.TileRoomType
-  RoomSprite:
-  - {fileID: -663168308, guid: a8066c32a87dc11499b55f30c5ae2fa8, type: 3}
+  RoomTile:
+  - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
   MinSize: {x: 1, y: 1}
   MaxSize: {x: 128, y: 128}
   Floor:
-  - {fileID: 11400000, guid: df5922690bf900981b65e38007cd0491, type: 2}
+  - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
   Doors:
   - {fileID: 11400000, guid: dd7ae445d0e16131d8733935321bc475, type: 2}
   Walls: []
+  WallAlgorithm: []
   Objects:
   - Amount: 10
     Chance: 100
@@ -28,7 +29,8 @@ MonoBehaviour:
     Tile:
     - {fileID: 11400000, guid: b6310488849e2a8a696a36663907763f, type: 2}
     Recursion: []
-  TunnelTile: {fileID: 11400000, guid: 405282794da5d054191f1ffac454d392, type: 2}
-  PlaceDoorsInsideRoom: 0
+  ObjectsAlgorithm: []
+  TunnelTile: {fileID: 11400000, guid: bbb4b5a53d3e5ed2495fc5adec4eb950, type: 2}
+  PlaceDoorsInsideRoom: 1
   TunnelAmount: {x: 4, y: 4}
-  TunnelingAlgorithm: 1
+  TunnelingAlgorithm: 0

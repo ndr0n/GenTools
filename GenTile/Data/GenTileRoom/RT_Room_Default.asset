@@ -20,8 +20,41 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
   Doors:
   - {fileID: 11400000, guid: dd7ae445d0e16131d8733935321bc475, type: 2}
-  Walls: []
+  Walls:
+  - Tile: {fileID: 11400000, guid: 1afa52c6ef077b6c38688d878b0210c4, type: 2}
+    Type: 2
+    Offset: {x: 1, y: 1}
+    Algorithm:
+    - Algorithm: 9
+      FillPercentage: {x: 0, y: 0}
+      DegradePercentage: {x: 0, y: 0}
+      Size: {x: 0, y: 0}
+      PerlinNoiseModifier: {x: 0, y: 0}
+      PathWidth: {x: 0, y: 0}
+      XBeginPercent: {x: 0, y: 0}
+      XFinishPercent: {x: 0, y: 0}
+      YBeginPercent: {x: 0, y: 0}
+      YFinishPercent: {x: 0, y: 0}
+      TunnelerLifetime: {x: 0, y: 0}
+      TunnelerChangePercentage: {x: 0, y: 0}
+      TunnelerWidth: {x: 0, y: 0}
+      TunnelerOverlap: 0
+      RoomerChance: {x: 0, y: 0}
+      RoomerWidth: {x: 0, y: 0}
+      RoomerHeight: {x: 0, y: 0}
+      Percentage: {x: 0, y: 0}
+      Offset: {x: 0, y: 0}
+      MinRoomWidth: {x: 0, y: 0}
+      MinRoomHeight: {x: 0, y: 0}
+      OuterWall: 0
+      WallPercentage: {x: 0, y: 0}
+      InputTexture: {fileID: 2800000, guid: 88bdec7a10feaf6f2b1285d909806bf7, type: 3}
+      N: {x: 3, y: 3}
+      Symmetry: {x: 1, y: 1}
+      Iterations: {x: 100, y: 100}
+      Invert: 0
   Objects: []
+  ObjectsAlgorithm: []
   TunnelTile: {fileID: 11400000, guid: bbb4b5a53d3e5ed2495fc5adec4eb950, type: 2}
   PlaceDoorsInsideRoom: 1
   TunnelAmount: {x: 4, y: 4}

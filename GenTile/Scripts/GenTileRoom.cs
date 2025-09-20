@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
@@ -99,59 +100,23 @@ namespace GenTools
 
         public List<Vector3Int> PlaceWalls(GenTile genTile, List<Vector3Int> availablePositions, System.Random random)
         {
-            List<Vector3Int> possiblePosition = new();
-            for (int x = 0; x < (Size.x); x++)
+            byte value = 1;
+            byte[,] map = new byte[Size.x, Size.y];
+            foreach (var algo in Type.Walls)
             {
-                int posx = x + Position.x;
-                Vector3Int pos1 = new Vector3Int(posx, Position.y, 0);
-                if (availablePositions.Contains(pos1)) possiblePosition.Add(pos1);
-                int posy = Size.y + Position.y - 1;
-                Vector3Int pos2 = new Vector3Int(posx, posy, 0);
-                if (availablePositions.Contains(pos2)) possiblePosition.Add(pos2);
-            }
-            for (int y = 0; y < (Size.y); y++)
-            {
-                int posy = y + Position.y;
-                Vector3Int pos1 = new Vector3Int(Position.x, posy, 0);
-                if (availablePositions.Contains(pos1)) possiblePosition.Add(pos1);
-                int posx = Size.x + Position.x - 1;
-                Vector3Int pos2 = new Vector3Int(posx, posy, 0);
-                if (availablePositions.Contains(pos2)) possiblePosition.Add(pos2);
-            }
-
-            List<GenTileWallData> wallsToPlace = new();
-            foreach (var wall in Type.Walls)
-            {
-                for (int i = 0; i < possiblePosition.Count; i++) wallsToPlace.Add(wall);
-            }
-            List<Vector3Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
-
-            if (wallsToPlace.Count > 0)
-            {
-                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Terrain];
-                foreach (var pos in iterPositions)
+                map = algo.Execute(map, value, random.Next(int.MinValue, int.MaxValue));
+                List<Vector3Int> worldPositions = availablePositions.ToList();
+                foreach (var worldPosition in worldPositions)
                 {
-                    GenTileWallData wall = null;
-                    if (wallsToPlace.Count > 0)
+                    Vector3Int roomPosition = worldPosition - new Vector3Int(Position.x, Position.y, 0);
+                    if (map[roomPosition.x, roomPosition.y] == value)
                     {
-                        int index = random.Next(0, wallsToPlace.Count);
-                        wall = wallsToPlace[index];
-                        wallsToPlace.RemoveAt(index);
-                    }
-                    if (wall != null)
-                    {
-                        if (random.Next(0, 100) < wall.Chance)
-                        {
-                            possiblePosition.Remove(pos);
-                            availablePositions.Remove(pos);
-                            TileBase tile = wall.Tile[random.Next(wall.Tile.Count)];
-                            tilemap.SetTile(pos, tile);
-                            PlacedWalls.Add(new GenTileObject(tile, pos));
-                        }
+                        availablePositions.Remove(roomPosition);
+                        genTile.Tilemap[(int) algo.Type].SetTile(worldPosition, algo.Tile);
+                        PlacedWalls.Add(new GenTileObject(algo.Tile, roomPosition));
                     }
                 }
             }
-
             return availablePositions;
         }
 

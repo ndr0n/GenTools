@@ -203,7 +203,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
-                            node.Wall[(int) CardinalDirection.South] = wall;
+                            node.Wall[(int) CardinalDirection.North] = wall;
                         }
                     }
                 }
@@ -217,7 +217,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
-                            node.Wall[(int) CardinalDirection.North] = wall;
+                            node.Wall[(int) CardinalDirection.South] = wall;
                         }
                     }
                 }
@@ -231,7 +231,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
-                            node.Wall[(int) CardinalDirection.West] = wall;
+                            node.Wall[(int) CardinalDirection.East] = wall;
                         }
                     }
                 }
@@ -245,7 +245,7 @@ namespace GenTools
                             GameObject wall = Object.Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
                             wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.West * 90, 0);
-                            node.Wall[(int) CardinalDirection.East] = wall;
+                            node.Wall[(int) CardinalDirection.West] = wall;
                         }
                     }
                 }

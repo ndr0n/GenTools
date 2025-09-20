@@ -85,8 +85,9 @@ namespace GenTools
                 GenRoom room = await BuildRoomFromTileRoom(tileRoom, 0);
                 await BuildDoorsFromTileRoom(room, tileRoom, 0);
                 await GenTunnel.BuildTunnelsFromTileRoom(random, room, tileRoom, 0);
-                await BuildWallsFromTileRoom(room, tileRoom, 1);
+                // await BuildWallsFromTileRoom(room, tileRoom, 1);
                 await BuildBalconyFromTileRoom(room, tileRoom);
+                await BuildBalconyWallsFromTileRoom(room, tileRoom);
             }
 
             // Build Tunnel
@@ -118,6 +119,7 @@ namespace GenTools
 
         async Awaitable BuildWallsFromTileRoom(GenRoom room, GenTileRoom tileRoom, int height)
         {
+            int h = 0;
             List<GenRoomNode> nodes = room.GetAllNodes();
             GameObject wallPreset = room.Preset.InnerWall[random.Next(0, room.Preset.InnerWall.Count)];
             List<Vector2Int> directions = new() {Vector2Int.down, Vector2Int.left, Vector2Int.up, Vector2Int.right};
@@ -133,13 +135,13 @@ namespace GenTools
                     {
                         if (node.Wall[i] == null)
                         {
-                            for (int h = 0; h < height; h++)
-                            {
-                                GameObject spawn = Instantiate(wallPreset, room.Content);
-                                spawn.transform.position = node.Floor.transform.position + new Vector3(directions[i].x * (room.Preset.TileSize.x / 2f), h * room.Preset.TileSize.y, directions[i].y * (room.Preset.TileSize.z / 2f));
-                                spawn.transform.rotation = Quaternion.Euler(0, 90 * i, 0);
-                                if (h == 0) node.Wall[i] = spawn;
-                            }
+                            // for (int h = 0; h < height; h++)
+                            // {
+                            GameObject spawn = Instantiate(wallPreset, room.Content);
+                            spawn.transform.position = node.Floor.transform.position + new Vector3(directions[i].x * (room.Preset.TileSize.x / 2f), h * room.Preset.TileSize.y, directions[i].y * (room.Preset.TileSize.z / 2f));
+                            spawn.transform.rotation = Quaternion.Euler(0, 90 * i, 0);
+                            node.Wall[i] = spawn;
+                            // }
                             await room.Await();
                             break;
                         }
@@ -168,14 +170,112 @@ namespace GenTools
             }
         }
 
+        public async Awaitable BuildBalconyWallsFromTileRoom(GenRoom room, GenTileRoom tileRoom)
+        {
+            GameObject wallPreset = room.Preset.InnerWall[random.Next(room.Preset.InnerWall.Count)];
+            List<GenRoomNode> nodes = room.GetAllNodes().OrderBy(y => random.Next()).ToList();
+            List<GenRoomNode> balconyNodes = nodes.Where(x => x.Position.y > 0 && x.Floor != null).OrderBy(y => random.Next()).ToList();
+            foreach (var node in balconyNodes)
+            {
+                List<GenRoomNode> adjacentFloors = new() {null, null, null, null};
+                foreach (var adj in balconyNodes)
+                {
+                    if (adj.Position == new Vector3(node.Position.x, node.Position.y, node.Position.z + 1))
+                    {
+                        adjacentFloors[(int) CardinalDirection.North] = adj;
+                    }
+                    else if (adj.Position == new Vector3(node.Position.x, node.Position.y, node.Position.z - 1))
+                    {
+                        adjacentFloors[(int) CardinalDirection.South] = adj;
+                    }
+                    else if (adj.Position == new Vector3(node.Position.x - 1, node.Position.y, node.Position.z))
+                    {
+                        adjacentFloors[(int) CardinalDirection.West] = adj;
+                    }
+                    else if (adj.Position == new Vector3(node.Position.x + 1, node.Position.y, node.Position.z))
+                    {
+                        adjacentFloors[(int) CardinalDirection.East] = adj;
+                    }
+                }
+
+                List<Vector3> directions = new() {Vector3.back * room.Preset.TileSize.z, Vector3.left * room.Preset.TileSize.x, Vector3.forward * room.Preset.TileSize.z, Vector3.right * room.Preset.TileSize.x};
+                for (int direction = 0; direction < 4; direction++)
+                {
+                    if (adjacentFloors[direction] == null)
+                    {
+                        for (int y = 0; y < Size.y; y++)
+                        {
+                            Vector3Int testPosition = new Vector3Int(node.Position.x, y, node.Position.z);
+                            GenRoomNode iterNode = nodes.FirstOrDefault(n => n.Position == testPosition && n.Object == null);
+                            if (iterNode == null) continue;
+                            Vector3 position = new Vector3(iterNode.Position.x * room.Preset.TileSize.x, iterNode.Position.y * room.Preset.TileSize.y, iterNode.Position.z * room.Preset.TileSize.z);
+                            Vector3 pos = position + (directions[direction] / 2f);
+                            if (CanBuildWall(room, iterNode, direction) == false) continue;
+                            GameObject wall = Instantiate(wallPreset, room.Content.transform);
+                            wall.transform.localPosition = pos;
+                            wall.transform.localRotation = Quaternion.Euler(0, direction * 90, 0);
+                            iterNode.Wall[direction] = wall;
+                        }
+                    }
+                }
+                await room.Await();
+            }
+        }
+
+        public bool CanBuildWall(GenRoom room, GenRoomNode node, int direction)
+        {
+            // List<GenRoomNode> nodes = room.GetAllNodes().OrderBy(y => random.Next()).ToList();
+            // if (nodes.FirstOrDefault(n => n.Wall.Exists(wall => wall.transform.position == wallPosition)) != null) return false;
+            // if (room.Node.Where(n => ))
+            // {
+
+            // }
+            if (node.Wall[direction] != null) return false;
+            int count = 0;
+            for (int d = 0; d < node.Wall.Count; d++)
+            {
+                if (node.Wall[d] != null) count++;
+            }
+            if (node.Position.x > 0)
+            {
+                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x - 1][node.Position.z];
+                if (testNode.Wall[(int) CardinalDirection.West] != null) count++;
+            }
+            // else count++;
+
+            if (node.Position.x < room.Node[0].Count - 1)
+            {
+                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x + 1][node.Position.z];
+                if (testNode.Wall[(int) CardinalDirection.East] != null) count++;
+            }
+            // else count++;
+
+            if (node.Position.z > 0)
+            {
+                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x][node.Position.z - 1];
+                if (testNode.Wall[(int) CardinalDirection.South] != null) count++;
+            }
+            // else count++;
+
+            if (node.Position.z < room.Node[0][0].Count - 1)
+            {
+                GenRoomNode testNode = room.Node[node.Position.y][node.Position.x][node.Position.z + 1];
+                if (testNode.Wall[(int) CardinalDirection.North] != null) count++;
+            }
+            // else count++;
+
+            if (count >= 2) return false;
+            return true;
+        }
+
         async Awaitable BuildDoorsFromTileRoom(GenRoom room, GenTileRoom tileRoom, int y)
         {
+            List<GenRoomNode> nodes = room.GetAllNodes();
             GameObject outerDoorPreset = room.Preset.OuterDoor[random.Next(0, room.Preset.OuterDoor.Count)];
             foreach (var door in tileRoom.PlacedDoors)
             {
                 Vector3 doorPosition = new Vector3(door.Position.x * room.TileSize.x, y * room.TileSize.y, door.Position.y * room.TileSize.z);
                 doorPosition += room.Content.localPosition;
-                List<GenRoomNode> nodes = room.GetAllNodes();
                 GenRoomNode node = nodes.FirstOrDefault(x => x.Floor.transform.position == doorPosition);
                 if (node != null)
                 {
@@ -190,6 +290,7 @@ namespace GenTools
                             room.OuterDoor.Add(outerDoor);
                             GenTunnel.TunnelDoors.Add(outerDoor);
                             node.Object = outerDoor;
+                            node.Wall[direction] = outerDoor;
                             DestroyImmediate(wall);
                             await room.Await();
                             break;

@@ -96,7 +96,18 @@ namespace GenTools
             if (TunnelPreset.Count > 0)
             {
                 GenTunnel.Build(random, GenTile);
-                GenTunnel.BuildTunnelWalls(random);
+                List<GameObject> roomWalls = new();
+                foreach (var room in InnerRoom)
+                {
+                    foreach (var node in room.GetAllNodes())
+                    {
+                        foreach (var wall in node.Wall)
+                        {
+                            if (wall != null) roomWalls.Add(wall);
+                        }
+                    }
+                }
+                GenTunnel.BuildTunnelWalls(roomWalls, random);
                 await GenTunnel.PlaceTunnelObjects(random);
                 GenTunnel.BuildTunnelPillars(random);
             }

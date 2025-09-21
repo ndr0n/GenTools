@@ -89,7 +89,6 @@ namespace GenTools
 
         public List<Vector3Int> Execute()
         {
-            Debug.Log($"TUNNEL INIT - pos: {initPosition} | direction: {direction}");
             for (int i = 0; i < lifetime; i++)
             {
                 tunnelPositions = Iterate();
@@ -108,7 +107,6 @@ namespace GenTools
                 bool newPosition = false;
                 foreach (var dir in directions)
                 {
-                    Debug.Log($"Try Direction: {dir}.");
                     futurePosition = pos + dir;
                     if (CheckIfPositionAvailable(futurePosition))
                     {
@@ -119,19 +117,15 @@ namespace GenTools
                 }
                 if (newPosition == false)
                 {
-                    Debug.Log($"Tunneler Stuck! pos: {pos} | direction: {direction}");
                     futurePosition = GetNextPosition(pos);
                     if (futurePosition == pos)
                     {
-                        Debug.Log($"Tunneler Died!");
                         return tunnelPositions;
                     }
                 }
-                Debug.Log($"TUNNEL SHIFT - pos: {pos} | direction: {direction}");
             }
             pos = futurePosition;
             if (!tunnelPositions.Contains(pos)) tunnelPositions.Add(pos);
-            Debug.Log($"Tunneler Position: {pos}");
             return tunnelPositions;
         }
 
@@ -142,7 +136,7 @@ namespace GenTools
             return true;
         }
 
-        List<Vector3Int> checkedPosiitions = new();
+        // List<Vector3Int> checkedPosiitions = new();
 
         Vector3Int GetNextPosition(Vector3Int currentPosition)
         {
@@ -150,11 +144,11 @@ namespace GenTools
             if (tunnelPositions.Count > 0)
             {
                 List<Vector3Int> toCheck = tunnelPositions.OrderBy(x => Vector3Int.Distance(targetPositions[0], x)).ToList();
-                foreach (var chkd in checkedPosiitions) toCheck.Remove(chkd);
+                // foreach (var chkd in checkedPosiitions) toCheck.Remove(chkd);
                 if (toCheck.Count > 0)
                 {
                     checkPosition = toCheck[0];
-                    checkedPosiitions.Add(checkPosition);
+                    // checkedPosiitions.Add(checkPosition);
                     if (checkPosition == targetPositions[0])
                     {
                         if (targetPositions.Count > 1) targetPositions.RemoveAt(0);

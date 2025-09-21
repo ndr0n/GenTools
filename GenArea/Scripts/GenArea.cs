@@ -21,10 +21,13 @@ namespace GenTools
 
         public GenTile GenTile;
         public GenRoom GenRoomPrefab;
+        public GenTileRoomType TileRoom;
+        public GenRoomType MainRoomType;
         public GenRoomType InnerRoomType;
         public List<GenRoomPreset> TunnelPreset;
 
         [Header("Runtime")]
+        public GenRoom MainRoom;
         public GenTunnel GenTunnel = new();
         public List<GenRoom> InnerRoom = new();
 
@@ -70,6 +73,26 @@ namespace GenTools
                 GenTile.RandomSeed = false;
                 GenTile.Seed = random.Next(int.MinValue, int.MaxValue);
                 GenTile.Generate();
+            }
+
+            if (MainRoomType != null)
+            {
+                GenTileRoom mainTileRoom = new(TileRoom, new Vector2Int(GenTile.Width, GenTile.Height), new Vector2Int(0, 0));
+                for (int x = 0; x < GenTile.Width; x++)
+                {
+                    for (int y = 0; y < GenTile.Height; y++)
+                    {
+                        foreach (var tile in TileRoom.RoomTile)
+                        {
+                            if (GenTile.Tilemap[0].GetTile(new Vector3Int(x, y, 0)) == tile)
+                            {
+                                mainTileRoom.PlacedFloor.Add(new GenTileObject(tile, new Vector2Int(x, y)));
+                                break;
+                            }
+                        }
+                    }
+                }
+                MainRoom = await BuildRoomFromTileRoom(mainTileRoom, 0);
             }
 
             // Init Tunnel

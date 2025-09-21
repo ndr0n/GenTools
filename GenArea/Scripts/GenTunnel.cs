@@ -170,11 +170,12 @@ namespace GenTools
                     {
                         for (int y = 0; y < Height; y++)
                         {
-                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == position);
+                            Vector3 wallPosition = pos + new Vector3(0, Preset.TileSize.y * y, 0);
+                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == wallPosition);
                             if (wall == null)
                             {
                                 wall = Object.Instantiate(wallPreset, Parent.transform);
-                                wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
+                                wall.transform.position = wallPosition;
                                 wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.North * 90, 0);
                             }
                             node.Wall[(int) CardinalDirection.North] = wall;
@@ -188,11 +189,12 @@ namespace GenTools
                     {
                         for (int y = 0; y < Height; y++)
                         {
-                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == position);
+                            Vector3 wallPosition = pos + new Vector3(0, Preset.TileSize.y * y, 0);
+                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == wallPosition);
                             if (wall == null)
                             {
                                 wall = Object.Instantiate(wallPreset, Parent.transform);
-                                wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
+                                wall.transform.position = wallPosition;
                                 wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.South * 90, 0);
                             }
                             node.Wall[(int) CardinalDirection.South] = wall;
@@ -206,11 +208,12 @@ namespace GenTools
                     {
                         for (int y = 0; y < Height; y++)
                         {
-                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == position);
+                            Vector3 wallPosition = pos + new Vector3(0, Preset.TileSize.y * y, 0);
+                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == wallPosition);
                             if (wall == null)
                             {
                                 wall = Object.Instantiate(wallPreset, Parent.transform);
-                                wall.transform.position = pos + (new Vector3(0, Preset.TileSize.y * y, 0));
+                                wall.transform.position = wallPosition;
                                 wall.transform.localRotation = Quaternion.Euler(0, (int) CardinalDirection.East * 90, 0);
                             }
                             node.Wall[(int) CardinalDirection.East] = wall;
@@ -224,7 +227,8 @@ namespace GenTools
                     {
                         for (int y = 0; y < Height; y++)
                         {
-                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == position);
+                            Vector3 wallPosition = pos + new Vector3(0, Preset.TileSize.y * y, 0);
+                            GameObject wall = existingWalls.FirstOrDefault(wall => wall.transform.position == wallPosition);
                             if (wall == null)
                             {
                                 wall = Object.Instantiate(wallPreset, Parent.transform);

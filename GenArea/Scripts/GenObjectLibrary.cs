@@ -120,10 +120,11 @@ namespace Modules.GenTools.GenArea.Scripts
             {
                 case GenObjectPosition.Outer:
                     possibleRotations.Clear();
-                    foreach (var wall in node.Wall)
+                    for (int dir = 0; dir < 4; dir++)
                     {
-                        if (wall != null) possibleRotations.Add(wall.transform.rotation);
+                        if (node.Wall[dir] != null) possibleRotations.Add(Quaternion.Euler(0, 90 * dir, 0));
                     }
+
                     break;
             }
             possibleRotations = possibleRotations.OrderBy(x => random.Next()).ToList();

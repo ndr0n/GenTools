@@ -105,7 +105,7 @@ MonoBehaviour:
         MinRoomWidth: {x: 5, y: 15}
         MinRoomHeight: {x: 5, y: 15}
         OuterWall: 1
-        WallPercentage: {x: 0, y: 0}
+        WallPercentage: {x: 100, y: 100}
         InputTexture: {fileID: 2800000, guid: 624bf8b056a4db0cfaea3bce7607741c, type: 3}
         N: {x: 3, y: 3}
         Symmetry: {x: 1, y: 1}
@@ -121,7 +121,7 @@ MonoBehaviour:
         XFinishPercent: {x: 0, y: 0}
         YBeginPercent: {x: 0, y: 0}
         YFinishPercent: {x: 0, y: 0}
-        TunnelerLifetime: {x: 40, y: 40}
+        TunnelerLifetime: {x: 50, y: 50}
         TunnelerChangePercentage: {x: 10, y: 10}
         TunnelerWidth: {x: 2, y: 2}
         TunnelerOverlap: 0

@@ -25,7 +25,6 @@ namespace GenTools
 
         public List<Vector3Int> Init(int seed, BoundsInt _bounds, int _lifetime, int _change, Vector2Int _width, List<Vector3Int> _existingPositions)
         {
-            Debug.Log($"TUNNELER BOUNDS: position: {_bounds.position} | size: {_bounds.size}");
             random = new Random(seed);
             lifetime = _lifetime;
             change = _change;

@@ -18,7 +18,6 @@ namespace GenTools
 
         public List<BoundsInt> Execute(int seed, BoundsInt _bounds, Vector2Int _chance, Vector2Int _width, Vector2Int _height, List<Vector3Int> _existingPositions, List<BoundsInt> _rooms)
         {
-            Debug.Log($"ROOMER BOUNDS: position: {_bounds.position} | size: {_bounds.size}");
             random = new Random(seed);
             bounds = _bounds;
             chance = _chance;
@@ -62,7 +61,6 @@ namespace GenTools
                                 {
                                     rooms = PlaceRoom(size, position);
                                     breakLoop = true;
-                                    Debug.Log($"ROOMER: Placed Room - pos: {position} | size: {size}");
                                     break;
                                 }
                             }
@@ -73,7 +71,6 @@ namespace GenTools
                 }
             }
 
-            Debug.Log($"PLACED {rooms.Count} ROOMS!");
             return rooms;
         }
 

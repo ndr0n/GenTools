@@ -15,11 +15,10 @@ namespace Modules.GenTools.GenArea.Scripts
     [System.Serializable]
     public enum GenObjectPosition
     {
-        All,
-        Outer,
+        Floor,
+        Wall,
         Inner,
-        Corner,
-        Center,
+        Roof,
     }
 
     [System.Serializable]
@@ -44,7 +43,7 @@ namespace Modules.GenTools.GenArea.Scripts
         public List<GameObject> Prefabs;
         public GenObjectPosition Position;
         public Vector3 RandomPositionOffset;
-        public Vector3 Size;
+        public Vector3Int Size;
     }
 
     [System.Serializable]

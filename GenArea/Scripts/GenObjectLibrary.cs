@@ -112,7 +112,7 @@ namespace Modules.GenTools.GenArea.Scripts
                     available = available.Where(x => x.Floor != null && !x.Wall.Exists(wall => wall != null)).ToList();
                     break;
                 case GenObjectPosition.Roof:
-                    available = available.Where(x => x.Floor != null).ToList();
+                    // available = available.Where(x => x.Floor != null).ToList();
                     available = available.Where(x => x.Roof != null || nodes.FirstOrDefault(n => n.Floor != null && n.Position == new Vector3Int(x.Position.x, x.Position.y + 1, x.Position.z)) != null).ToList();
                     break;
             }
@@ -136,7 +136,7 @@ namespace Modules.GenTools.GenArea.Scripts
             possibleRotations = possibleRotations.OrderBy(x => random.Next()).ToList();
             Quaternion rotation = possibleRotations[0];
 
-            Vector3 position = node.Floor.transform.position;
+            Vector3 position = parent.transform.position + new Vector3(node.Position.x * 4f, node.Position.y * 4f, node.Position.z * 4f);
             if (data.Size.x > 1) position += new Vector3((data.Size.x - 1) * 2f, 0, 0);
             if (data.Size.z > 1) position += new Vector3(0, 0, (data.Size.z - 1) * 2f);
 

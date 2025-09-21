@@ -24,7 +24,7 @@ namespace GenTools
         public List<GameObject> Stair = new();
         public List<GameObject> Rail = new();
 
-        public List<GameObject> Lamps = new();
+        public List<GenObjectIteration> Lamps = new();
         public List<GenObjectIteration> Object = new();
     }
 }

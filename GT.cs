@@ -7,6 +7,8 @@ namespace GenTools
 {
     public static class GT
     {
+        public static readonly int EmissionColorHash = Shader.PropertyToID("_EmissionColor");
+
         public static string TrimCloneName(string name)
         {
             return name.Replace("(Clone)", "");

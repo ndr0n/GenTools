@@ -25,9 +25,8 @@ namespace GenTools
         public GenRoomType MainRoomType;
         public GenRoomType InnerRoomType;
 
-        [Header("Runtime")]
-        public GenRoom MainRoom;
-        public List<GenRoom> InnerRoom = new();
+        [HideInInspector] public GenRoom MainRoom;
+        public readonly List<GenRoom> InnerRoom = new();
 
         System.Random random;
 

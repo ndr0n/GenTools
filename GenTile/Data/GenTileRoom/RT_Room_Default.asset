@@ -70,7 +70,7 @@ MonoBehaviour:
       TunnelerLifetime: {x: 40, y: 60}
       TunnelerChangePercentage: {x: 25, y: 25}
       TunnelerWidth: {x: 1, y: 1}
-      TunnelerOverlap: 1
+      TunnelerOverlap: 0
       RoomerChance: {x: 0, y: 0}
       RoomerWidth: {x: 0, y: 0}
       RoomerHeight: {x: 0, y: 0}

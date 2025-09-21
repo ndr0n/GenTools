@@ -10,43 +10,12 @@ using UnityEngine.Serialization;
 namespace GenTools
 {
     [System.Serializable]
-    public class GenTunnelNode
-    {
-        public Vector3Int Position = Vector3Int.zero;
-        public GameObject Floor = null;
-        public GameObject Roof = null;
-        public GameObject Object = null;
-        public List<GameObject> Wall = new() {null, null, null, null};
-
-        public GenTunnelNode(Vector3Int position)
-        {
-            Position = position;
-            Floor = null;
-            Roof = null;
-            Object = null;
-            Wall = new() {null, null, null, null};
-        }
-
-        public void Clear()
-        {
-            Position = Vector3Int.zero;
-            if (Floor != null) UnityEngine.Object.DestroyImmediate(Floor);
-            if (Roof != null) UnityEngine.Object.DestroyImmediate(Floor);
-            if (Object != null) UnityEngine.Object.DestroyImmediate(Floor);
-            foreach (var w in Wall)
-            {
-                if (w != null) UnityEngine.Object.DestroyImmediate(w);
-            }
-        }
-    }
-
-    [System.Serializable]
     public class GenTunnel
     {
         public Transform Parent;
         public int Height = 2;
         public GenRoomPreset Preset;
-        public List<GenTunnelNode> Node = new();
+        public List<GenRoomNode> Node = new();
         public List<GameObject> TunnelDoors = new();
         public List<GameObject> TunnelObjects = new();
         public int PillarChance = 10;
@@ -87,10 +56,10 @@ namespace GenTools
             foreach (var position in genTile.GenTileRoomPlacer.PlacedTunnels)
             {
                 Vector3Int nodePosition = new Vector3Int(position.x, 0, position.y);
-                GenTunnelNode node = Node.FirstOrDefault(x => x.Position == nodePosition);
+                GenRoomNode node = Node.FirstOrDefault(x => x.Position == nodePosition);
                 if (node == null)
                 {
-                    node = new GenTunnelNode(nodePosition);
+                    node = new GenRoomNode(nodePosition);
                     Node.Add(node);
                     Vector3 pos = new Vector3(position.x * Preset.TileSize.x, 0, position.y * Preset.TileSize.z);
                     pos += new Vector3(Preset.TileSize.x / 2, 0, Preset.TileSize.z / 2);
@@ -100,7 +69,7 @@ namespace GenTools
             }
         }
 
-        void BuildTunnelFloorAndRoof(GenTunnelNode node, GameObject floorPreset, GameObject roofPreset, Vector3 position, Vector3 size)
+        void BuildTunnelFloorAndRoof(GenRoomNode node, GameObject floorPreset, GameObject roofPreset, Vector3 position, Vector3 size)
         {
             // Build Floor
             GameObject floor = Object.Instantiate(floorPreset, Parent.transform);
@@ -128,10 +97,10 @@ namespace GenTools
                 foreach (var position in tunnel.Positions)
                 {
                     Vector3Int nodePosition = new Vector3Int(position.x, 0, position.y);
-                    GenTunnelNode tunnelNode = Node.FirstOrDefault(x => x.Position == nodePosition);
+                    GenRoomNode tunnelNode = Node.FirstOrDefault(x => x.Position == nodePosition);
                     if (tunnelNode == null)
                     {
-                        tunnelNode = new GenTunnelNode(nodePosition);
+                        tunnelNode = new GenRoomNode(nodePosition);
                         Node.Add(tunnelNode);
                         Vector3 pos = new Vector3(position.x * room.Preset.TileSize.x, 0, position.y * room.Preset.TileSize.z);
                         pos += new Vector3(room.Preset.TileSize.x / 2, 0, room.Preset.TileSize.z / 2);
@@ -170,7 +139,7 @@ namespace GenTools
             GameObject wallPreset = Preset.OuterWall[random.Next(Preset.OuterWall.Count)];
             foreach (var node in Node)
             {
-                List<GenTunnelNode> adjacentFloors = new() {null, null, null, null};
+                List<GenRoomNode> adjacentFloors = new() {null, null, null, null};
                 foreach (var adj in Node)
                 {
                     if (adj.Position == new Vector3(node.Position.x, node.Position.y, node.Position.z + 1))
@@ -258,7 +227,7 @@ namespace GenTools
             if (Preset.Pillar.Count > 0) pillarPreset = Preset.Pillar[random.Next(0, Preset.Pillar.Count)];
             if (pillarPreset != null)
             {
-                List<GenTunnelNode> pillars = new();
+                List<GenRoomNode> pillars = new();
                 foreach (var node in Node)
                 {
                     if (random.Next(0, 100) < PillarChance)
@@ -287,7 +256,7 @@ namespace GenTools
                 for (int i = 0; i < pillars.Count; i++)
                 {
                     Vector3Int nodePosition = pillars[i].Position + new Vector3Int(0, 1, 0);
-                    GenTunnelNode node = Node.FirstOrDefault(x => x.Position == nodePosition);
+                    GenRoomNode node = Node.FirstOrDefault(x => x.Position == nodePosition);
                     if (node == null)
                     {
                         node = new(nodePosition);
@@ -297,7 +266,7 @@ namespace GenTools
                         floor.transform.rotation = Quaternion.identity;
                         node.Floor = floor;
                     }
-                    GenTunnelNode target = pillars.Where(x => x != pillars[i]).OrderBy(x => Vector3.Distance(x.Floor.transform.position, pillars[i].Floor.transform.position)).FirstOrDefault();
+                    GenRoomNode target = pillars.Where(x => x != pillars[i]).OrderBy(x => Vector3.Distance(x.Floor.transform.position, pillars[i].Floor.transform.position)).FirstOrDefault();
                     if (target != null)
                     {
                         Vector2Int startingPosition = new Vector2Int(pillars[i].Position.x, pillars[i].Position.z);
@@ -305,7 +274,7 @@ namespace GenTools
                         List<Vector2Int> targetPositions = BresenhamLine.ComputeNoDiagonal(startingPosition, finalPosition);
                         foreach (var pos in targetPositions)
                         {
-                            GenTunnelNode checkNode = Node.FirstOrDefault(x => x.Position == new Vector3Int(pos.x, 0, pos.y));
+                            GenRoomNode checkNode = Node.FirstOrDefault(x => x.Position == new Vector3Int(pos.x, 0, pos.y));
                             if (checkNode == null) break;
                             nodePosition = new Vector3Int(pos.x, node.Position.y, pos.y);
                             node = Node.FirstOrDefault(x => x.Position == nodePosition);
@@ -328,7 +297,7 @@ namespace GenTools
         {
             foreach (var obj in Preset.Object)
             {
-                List<GameObject> spawn = GenObjectLibrary.PlaceInTunnel(this, obj, random);
+                List<GameObject> spawn = GenObjectLibrary.PlaceObject(Node, Parent, TunnelObjects, obj, random);
                 // if (spawn == null) return;
             }
         }

@@ -34,6 +34,7 @@ namespace Modules.GenTools.GenArea.Scripts
     public struct GenObjectIteration
     {
         public Vector2Int Amount;
+        public Vector2Int Percentage;
         public List<GenObject> Objects;
     }
 
@@ -41,9 +42,7 @@ namespace Modules.GenTools.GenArea.Scripts
     public struct GenObjectData
     {
         public List<GameObject> Prefabs;
-        public GenObjectType Type;
         public GenObjectPosition Position;
-        public GenObjectRotation Rotation;
         public Vector3 RandomPositionOffset;
         public Vector3 Size;
     }

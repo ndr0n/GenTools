@@ -93,7 +93,7 @@ MonoBehaviour:
         XFinishPercent: {x: 0, y: 0}
         YBeginPercent: {x: 0, y: 0}
         YFinishPercent: {x: 0, y: 0}
-        TunnelerLifetime: {x: 40, y: 40}
+        TunnelerLifetime: {x: 50, y: 50}
         TunnelerChangePercentage: {x: 10, y: 10}
         TunnelerWidth: {x: 3, y: 3}
         TunnelerOverlap: 0

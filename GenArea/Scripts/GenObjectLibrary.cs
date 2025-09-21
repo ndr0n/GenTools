@@ -19,43 +19,48 @@ namespace Modules.GenTools.GenArea.Scripts
             return spawn;
         }
 
-        #region Tunnel
-
-        public static List<GameObject> PlaceInTunnel(GenTunnel genTunnel, GenObjectIteration genObjectIteration, System.Random random)
+        public static List<GameObject> PlaceObject(List<GenRoomNode> nodes, Transform parent, List<GameObject> objects, GenObjectIteration genObjectIteration, System.Random random)
         {
             List<GameObject> placed = new();
-            int count = random.Next(genObjectIteration.Amount.x, genObjectIteration.Amount.y + 1);
+            List<GenRoomNode> available = nodes.Where(x => x.Floor != null && x.Object == null).ToList();
+            int percent = random.Next(genObjectIteration.Percentage.x, genObjectIteration.Percentage.y + 1);
+            int count = Mathf.CeilToInt((available.Count / 100f) * percent);
+            count += random.Next(genObjectIteration.Amount.x, genObjectIteration.Amount.y + 1);
+
             for (int i = 0; i < count; i++)
             {
-                GenObject obj = genObjectIteration.Objects[random.Next(genObjectIteration.Objects.Count)];
-                List<GenTunnelNode> available = GetAvailableNodesInTunnel(genTunnel, obj.Object, random);
-                if (available.Count > 0)
+                foreach (var obj in genObjectIteration.Objects.OrderBy(x => random.Next()))
                 {
-                    GenTunnelNode node = GetFirstValidNode(genTunnel, obj.Object, available);
-                    if (node != null)
+                    available = GetAvailableNodes(nodes, obj.Object.Position, random);
+                    if (available.Count > 0)
                     {
-                        GameObject spawn = PlaceObjectInTunnel(genTunnel, obj.Object, random, node);
-                        placed.Add(spawn);
-                        available.Remove(node);
-                        foreach (var nearbyObject in obj.Nearby)
+                        GenRoomNode node = GetFirstValidNode(obj.Object, available);
+                        if (node != null)
                         {
-                            List<GenTunnelNode> closest = GetAvailableNodesInTunnel(genTunnel, nearbyObject, random);
-                            closest = closest.OrderBy(x => Vector3.Distance(x.Position, node.Position)).ToList();
-                            int nearbyCount = random.Next(genObjectIteration.Amount.x, genObjectIteration.Amount.y + 1);
-                            for (int j = 0; j < nearbyCount; j++)
+                            GameObject spawn = ExecutePlaceObject(parent, objects, obj.Object, random, node);
+                            placed.Add(spawn);
+                            available.Remove(node);
+                            foreach (var nearbyObject in obj.Nearby)
                             {
-                                if (closest.Count == 0) break;
-                                if (available.Count == 0) return placed;
-                                GenTunnelNode nearby = GetFirstValidNode(genTunnel, nearbyObject, closest);
-                                if (nearby != null)
+                                List<GenRoomNode> closest = GetAvailableNodes(nodes, nearbyObject.Position, random);
+                                closest = closest.OrderBy(x => Vector3.Distance(x.Position, node.Position)).ToList();
+                                int nearbyCount = random.Next(genObjectIteration.Percentage.x, genObjectIteration.Percentage.y + 1);
+                                for (int j = 0; j < nearbyCount; j++)
                                 {
-                                    GameObject nearbySpawn = PlaceObjectInTunnel(genTunnel, nearbyObject, random, nearby);
-                                    placed.Add(nearbySpawn);
-                                    closest.Remove(nearby);
-                                    available.Remove(nearby);
+                                    if (closest.Count == 0) break;
+                                    if (available.Count == 0) return placed;
+                                    GenRoomNode nearby = GetFirstValidNode(nearbyObject, closest);
+                                    if (nearby != null)
+                                    {
+                                        GameObject nearbySpawn = ExecutePlaceObject(parent, objects, nearbyObject, random, nearby);
+                                        placed.Add(nearbySpawn);
+                                        closest.Remove(nearby);
+                                        available.Remove(nearby);
+                                    }
+                                    else break;
                                 }
-                                else break;
                             }
+                            if (spawn != null) break;
                         }
                     }
                 }
@@ -63,9 +68,9 @@ namespace Modules.GenTools.GenArea.Scripts
             return placed;
         }
 
-        static GenTunnelNode GetFirstValidNode(GenTunnel genTunnel, GenObjectData data, List<GenTunnelNode> available)
+        static GenRoomNode GetFirstValidNode(GenObjectData data, List<GenRoomNode> available)
         {
-            GenTunnelNode node = null;
+            GenRoomNode node = null;
             foreach (var n in available)
             {
                 node = n;
@@ -92,26 +97,26 @@ namespace Modules.GenTools.GenArea.Scripts
             return node;
         }
 
-        static List<GenTunnelNode> GetAvailableNodesInTunnel(GenTunnel genTunnel, GenObjectData data, System.Random random)
+        static List<GenRoomNode> GetAvailableNodes(List<GenRoomNode> nodes, GenObjectPosition position, System.Random random)
         {
-            List<GenTunnelNode> available = genTunnel.Node.Where(x => x.Object == null).OrderBy(x => random.Next()).ToList();
-            switch (data.Position)
+            List<GenRoomNode> available = nodes.Where(x => x.Object == null && x.Floor != null).OrderBy(x => random.Next()).ToList();
+            switch (position)
             {
                 case GenObjectPosition.Outer:
-                    available = genTunnel.Node.Where(x => x.Object == null && x.Wall.Exists(wall => wall != null)).OrderBy(x => random.Next()).ToList();
+                    available = available.Where(x => x.Wall.Exists(wall => wall != null)).ToList();
                     break;
                 case GenObjectPosition.Inner:
-                    available = genTunnel.Node.Where(x => x.Object == null && !x.Wall.Exists(wall => wall != null)).OrderBy(x => random.Next()).ToList();
+                    available = available.Where(x => !x.Wall.Exists(wall => wall != null)).ToList();
                     break;
             }
 
             return available;
         }
 
-        static GameObject PlaceObjectInTunnel(GenTunnel tunnel, GenObjectData genObjectData, System.Random random, GenTunnelNode node)
+        static GameObject ExecutePlaceObject(Transform parent, List<GameObject> objects, GenObjectData data, System.Random random, GenRoomNode node)
         {
             List<Quaternion> possibleRotations = new() {Quaternion.Euler(0, 0, 0), Quaternion.Euler(0, 90, 0), Quaternion.Euler(0, 180, 0), Quaternion.Euler(0, 270, 0)};
-            switch (genObjectData.Position)
+            switch (data.Position)
             {
                 case GenObjectPosition.Outer:
                     possibleRotations.Clear();
@@ -123,12 +128,10 @@ namespace Modules.GenTools.GenArea.Scripts
             }
             possibleRotations = possibleRotations.OrderBy(x => random.Next()).ToList();
             Quaternion rotation = possibleRotations[0];
-            GameObject spawn = SpawnObject(genObjectData, tunnel.Parent, node.Floor.transform.position, rotation, random);
+            GameObject spawn = SpawnObject(data, parent, node.Floor.transform.position, rotation, random);
             node.Object = spawn;
-            tunnel.TunnelObjects.Add(spawn);
+            objects.Add(spawn);
             return spawn;
         }
-
-        #endregion
     }
 }

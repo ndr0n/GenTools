@@ -21,24 +21,10 @@ namespace GenTools
         public List<GameObject> Pillar = new();
         public List<GameObject> Elevator = new();
 
-        public List<GenRoomStair> Stair = new();
+        public List<GameObject> Stair = new();
         public List<GameObject> Rail = new();
 
         public List<GameObject> Lamps = new();
         public List<GenObjectIteration> Object = new();
-    }
-
-    [System.Serializable]
-    public class GenRoomStair
-    {
-        public enum RoomStairType
-        {
-            Square,
-            // Straight,
-            // Floor,
-        }
-
-        public GameObject Stair;
-        public RoomStairType Type;
     }
 }

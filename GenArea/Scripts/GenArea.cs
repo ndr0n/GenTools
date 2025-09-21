@@ -87,7 +87,9 @@ namespace GenTools
                 await GenTunnel.BuildTunnelsFromTileRoom(random, room, tileRoom, 0);
                 // await BuildWallsFromTileRoom(room, tileRoom, 1);
                 await BuildBalconyFromTileRoom(room, tileRoom);
-                await BuildBalconyWallsFromTileRoom(room, tileRoom);
+                await BuildBalconyWalls(room);
+                await BuildBalconyStairs(room);
+                await room.PlaceRoomObjects(random);
             }
 
             // Build Tunnel
@@ -170,7 +172,7 @@ namespace GenTools
             }
         }
 
-        public async Awaitable BuildBalconyWallsFromTileRoom(GenRoom room, GenTileRoom tileRoom)
+        public async Awaitable BuildBalconyWalls(GenRoom room)
         {
             GameObject wallPreset = room.Preset.InnerWall[random.Next(room.Preset.InnerWall.Count)];
             GameObject railPreset = room.Preset.Rail[random.Next(0, room.Preset.Rail.Count)];
@@ -212,18 +214,19 @@ namespace GenTools
                             Vector3 position = new Vector3(iterNode.Position.x * room.Preset.TileSize.x, iterNode.Position.y * room.Preset.TileSize.y, iterNode.Position.z * room.Preset.TileSize.z);
                             Vector3 pos = position + (directions[direction] / 2f);
                             GameObject preset = wallPreset;
+                            if (node.Wall[direction] != null) continue;
                             if (y == 0)
                             {
-                                if (CanBuildWall(room, iterNode, direction) == false) continue;
+                                if (CanBuildWall(room, iterNode) == false) continue;
                             }
                             else
                             {
-                                if (CanBuildWall(room, iterNode, direction) == false) preset = railPreset;
+                                if (CanBuildWall(room, iterNode) == false) preset = railPreset;
                             }
                             GameObject wall = Instantiate(preset, room.Content.transform);
                             wall.transform.localPosition = pos;
                             wall.transform.localRotation = Quaternion.Euler(0, direction * 90, 0);
-                            iterNode.Wall[direction] = wall;
+                            if (preset == wallPreset) iterNode.Wall[direction] = wall;
                         }
                     }
                 }
@@ -231,9 +234,40 @@ namespace GenTools
             }
         }
 
-        public bool CanBuildWall(GenRoom room, GenRoomNode node, int direction)
+        public async Awaitable BuildBalconyStairs(GenRoom room)
         {
-            if (node.Wall[direction] != null) return false;
+            int maxStairCount = random.Next(room.Type.StairCount.x, room.Type.StairCount.y + 1);
+            GenRoomNode lastStairNode = null;
+            GameObject stairPreset = room.Preset.Stair[random.Next(room.Preset.Stair.Count)];
+            List<GenRoomNode> nodes = room.GetAllNodes();
+            for (int stairCount = 0; stairCount < maxStairCount; stairCount++)
+            {
+                List<GenRoomNode> balconyNodes = nodes.Where(x => x.Position.y > 0 && x.Floor != null && x.Object == null).ToList();
+                if (stairCount % 2 == 0) balconyNodes = balconyNodes.OrderBy(x => random.Next()).ToList();
+                else balconyNodes = balconyNodes.OrderByDescending(x => Vector3Int.Distance(x.Position, lastStairNode.Position)).ToList();
+
+                foreach (var node in balconyNodes)
+                {
+                    GenRoomNode floorNode = nodes.FirstOrDefault(x => x.Position == new Vector3Int(node.Position.x, 0, node.Position.z) && x.Object == null);
+                    if (floorNode != null)
+                    {
+                        Vector3 pos = new Vector3(floorNode.Position.x * room.Preset.TileSize.x, floorNode.Position.y * room.Preset.TileSize.y, floorNode.Position.z * room.Preset.TileSize.z);
+                        GameObject stair = Instantiate(stairPreset, room.Content);
+                        stair.transform.localPosition = pos;
+                        stair.transform.localRotation = Quaternion.Euler(0, (random.Next(0, 4)) * 90, 0);
+                        floorNode.Object = stair;
+                        node.Object = stair;
+                        lastStairNode = node;
+                        DestroyImmediate(node.Floor);
+                        await room.Await();
+                        break;
+                    }
+                }
+            }
+        }
+
+        public bool CanBuildWall(GenRoom room, GenRoomNode node)
+        {
             int count = 0;
             for (int d = 0; d < node.Wall.Count; d++)
             {

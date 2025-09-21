@@ -12,6 +12,7 @@ namespace GenTools
     {
         public Vector2Int MinSize = new Vector2Int(1, 1);
         public Vector2Int MaxSize = new Vector2Int(100, 100);
+        public Vector2Int StairCount = new Vector2Int(2, 2);
         public List<GenRoomPreset> Presets = new();
     }
 }

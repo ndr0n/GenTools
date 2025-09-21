@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Modules.GenTools.GenArea.Scripts;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -26,6 +27,7 @@ namespace GenTools
         public readonly List<List<List<GenRoomNode>>> Node = new();
         public readonly List<GameObject> OuterDoor = new();
         public readonly List<GameObject> InnerDoor = new();
+        public readonly List<GameObject> Objects = new();
 
         GenRoomPreset preset = null;
         public GenRoomPreset Preset => preset;
@@ -49,6 +51,12 @@ namespace GenTools
             }
             OuterDoor.Clear();
             InnerDoor.Clear();
+
+            foreach (var obj in Objects)
+            {
+                if (obj != null) DestroyImmediate(obj);
+            }
+            Objects.Clear();
 
             Node.Clear();
             for (int y = 0; y < GridSize.y; y++)
@@ -105,6 +113,15 @@ namespace GenTools
             if (GenerationDelayMilliseconds > 0)
             {
                 await Task.Delay(GenerationDelayMilliseconds);
+            }
+        }
+
+        public async Awaitable PlaceRoomObjects(System.Random random)
+        {
+            foreach (var obj in Preset.Object)
+            {
+                List<GameObject> spawn = GenObjectLibrary.PlaceObject(GetAllNodes(), Content, Objects, obj, random);
+                // if (spawn == null) return;
             }
         }
     }

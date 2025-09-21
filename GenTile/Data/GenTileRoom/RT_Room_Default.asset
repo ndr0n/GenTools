@@ -16,10 +16,41 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
   MinSize: {x: 1, y: 1}
   MaxSize: {x: 128, y: 128}
-  Floor:
-  - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
   Doors:
   - {fileID: 11400000, guid: dd7ae445d0e16131d8733935321bc475, type: 2}
+  Floor:
+  - Tile: {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
+    Type: 0
+    Offset: {x: 0, y: 0}
+    Algorithm:
+    - Algorithm: 0
+      FillPercentage: {x: 100, y: 100}
+      DegradePercentage: {x: 0, y: 0}
+      Size: {x: 0, y: 0}
+      PerlinNoiseModifier: {x: 0, y: 0}
+      PathWidth: {x: 0, y: 0}
+      XBeginPercent: {x: 0, y: 0}
+      XFinishPercent: {x: 0, y: 0}
+      YBeginPercent: {x: 0, y: 0}
+      YFinishPercent: {x: 0, y: 0}
+      TunnelerLifetime: {x: 0, y: 0}
+      TunnelerChangePercentage: {x: 0, y: 0}
+      TunnelerWidth: {x: 0, y: 0}
+      TunnelerOverlap: 0
+      RoomerChance: {x: 0, y: 0}
+      RoomerWidth: {x: 0, y: 0}
+      RoomerHeight: {x: 0, y: 0}
+      Percentage: {x: 0, y: 0}
+      Offset: {x: 0, y: 0}
+      MinRoomWidth: {x: 0, y: 0}
+      MinRoomHeight: {x: 0, y: 0}
+      OuterWall: 0
+      WallPercentage: {x: 0, y: 0}
+      InputTexture: {fileID: 0}
+      N: {x: 0, y: 0}
+      Symmetry: {x: 0, y: 0}
+      Iterations: {x: 0, y: 0}
+      Invert: 0
   Walls: []
   Balcony:
   - Tile: {fileID: 11400000, guid: e02e8c29f1e4a049d8c00d8cf0f59780, type: 2}

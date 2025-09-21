@@ -30,6 +30,7 @@ namespace GenTools
     public enum GenTileRoomObjectType
     {
         Door,
+        Floor,
         Wall,
         Balcony,
         Object,
@@ -65,9 +66,9 @@ namespace GenTools
 
         public List<Vector2Int> PlaceTileRoom(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
-            availablePositions = ReplaceFloor(genTile, availablePositions, random);
-            availablePositions = PlaceDoors(genTile, availablePositions, random);
+            foreach (var floorAlgo in Type.Floor) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Floor, floorAlgo, genTile, availablePositions, random);
             foreach (var wallAlgo in Type.Walls) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, availablePositions, random);
+            availablePositions = PlaceDoors(genTile, availablePositions, random);
             foreach (var wallAlgo in Type.Balcony) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Balcony, wallAlgo, genTile, availablePositions, random);
             availablePositions = PlaceObjects(genTile, availablePositions, random);
             return availablePositions;
@@ -88,6 +89,9 @@ namespace GenTools
                     genTile.Tilemap[(int) algorithm.Type].SetTile(new Vector3Int(worldPosition.x, worldPosition.y, 0), algorithm.Tile);
                     switch (type)
                     {
+                        case GenTileRoomObjectType.Floor:
+                            PlacedFloor.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            break;
                         case GenTileRoomObjectType.Door:
                             PlacedDoors.Add(new GenTileObject(algorithm.Tile, roomPosition));
                             break;
@@ -103,21 +107,6 @@ namespace GenTools
                         default:
                             throw new ArgumentOutOfRangeException(nameof(type), type, null);
                     }
-                }
-            }
-            return availablePositions;
-        }
-
-        public List<Vector2Int> ReplaceFloor(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
-        {
-            if (Type.Floor.Count > 0)
-            {
-                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Terrain];
-                TileBase floor = Type.Floor[random.Next(Type.Floor.Count)];
-                foreach (var pos in availablePositions)
-                {
-                    tilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), floor);
-                    PlacedFloor.Add(new GenTileObject(floor, new Vector2Int(pos.x - Position.x, pos.y - Position.y)));
                 }
             }
             return availablePositions;

@@ -114,8 +114,7 @@ namespace GenTools
                 CardinalDirection doorDirection = GenTools.GetDirection(tunnel.OriginPoint, tunnel.Positions[0]);
                 Vector3 doorPosition = new Vector3(tunnel.OriginPoint.x * room.TileSize.x, y * room.TileSize.y, tunnel.OriginPoint.y * room.TileSize.z);
                 doorPosition += room.Content.localPosition;
-                List<GenRoomNode> roomNodes = room.GetAllNodes();
-                GenRoomNode roomNode = roomNodes.FirstOrDefault(x => x.Floor.transform.position == doorPosition);
+                GenRoomNode roomNode = room.Node.FirstOrDefault(x => x.Floor.transform.position == doorPosition);
                 if (roomNode != null)
                 {
                     GameObject wall = roomNode.Wall[(int) doorDirection];

@@ -43,6 +43,7 @@ namespace GenTools
         public Vector2Int Position;
 
         [Header("Runtime")]
+        public List<GenTileObject> PlacedFloor = new();
         public List<GenTileObject> PlacedWalls = new();
         public List<GenTileObject> PlacedDoors = new();
         public List<GenTileObject> PlacedStairs = new();
@@ -113,7 +114,11 @@ namespace GenTools
             {
                 Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Terrain];
                 TileBase floor = Type.Floor[random.Next(Type.Floor.Count)];
-                foreach (var pos in availablePositions) tilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), floor);
+                foreach (var pos in availablePositions)
+                {
+                    tilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), floor);
+                    PlacedFloor.Add(new GenTileObject(floor, new Vector2Int(pos.x - Position.x, pos.y - Position.y)));
+                }
             }
             return availablePositions;
         }
@@ -131,13 +136,13 @@ namespace GenTools
                     {
                         Vector3Int doorPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
                         tilemap.SetTile(doorPosition, door);
-                        PlacedDoors.Add(new GenTileObject(door, tunnel.OriginPoint));
+                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(tunnel.OriginPoint.x - Position.x, tunnel.OriginPoint.y - Position.y)));
                     }
                     else
                     {
                         Vector3Int doorPosition = new Vector3Int(tunnel.Positions[0].x, tunnel.Positions[0].y, 0);
                         tilemap.SetTile(doorPosition, door);
-                        PlacedDoors.Add(new GenTileObject(door, tunnel.Positions[0]));
+                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(tunnel.Positions[0].x - Position.x, tunnel.Positions[0].y - Position.y)));
                     }
                 }
             }

@@ -62,16 +62,6 @@ namespace GenTools
             Objects.Clear();
 
             Node.Clear();
-            for (int x = 0; x < Size.x; x++)
-            {
-                for (int y = 0; y < Size.y; y++)
-                {
-                    for (int z = 0; z < Size.z; z++)
-                    {
-                        Node.Add(new GenRoomNode(new Vector3Int(x, y, z)));
-                    }
-                }
-            }
         }
 
         public async Awaitable Generate(GenTileRoom tileRoom, List<GameObject> existingWalls)
@@ -112,8 +102,13 @@ namespace GenTools
                     GameObject floor = Instantiate(floorPreset, Content);
                     floor.transform.localPosition = new Vector3(pos.x * TileSize.x, pos.y * TileSize.y, pos.z * TileSize.z);
                     floor.transform.localRotation = Quaternion.identity;
-                    GenRoomNode node = Node.FirstOrDefault(x => x.Position == pos);
-                    node.Floor = floor;
+                    GenRoomNode floorNode = Node.FirstOrDefault(n => n.Position == pos);
+                    if (floorNode == null)
+                    {
+                        floorNode = new GenRoomNode(pos);
+                        Node.Add(floorNode);
+                    }
+                    floorNode.Floor = floor;
                     await Await();
                 }
             }
@@ -130,7 +125,13 @@ namespace GenTools
                     GameObject roof = Instantiate(roofPreset, Content);
                     roof.transform.localPosition = new Vector3(pos.x * TileSize.x, pos.y * TileSize.y, pos.z * TileSize.z);
                     roof.transform.localRotation = Quaternion.identity;
-                    GenRoomNode roofNode = Node.FirstOrDefault(n => n.Position == new Vector3Int(pos.x, Size.y - 1, pos.z));
+                    Vector3Int roofPos = new Vector3Int(pos.x, Size.y - 1, pos.z);
+                    GenRoomNode roofNode = Node.FirstOrDefault(n => n.Position == roofPos);
+                    if (roofNode == null)
+                    {
+                        roofNode = new GenRoomNode(roofPos);
+                        Node.Add(roofNode);
+                    }
                     roofNode.Roof = roof;
                     await Await();
                 }

@@ -13,7 +13,7 @@ namespace GenTools
     [System.Serializable]
     public class GenRoom : MonoBehaviour
     {
-        public Transform Content;
+        public Transform Parent;
         public GenRoomType Type;
         public int GenerationDelayMilliseconds = 0;
 
@@ -39,18 +39,17 @@ namespace GenTools
 
         public void Clear()
         {
-            if (Content != null)
+            if (Parent != null)
             {
-                for (int i = Content.childCount; i-- > 0;)
+                for (int i = Parent.childCount; i-- > 0;)
                 {
-                    DestroyImmediate(Content.GetChild(i).gameObject);
+                    DestroyImmediate(Parent.GetChild(i).gameObject);
                 }
             }
-
-            if (Content == null)
+            if (Parent == null)
             {
-                Content = GenTools.CreateGameObject("Content", transform).transform;
-                Content.transform.localPosition += new Vector3(TileSize.x / 2f, 0, TileSize.z / 2f);
+                Parent = GenTools.CreateGameObject("Parent", transform).transform;
+                Parent.transform.localPosition += new Vector3(TileSize.x / 2f, 0, TileSize.z / 2f);
             }
             OuterDoor.Clear();
             InnerDoor.Clear();
@@ -99,7 +98,7 @@ namespace GenTools
                 foreach (var tileFloor in tileRoom.PlacedFloor)
                 {
                     Vector3Int pos = new Vector3Int(tileFloor.Position.x, 0, tileFloor.Position.y);
-                    GameObject floor = Instantiate(floorPreset, Content);
+                    GameObject floor = Instantiate(floorPreset, Parent);
                     floor.transform.localPosition = new Vector3(pos.x * TileSize.x, pos.y * TileSize.y, pos.z * TileSize.z);
                     floor.transform.localRotation = Quaternion.identity;
                     GenRoomNode floorNode = Node.FirstOrDefault(n => n.Position == pos);
@@ -122,7 +121,7 @@ namespace GenTools
                 foreach (var tileFloor in tileRoom.PlacedFloor)
                 {
                     Vector3Int pos = new Vector3Int(tileFloor.Position.x, Size.y, tileFloor.Position.y);
-                    GameObject roof = Instantiate(roofPreset, Content);
+                    GameObject roof = Instantiate(roofPreset, Parent);
                     roof.transform.localPosition = new Vector3(pos.x * TileSize.x, pos.y * TileSize.y, pos.z * TileSize.z);
                     roof.transform.localRotation = Quaternion.identity;
                     Vector3Int roofPos = new Vector3Int(pos.x, Size.y - 1, pos.z);
@@ -177,10 +176,10 @@ namespace GenTools
                             GenRoomNode iterNode = nodes.FirstOrDefault(n => n.Position == testPosition && n.Object == null);
                             if (iterNode == null) continue;
                             Vector3 position = new Vector3(iterNode.Position.x * Preset.TileSize.x, iterNode.Position.y * Preset.TileSize.y, iterNode.Position.z * Preset.TileSize.z);
-                            Vector3 pos = position + (directions[direction] / 2f) + Content.transform.position;
+                            Vector3 pos = position + (directions[direction] / 2f) + Parent.transform.position;
                             if (iterNode.Wall[direction] != null) continue;
                             if (existingWalls.Exists(ew => ew.transform.position == pos)) continue;
-                            GameObject wall = Instantiate(wallPreset, Content.transform);
+                            GameObject wall = Instantiate(wallPreset, Parent.transform);
                             wall.transform.position = pos;
                             wall.transform.localRotation = Quaternion.Euler(0, direction * 90, 0);
                             iterNode.Wall[direction] = wall;
@@ -254,7 +253,7 @@ namespace GenTools
             foreach (var door in tileRoom.PlacedDoors)
             {
                 Vector3 doorPosition = new Vector3(door.Position.x * TileSize.x, y * TileSize.y, door.Position.y * TileSize.z);
-                doorPosition += Content.localPosition;
+                doorPosition += Parent.localPosition;
                 GenRoomNode node = Node.Where(x => x.Floor != null).OrderBy(x => random.Next()).FirstOrDefault(x => x.Floor.transform.position == doorPosition);
                 if (node != null)
                 {
@@ -263,7 +262,7 @@ namespace GenTools
                         GameObject wall = node.Wall[direction];
                         if (wall != null)
                         {
-                            GameObject outerDoor = Instantiate(outerDoorPreset, Content);
+                            GameObject outerDoor = Instantiate(outerDoorPreset, Parent);
                             outerDoor.transform.position = wall.transform.position;
                             outerDoor.transform.rotation = wall.transform.rotation;
                             OuterDoor.Add(outerDoor);
@@ -297,7 +296,7 @@ namespace GenTools
                         {
                             // for (int h = 0; h < height; h++)
                             // {
-                            GameObject spawn = Instantiate(wallPreset, Content);
+                            GameObject spawn = Instantiate(wallPreset, Parent);
                             spawn.transform.position = node.Floor.transform.position + new Vector3(directions[i].x * (Preset.TileSize.x / 2f), h * Preset.TileSize.y, directions[i].y * (Preset.TileSize.z / 2f));
                             spawn.transform.rotation = Quaternion.Euler(0, 90 * i, 0);
                             node.Wall[i] = spawn;
@@ -320,7 +319,7 @@ namespace GenTools
                 if (node != null)
                 {
                     Vector3 worldPosition = new Vector3(pos.x * Preset.TileSize.x, pos.y * Preset.TileSize.y, pos.z * Preset.TileSize.z);
-                    GameObject spawn = Instantiate(floorPreset, Content);
+                    GameObject spawn = Instantiate(floorPreset, Parent);
                     spawn.transform.localPosition = worldPosition;
                     spawn.transform.rotation = Quaternion.identity;
                     node.Floor = spawn;
@@ -369,7 +368,7 @@ namespace GenTools
                             GenRoomNode iterNode = nodes.FirstOrDefault(n => n.Position == testPosition && n.Object == null);
                             if (iterNode == null) continue;
                             Vector3 position = new Vector3(iterNode.Position.x * Preset.TileSize.x, iterNode.Position.y * Preset.TileSize.y, iterNode.Position.z * Preset.TileSize.z);
-                            Vector3 pos = position + (directions[direction] / 2f) + Content.transform.position;
+                            Vector3 pos = position + (directions[direction] / 2f) + Parent.transform.position;
                             GameObject preset = wallPreset;
                             if (node.Wall[direction] != null) continue;
                             if (existingWalls.Exists(ew => ew.transform.position == pos)) continue;
@@ -381,7 +380,7 @@ namespace GenTools
                             {
                                 if (CanBuildWall(iterNode) == false) preset = railPreset;
                             }
-                            GameObject wall = Instantiate(preset, Content.transform);
+                            GameObject wall = Instantiate(preset, Parent.transform);
                             wall.transform.position = pos;
                             wall.transform.localRotation = Quaternion.Euler(0, direction * 90, 0);
                             if (preset == wallPreset) iterNode.Wall[direction] = wall;
@@ -409,7 +408,7 @@ namespace GenTools
                     if (floorNode != null)
                     {
                         Vector3 pos = new Vector3(floorNode.Position.x * Preset.TileSize.x, floorNode.Position.y * Preset.TileSize.y, floorNode.Position.z * Preset.TileSize.z);
-                        GameObject stair = Instantiate(stairPreset, Content);
+                        GameObject stair = Instantiate(stairPreset, Parent);
                         stair.transform.localPosition = pos;
                         stair.transform.localRotation = Quaternion.Euler(0, (random.Next(0, 4)) * 90, 0);
                         floorNode.Object = stair;
@@ -449,14 +448,14 @@ namespace GenTools
                 GameObject outerDoorPreset = Preset.OuterDoor[random.Next(0, Preset.OuterDoor.Count)];
                 CardinalDirection doorDirection = GenTools.GetDirection(tunnel.OriginPoint, tunnel.Positions[0]);
                 Vector3 doorPosition = new Vector3(tunnel.OriginPoint.x * TileSize.x, y * TileSize.y, tunnel.OriginPoint.y * TileSize.z);
-                doorPosition += Content.localPosition;
+                doorPosition += Parent.localPosition;
                 GenRoomNode roomNode = Node.FirstOrDefault(x => x.Floor.transform.position == doorPosition);
                 if (roomNode != null)
                 {
                     GameObject wall = roomNode.Wall[(int) doorDirection];
                     if (wall != null)
                     {
-                        GameObject outerDoor = Instantiate(outerDoorPreset, Content);
+                        GameObject outerDoor = Instantiate(outerDoorPreset, Parent);
                         outerDoor.transform.position = wall.transform.position;
                         outerDoor.transform.rotation = wall.transform.rotation;
                         OuterDoor.Add(outerDoor);
@@ -519,7 +518,7 @@ namespace GenTools
             List<GameObject> spawned = new();
             foreach (var lamp in Preset.Lamps)
             {
-                List<GameObject> lamps = GenObjectLibrary.PlaceObject(Node, Content, Objects, lamp, random);
+                List<GameObject> lamps = GenObjectLibrary.PlaceObject(Node, Parent, Objects, lamp, random);
                 spawned.AddRange(lamps);
             }
 
@@ -562,7 +561,7 @@ namespace GenTools
 
             foreach (var obj in Preset.Object)
             {
-                List<GameObject> objs = GenObjectLibrary.PlaceObject(Node, Content, Objects, obj, random);
+                List<GameObject> objs = GenObjectLibrary.PlaceObject(Node, Parent, Objects, obj, random);
                 spawned.AddRange(objs);
                 // if (spawn == null) return;
             }

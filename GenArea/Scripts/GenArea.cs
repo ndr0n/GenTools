@@ -117,7 +117,8 @@ namespace GenTools
             GenRoom room = Instantiate(GenRoomPrefab.gameObject, transform).GetComponent<GenRoom>();
             room.RandomSeed = false;
             room.Seed = random.Next(int.MinValue, int.MaxValue);
-            room.GridSize = new Vector3Int(tileRoom.Size.x, Size.y, tileRoom.Size.y);
+            room.Size = new Vector3Int(tileRoom.Size.x, Size.y, tileRoom.Size.y);
+            room.Position = new Vector3Int(tileRoom.Position.x, y, tileRoom.Position.y);
             room.transform.localPosition = new Vector3(tileRoom.Position.x * room.TileSize.x, y * room.TileSize.y, tileRoom.Position.y * room.TileSize.z);
             room.transform.localRotation = Quaternion.identity;
             room.transform.localPosition += new Vector3(Border.x * room.TileSize.x, 0, Border.y * room.TileSize.z);

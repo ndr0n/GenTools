@@ -19,10 +19,11 @@ namespace GenTools
 
         public bool RandomSeed = false;
         public int Seed = 0;
+        public Vector3Int Size = new Vector3Int(5, 1, 5);
+        public Vector3Int Position = new Vector3Int(0, 0, 0);
 
         public Vector3 TileSize = new Vector3(4, 4, 4);
         public Vector3 TileScale = new Vector3(1, 1, 1);
-        public Vector3Int GridSize = new Vector3Int(5, 1, 5);
         public Vector2Int OuterDoorAmount = new Vector2Int(0, 0);
 
         public readonly List<GenRoomNode> Node = new();
@@ -61,11 +62,11 @@ namespace GenTools
             Objects.Clear();
 
             Node.Clear();
-            for (int x = 0; x < GridSize.x; x++)
+            for (int x = 0; x < Size.x; x++)
             {
-                for (int y = 0; y < GridSize.y; y++)
+                for (int y = 0; y < Size.y; y++)
                 {
-                    for (int z = 0; z < GridSize.z; z++)
+                    for (int z = 0; z < Size.z; z++)
                     {
                         Node.Add(new GenRoomNode(new Vector3Int(x, y, z)));
                     }
@@ -125,11 +126,11 @@ namespace GenTools
                 GameObject roofPreset = preset.Roof[random.Next(0, preset.Roof.Count)];
                 foreach (var tileFloor in tileRoom.PlacedFloor)
                 {
-                    Vector3Int pos = new Vector3Int(tileFloor.Position.x, GridSize.y, tileFloor.Position.y);
+                    Vector3Int pos = new Vector3Int(tileFloor.Position.x, Size.y, tileFloor.Position.y);
                     GameObject roof = Instantiate(roofPreset, Content);
                     roof.transform.localPosition = new Vector3(pos.x * TileSize.x, pos.y * TileSize.y, pos.z * TileSize.z);
                     roof.transform.localRotation = Quaternion.identity;
-                    GenRoomNode roofNode = Node.FirstOrDefault(n => n.Position == new Vector3Int(pos.x, GridSize.y - 1, pos.z));
+                    GenRoomNode roofNode = Node.FirstOrDefault(n => n.Position == new Vector3Int(pos.x, Size.y - 1, pos.z));
                     roofNode.Roof = roof;
                     await Await();
                 }
@@ -169,7 +170,7 @@ namespace GenTools
                 {
                     if (adjacentFloors[direction] == null)
                     {
-                        for (int y = 0; y < GridSize.y; y++)
+                        for (int y = 0; y < Size.y; y++)
                         {
                             Vector3Int testPosition = new Vector3Int(node.Position.x, y, node.Position.z);
                             GenRoomNode iterNode = nodes.FirstOrDefault(n => n.Position == testPosition && n.Object == null);
@@ -361,7 +362,7 @@ namespace GenTools
                 {
                     if (adjacentFloors[direction] == null)
                     {
-                        for (int y = 0; y < GridSize.y; y++)
+                        for (int y = 0; y < Size.y; y++)
                         {
                             Vector3Int testPosition = new Vector3Int(node.Position.x, y, node.Position.z);
                             GenRoomNode iterNode = nodes.FirstOrDefault(n => n.Position == testPosition && n.Object == null);
@@ -481,7 +482,7 @@ namespace GenTools
                 if (westNode.Wall[(int) CardinalDirection.East] != null) count++;
             }
 
-            if (node.Position.x < GridSize.x - 1)
+            if (node.Position.x < Size.x - 1)
             {
                 GenRoomNode eastNode = Node.FirstOrDefault(x => x.Position == new Vector3Int(node.Position.x + 1, node.Position.y, node.Position.z));
                 if (eastNode.Wall[(int) CardinalDirection.West] != null) count++;
@@ -493,7 +494,7 @@ namespace GenTools
                 if (southNode.Wall[(int) CardinalDirection.North] != null) count++;
             }
 
-            if (node.Position.z < GridSize.y - 1)
+            if (node.Position.z < Size.y - 1)
             {
                 GenRoomNode northNode = Node.FirstOrDefault(x => x.Position == new Vector3Int(node.Position.x, node.Position.y, node.Position.z + 1));
                 if (northNode.Wall[(int) CardinalDirection.South] != null) count++;

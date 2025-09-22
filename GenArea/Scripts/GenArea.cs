@@ -21,9 +21,9 @@ namespace GenTools
 
         public GenTile GenTile;
         public GenRoom GenRoomPrefab;
-        public GenTileRoomType TileRoom;
-        public GenRoomType MainRoomType;
-        public GenRoomType InnerRoomType;
+        public GenTileRoomType MainRoomTile;
+        public List<GenRoomType> MainRoomType;
+        public List<GenRoomType> InnerRoomType;
 
         [HideInInspector] public GenRoom MainRoom;
         public readonly List<GenRoom> InnerRoom = new();
@@ -82,17 +82,18 @@ namespace GenTools
 
             foreach (var tileRoom in GenTile.GenTileRoomPlacer.PlacedRooms)
             {
-                GenRoom innerRoom = await BuildRoomFromTileRoom(tileRoom, InnerRoomType, 0);
+                GenRoomType innerRoomType = InnerRoomType[random.Next(0, InnerRoomType.Count)];
+                GenRoom innerRoom = await BuildRoomFromTileRoom(tileRoom, innerRoomType, 0);
                 innerRoom.name = $"InnerRoom-{innerRoom.transform.parent.childCount}";
                 InnerRoom.Add(innerRoom);
             }
 
-            GenTileRoom mainTileRoom = new(TileRoom, new Vector2Int(GenTile.Width, GenTile.Height), new Vector2Int(0, 0));
+            GenTileRoom mainTileRoom = new(MainRoomTile, new Vector2Int(GenTile.Width, GenTile.Height), new Vector2Int(0, 0));
             for (int x = 0; x < GenTile.Width; x++)
             {
                 for (int y = 0; y < GenTile.Height; y++)
                 {
-                    foreach (var tile in TileRoom.RoomTile)
+                    foreach (var tile in MainRoomTile.RoomTile)
                     {
                         if (GenTile.Tilemap[0].GetTile(new Vector3Int(x, y, 0)) == tile)
                         {
@@ -102,7 +103,8 @@ namespace GenTools
                     }
                 }
             }
-            MainRoom = await BuildRoomFromTileRoom(mainTileRoom, MainRoomType, 0);
+            GenRoomType mainRoomType = MainRoomType[random.Next(0, MainRoomType.Count)];
+            MainRoom = await BuildRoomFromTileRoom(mainTileRoom, mainRoomType, 0);
             MainRoom.name = $"MainRoom";
 
             MainRoom?.PlaceRoomObjects(random);

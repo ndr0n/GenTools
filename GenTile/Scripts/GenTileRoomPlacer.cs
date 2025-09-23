@@ -12,7 +12,7 @@ namespace GenTools
 {
     public enum TunnelingAlgorithm
     {
-        Door = 0,
+        None = 0,
         Directional = 1,
         BresenhamLine = 2,
     }
@@ -205,9 +205,6 @@ namespace GenTools
             {
                 switch (origin.Type.TunnelingAlgorithm)
                 {
-                    case TunnelingAlgorithm.Door:
-                        PlaceTunnelsDoor(origin);
-                        break;
                     case TunnelingAlgorithm.Directional:
                         PlaceTunnelsDirectional(origin);
                         break;
@@ -217,102 +214,7 @@ namespace GenTools
                 }
             }
         }
-
-        public void PlaceTunnelsDoor(GenTileRoom origin)
-        {
-            List<CardinalDirection> directions = new() {CardinalDirection.South, CardinalDirection.West, CardinalDirection.North, CardinalDirection.East};
-            directions = directions.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
-            int doorCount = random.Next(origin.Type.TunnelAmount.x, origin.Type.TunnelAmount.y + 1);
-            Tilemap tunnelTilemap = GenTile.Tilemap[(int) GenTileType.Terrain];
-            Tilemap doorTilemap = GenTile.Tilemap[(int) GenTileType.Objects];
-            TileBase door = origin.Type.Doors[random.Next(origin.Type.Doors.Count)];
-            for (int i = 0; i < doorCount; i++)
-            {
-                if (directions.Count == 0) break;
-                CardinalDirection direction = directions[0];
-                directions.RemoveAt(0);
-                switch (direction)
-                {
-                    case CardinalDirection.South:
-                        bool breakLoop1 = false;
-                        for (int x1 = origin.Position.x + 1; x1 < origin.Position.x + origin.Size.x - 1; x1++)
-                        {
-                            int y1 = origin.Position.y;
-                            Vector3Int doorPosition1 = new Vector3Int(x1, y1, 0);
-                            foreach (var tunnelTile in TunnelTile)
-                            {
-                                if (tunnelTilemap.GetTile(doorPosition1 + Vector3Int.down) == tunnelTile)
-                                {
-                                    doorTilemap.SetTile(doorPosition1, door);
-                                    origin.PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x1, y1)));
-                                    breakLoop1 = true;
-                                    break;
-                                }
-                            }
-                            if (breakLoop1) break;
-                        }
-                        break;
-                    case CardinalDirection.West:
-                        bool breakLoop2 = false;
-                        for (int y2 = origin.Position.y + 1; y2 < origin.Position.y + origin.Size.y - 1; y2++)
-                        {
-                            int x2 = origin.Position.x;
-                            Vector3Int doorPosition2 = new Vector3Int(x2, y2, 0);
-                            foreach (var tunnelTile in TunnelTile)
-                            {
-                                if (tunnelTilemap.GetTile(doorPosition2 + Vector3Int.left) == tunnelTile)
-                                {
-                                    doorTilemap.SetTile(doorPosition2, door);
-                                    origin.PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x2, y2)));
-                                    breakLoop2 = true;
-                                    break;
-                                }
-                            }
-                            if (breakLoop2) break;
-                        }
-                        break;
-                    case CardinalDirection.North:
-                        bool breakLoop3 = false;
-                        for (int x3 = origin.Position.x + 1; x3 < origin.Position.x + origin.Size.x - 1; x3++)
-                        {
-                            int y3 = origin.Position.y + origin.Size.y - 1;
-                            Vector3Int doorPosition3 = new Vector3Int(x3, y3, 0);
-                            foreach (var tunnelTile in TunnelTile)
-                            {
-                                if (tunnelTilemap.GetTile(doorPosition3 + Vector3Int.up) == tunnelTile)
-                                {
-                                    doorTilemap.SetTile(doorPosition3, door);
-                                    origin.PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x3, y3)));
-                                    breakLoop3 = true;
-                                    break;
-                                }
-                            }
-                            if (breakLoop3) break;
-                        }
-                        break;
-                    case CardinalDirection.East:
-                        bool breakLoop4 = false;
-                        for (int y4 = origin.Position.y + 1; y4 < origin.Position.y + origin.Size.y - 1; y4++)
-                        {
-                            int x4 = origin.Position.x + origin.Size.x - 1;
-                            Vector3Int doorPosition4 = new Vector3Int(x4, y4, 0);
-                            foreach (var tunnelTile in TunnelTile)
-                            {
-                                if (tunnelTilemap.GetTile(doorPosition4 + Vector3Int.right) == tunnelTile)
-                                {
-                                    doorTilemap.SetTile(doorPosition4, door);
-                                    origin.PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x4, y4)));
-                                    breakLoop4 = true;
-                                    break;
-                                }
-                            }
-                            if (breakLoop4) break;
-                        }
-                        break;
-                }
-            }
-        }
-
+        
         public void PlaceTunnelsDirectional(GenTileRoom origin)
         {
             int tunnelCount = random.Next(origin.Type.TunnelAmount.x, origin.Type.TunnelAmount.y + 1);

@@ -14,8 +14,12 @@ namespace GenTools
         public Vector2Int MinSize = new Vector2Int(1, 1);
         public Vector2Int MaxSize = new Vector2Int(100, 100);
 
-        [Header("Building")]
+        [Header("Doors")]
         public List<TileBase> Doors = new();
+        public List<TileBase> OuterFloorTile = new();
+        public Vector2Int DoorCount = new Vector2Int(4, 4);
+
+        [Header("Building")]
         public List<GenTileAlgorithm> Floor = new();
         public List<GenTileAlgorithm> Walls = new();
         public List<GenTileAlgorithm> Balcony = new();

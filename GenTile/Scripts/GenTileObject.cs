@@ -31,7 +31,7 @@ namespace GenTools
         // public int Chance = 100;
         public List<GenTileAlgorithm> Algorithm = new();
     }
-
+    
     [System.Serializable]
     public class GenTileObjectData
     {

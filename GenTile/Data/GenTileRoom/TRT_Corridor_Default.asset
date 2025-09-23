@@ -18,6 +18,9 @@ MonoBehaviour:
   MaxSize: {x: 128, y: 128}
   Doors:
   - {fileID: 11400000, guid: dd7ae445d0e16131d8733935321bc475, type: 2}
+  OuterFloorTile:
+  - {fileID: 11400000, guid: e5b224ff15c4dd371916fbed3c848648, type: 2}
+  DoorCount: {x: 4, y: 4}
   Floor:
   - Tile: {fileID: 11400000, guid: dff12d1eb4fca04d59ee6de7a0138834, type: 2}
     Type: 0

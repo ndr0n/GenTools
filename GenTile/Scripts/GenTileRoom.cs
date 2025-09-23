@@ -42,6 +42,7 @@ namespace GenTools
         public GenTileRoomType Type;
         public Vector2Int Size;
         public Vector2Int Position;
+        readonly List<TileBase> roomTiles = new();
 
         [Header("Runtime")]
         public List<GenTileObject> PlacedFloor = new();
@@ -66,6 +67,7 @@ namespace GenTools
 
         public List<Vector2Int> PlaceTileRoom(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
+            roomTiles.Clear();
             foreach (var floorAlgo in Type.Floor) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Floor, floorAlgo, genTile, availablePositions, random);
             foreach (var wallAlgo in Type.Walls) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, availablePositions, random);
             availablePositions = PlaceDoors(genTile, availablePositions, random);
@@ -109,6 +111,7 @@ namespace GenTools
                     }
                 }
             }
+            if (!roomTiles.Contains(algorithm.Tile)) roomTiles.Add(algorithm.Tile);
             return availablePositions;
         }
 
@@ -116,22 +119,96 @@ namespace GenTools
         {
             if (Type.Doors.Count > 0)
             {
-                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
+                int doorCount = random.Next(Type.DoorCount.x, Type.DoorCount.y + 1);
+                List<CardinalDirection> directions = new() {CardinalDirection.South, CardinalDirection.West, CardinalDirection.North, CardinalDirection.East};
+                directions = directions.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
+                Tilemap tunnelTilemap = genTile.Tilemap[(int) GenTileType.Terrain];
+                Tilemap doorTilemap = genTile.Tilemap[(int) GenTileType.Terrain];
                 TileBase door = Type.Doors[random.Next(Type.Doors.Count)];
-                foreach (var tunnel in PlacedTunnels)
+
+                for (int i = 0; i < doorCount; i++)
                 {
-                    availablePositions.Remove(tunnel.OriginPoint);
-                    if (Type.PlaceDoorsInsideRoom)
+                    if (directions.Count == 0) break;
+                    CardinalDirection direction = directions[0];
+                    directions.RemoveAt(0);
+                    switch (direction)
                     {
-                        Vector3Int doorPosition = new Vector3Int(tunnel.OriginPoint.x, tunnel.OriginPoint.y, 0);
-                        tilemap.SetTile(doorPosition, door);
-                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(tunnel.OriginPoint.x - Position.x, tunnel.OriginPoint.y - Position.y)));
-                    }
-                    else
-                    {
-                        Vector3Int doorPosition = new Vector3Int(tunnel.Positions[0].x, tunnel.Positions[0].y, 0);
-                        tilemap.SetTile(doorPosition, door);
-                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(tunnel.Positions[0].x - Position.x, tunnel.Positions[0].y - Position.y)));
+                        case CardinalDirection.South:
+                            bool breakLoop1 = false;
+                            for (int x1 = Position.x + 1; x1 < Position.x + Size.x - 1; x1++)
+                            {
+                                int y1 = Position.y;
+                                Vector3Int doorPosition1 = new Vector3Int(x1, y1, 0);
+                                foreach (var floorTile in Type.OuterFloorTile)
+                                {
+                                    if (tunnelTilemap.GetTile(doorPosition1 + Vector3Int.down) == floorTile)
+                                    {
+                                        doorTilemap.SetTile(doorPosition1, door);
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x1, y1)));
+                                        breakLoop1 = true;
+                                        break;
+                                    }
+                                }
+                                if (breakLoop1) break;
+                            }
+                            break;
+                        case CardinalDirection.West:
+                            bool breakLoop2 = false;
+                            for (int y2 = Position.y + 1; y2 < Position.y + Size.y - 1; y2++)
+                            {
+                                int x2 = Position.x;
+                                Vector3Int doorPosition2 = new Vector3Int(x2, y2, 0);
+                                foreach (var floorTile in Type.OuterFloorTile)
+                                {
+                                    if (tunnelTilemap.GetTile(doorPosition2 + Vector3Int.left) == floorTile)
+                                    {
+                                        doorTilemap.SetTile(doorPosition2, door);
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x2, y2)));
+                                        breakLoop2 = true;
+                                        break;
+                                    }
+                                }
+                                if (breakLoop2) break;
+                            }
+                            break;
+                        case CardinalDirection.North:
+                            bool breakLoop3 = false;
+                            for (int x3 = Position.x + 1; x3 < Position.x + Size.x - 1; x3++)
+                            {
+                                int y3 = Position.y + Size.y - 1;
+                                Vector3Int doorPosition3 = new Vector3Int(x3, y3, 0);
+                                foreach (var floorTile in Type.OuterFloorTile)
+                                {
+                                    if (tunnelTilemap.GetTile(doorPosition3 + Vector3Int.up) == floorTile)
+                                    {
+                                        doorTilemap.SetTile(doorPosition3, door);
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x3, y3)));
+                                        breakLoop3 = true;
+                                        break;
+                                    }
+                                }
+                                if (breakLoop3) break;
+                            }
+                            break;
+                        case CardinalDirection.East:
+                            bool breakLoop4 = false;
+                            for (int y4 = Position.y + 1; y4 < Position.y + Size.y - 1; y4++)
+                            {
+                                int x4 = Position.x + Size.x - 1;
+                                Vector3Int doorPosition4 = new Vector3Int(x4, y4, 0);
+                                foreach (var floorTile in Type.OuterFloorTile)
+                                {
+                                    if (tunnelTilemap.GetTile(doorPosition4 + Vector3Int.right) == floorTile)
+                                    {
+                                        doorTilemap.SetTile(doorPosition4, door);
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x4, y4)));
+                                        breakLoop4 = true;
+                                        break;
+                                    }
+                                }
+                                if (breakLoop4) break;
+                            }
+                            break;
                     }
                 }
             }

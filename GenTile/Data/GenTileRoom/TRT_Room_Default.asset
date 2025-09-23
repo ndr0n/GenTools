@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 758cf2ccf13a4ae6a34a37b0288688e1, type: 3}
-  m_Name: RT_Room_Default
+  m_Name: TRT_Room_Default
   m_EditorClassIdentifier: Assembly-CSharp::GenTools.TileRoomType
   RoomTile:
   - {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}

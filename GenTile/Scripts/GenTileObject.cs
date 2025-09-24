@@ -16,11 +16,13 @@ namespace GenTools
     public struct GenTileObject
     {
         public TileBase Tile;
+        public GameObject Spawn;
         public Vector2Int Position;
 
-        public GenTileObject(TileBase tile, Vector2Int position)
+        public GenTileObject(TileBase tile, Vector2Int position, GameObject spawn)
         {
             Tile = tile;
+            Spawn = spawn;
             Position = position;
         }
     }

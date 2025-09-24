@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 namespace GenTools
@@ -95,9 +96,14 @@ namespace GenTools
                 {
                     foreach (var tile in MainRoomTile.RoomTile)
                     {
-                        if (GenTile.Tilemap[0].GetTile(new Vector3Int(x, y, 0)) == tile)
+                        Vector3Int pos = new Vector3Int(x, y, 0);
+                        if (GenTile.Tilemap[0].GetTile(pos) == tile)
                         {
-                            mainTileRoom.PlacedFloor.Add(new GenTileObject(tile, new Vector2Int(x, y)));
+                            TileData data = new();
+                            tile.GetTileData(pos, GenTile.Tilemap[0], ref data);
+                            GameObject spawn = data.gameObject;
+
+                            mainTileRoom.PlacedFloor.Add(new GenTileObject(tile, new Vector2Int(x, y), spawn));
                             break;
                         }
                     }

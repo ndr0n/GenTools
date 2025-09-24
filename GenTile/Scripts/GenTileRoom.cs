@@ -88,23 +88,29 @@ namespace GenTools
                 if (map[roomPosition.x, roomPosition.y] == value)
                 {
                     availablePositions.Remove(roomPosition);
-                    genTile.Tilemap[(int) algorithm.Type].SetTile(new Vector3Int(worldPosition.x, worldPosition.y, 0), algorithm.Tile);
+                    Vector3Int worldPos = new Vector3Int(worldPosition.x, worldPosition.y, 0);
+                    genTile.Tilemap[(int) algorithm.Type].SetTile(worldPos, algorithm.Tile);
+
+                    TileData data = new();
+                    algorithm.Tile.GetTileData(worldPos, genTile.Tilemap[(int) algorithm.Type], ref data);
+                    GameObject obj = data.gameObject;
+
                     switch (type)
                     {
                         case GenTileRoomObjectType.Floor:
-                            PlacedFloor.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            PlacedFloor.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
                             break;
                         case GenTileRoomObjectType.Door:
-                            PlacedDoors.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            PlacedDoors.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
                             break;
                         case GenTileRoomObjectType.Wall:
-                            PlacedWalls.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            PlacedWalls.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
                             break;
                         case GenTileRoomObjectType.Balcony:
-                            PlacedBalcony.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            PlacedBalcony.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
                             break;
                         case GenTileRoomObjectType.Object:
-                            PlacedObjects.Add(new GenTileObject(algorithm.Tile, roomPosition));
+                            PlacedObjects.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -144,7 +150,12 @@ namespace GenTools
                                     if (tunnelTilemap.GetTile(doorPosition1 + Vector3Int.down) == floorTile)
                                     {
                                         doorTilemap.SetTile(doorPosition1, door);
-                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x1, y1)));
+
+                                        TileData data = new();
+                                        door.GetTileData(doorPosition1, doorTilemap, ref data);
+                                        GameObject spawn = data.gameObject;
+
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x1, y1), spawn));
                                         breakLoop1 = true;
                                         break;
                                     }
@@ -163,7 +174,12 @@ namespace GenTools
                                     if (tunnelTilemap.GetTile(doorPosition2 + Vector3Int.left) == floorTile)
                                     {
                                         doorTilemap.SetTile(doorPosition2, door);
-                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x2, y2)));
+
+                                        TileData data = new();
+                                        door.GetTileData(doorPosition2, doorTilemap, ref data);
+                                        GameObject spawn = data.gameObject;
+
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x2, y2), spawn));
                                         breakLoop2 = true;
                                         break;
                                     }
@@ -182,7 +198,12 @@ namespace GenTools
                                     if (tunnelTilemap.GetTile(doorPosition3 + Vector3Int.up) == floorTile)
                                     {
                                         doorTilemap.SetTile(doorPosition3, door);
-                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x3, y3)));
+
+                                        TileData data = new();
+                                        door.GetTileData(doorPosition3, doorTilemap, ref data);
+                                        GameObject spawn = data.gameObject;
+
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x3, y3), spawn));
                                         breakLoop3 = true;
                                         break;
                                     }
@@ -201,7 +222,12 @@ namespace GenTools
                                     if (tunnelTilemap.GetTile(doorPosition4 + Vector3Int.right) == floorTile)
                                     {
                                         doorTilemap.SetTile(doorPosition4, door);
-                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x4, y4)));
+
+                                        TileData data = new();
+                                        door.GetTileData(doorPosition4, doorTilemap, ref data);
+                                        GameObject spawn = data.gameObject;
+
+                                        PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x4, y4), spawn));
                                         breakLoop4 = true;
                                         break;
                                     }
@@ -265,7 +291,12 @@ namespace GenTools
                         availablePositions.Remove(iterPositions[0]);
                         TileBase tile = obj.Tile[random.Next(obj.Tile.Count)];
                         tilemap.SetTile(pos, tile);
-                        PlacedObjects.Add(new GenTileObject(tile, iterPositions[0]));
+
+                        TileData data = new();
+                        tile.GetTileData(pos, tilemap, ref data);
+                        GameObject spawn = data.gameObject;
+
+                        PlacedObjects.Add(new GenTileObject(tile, iterPositions[0], spawn));
                         priority.AddRange(obj.Recursion);
                         // Tilegen.CollisionMap[pos.x, pos.y] = true;
                     }

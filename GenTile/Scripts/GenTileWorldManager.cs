@@ -15,7 +15,6 @@ namespace GenTools
         [Header("GenTile")]
         public Grid Grid;
         public GenTile GenTile;
-        public GenTile GenTileLoader;
         public bool RenderAdjacentTiles = false;
         public readonly List<GenTile> Adjacent = new List<GenTile>();
 
@@ -35,9 +34,10 @@ namespace GenTools
         public void ClearWorld()
         {
             GenTile.Clear();
-            GenTileLoader.Clear();
-            GenTileLoader.gameObject.SetActive(false);
-            foreach (var edge in Adjacent) DestroyImmediate(edge.gameObject);
+            foreach (var adj in Adjacent)
+            {
+                if (adj != null) DestroyImmediate(adj.gameObject);
+            }
             Adjacent.Clear();
         }
 
@@ -50,10 +50,6 @@ namespace GenTools
             GenTile.Width = worldMap.WorldAreaSize.x;
             GenTile.Height = worldMap.WorldAreaSize.z;
             GenTile.transform.position = Vector3.zero;
-            GenTileLoader.RandomSeed = false;
-            GenTileLoader.Width = worldMap.WorldAreaSize.x;
-            GenTileLoader.Height = worldMap.WorldAreaSize.z;
-            GenTileLoader.transform.position = Vector3.zero;
 
             Area = LoadWorldPosition(World, WorldPosition);
         }
@@ -68,6 +64,11 @@ namespace GenTools
             }
             Area = worldArea;
             ClearWorld();
+
+            GenTile loader = Instantiate(GenTile, GenTile.transform.parent);
+            loader.transform.position = GenTile.transform.position;
+            loader.transform.rotation = GenTile.transform.rotation;
+
             Area.Load(GenTile);
 
             List<Vector3> adjacentPositions = new()
@@ -77,16 +78,15 @@ namespace GenTools
                 new Vector3(0, 1, 0), new Vector3(0, -1, 0)
             };
 
-            GenTileLoader.gameObject.SetActive(true);
             foreach (var adj in adjacentPositions)
             {
                 GenTileArea adjacentArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition + adj);
                 if (adjacentArea != null)
                 {
-                    GenTile genTile = GenTileLoader;
+                    GenTile genTile = loader;
                     if (RenderAdjacentTiles)
                     {
-                        genTile = Instantiate(GenTileLoader, GenTile.transform.parent);
+                        genTile = Instantiate(loader, GenTile.transform.parent);
                         genTile.transform.position = GenTile.transform.position + (new Vector3(GenTile.Width * adj.x, GenTile.Height * adj.z, adj.y));
                         genTile.transform.rotation = GenTile.transform.rotation;
                         genTile.name = $"Adjacent-{adj}";
@@ -96,7 +96,9 @@ namespace GenTools
                     Debug.Log($"Loaded AdjacentPosition: {worldPosition}");
                 }
             }
-            GenTileLoader.gameObject.SetActive(false);
+
+            DestroyImmediate(loader.gameObject);
+
             Debug.Log($"Loaded WorldPosition: {worldPosition}");
             return Area;
         }

@@ -19,6 +19,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
       Algorithm:
       - Algorithm: 0
+        FillCount: {x: 0, y: 0}
         FillPercentage: {x: 100, y: 100}
         DegradePercentage: {x: 25, y: 75}
         Size: {x: 0, y: 0}
@@ -52,6 +53,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
       Algorithm:
       - Algorithm: 7
+        FillCount: {x: 0, y: 0}
         FillPercentage: {x: 50, y: 50}
         DegradePercentage: {x: 25, y: 75}
         Size: {x: 0, y: 0}
@@ -84,6 +86,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
       Algorithm:
       - Algorithm: 8
+        FillCount: {x: 0, y: 0}
         FillPercentage: {x: 50, y: 50}
         DegradePercentage: {x: 25, y: 75}
         Size: {x: 0, y: 0}
@@ -112,6 +115,7 @@ MonoBehaviour:
         Iterations: {x: 0, y: 0}
         Invert: 0
       - Algorithm: 5
+        FillCount: {x: 0, y: 0}
         FillPercentage: {x: 50, y: 50}
         DegradePercentage: {x: 25, y: 75}
         Size: {x: 0, y: 0}
@@ -144,6 +148,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
       Algorithm:
       - Algorithm: 6
+        FillCount: {x: 0, y: 0}
         FillPercentage: {x: 50, y: 50}
         DegradePercentage: {x: 25, y: 75}
         Size: {x: 0, y: 0}

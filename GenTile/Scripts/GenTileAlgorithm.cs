@@ -23,8 +23,9 @@ namespace GenTools
         public byte[,] Execute(byte[,] map, byte value, int seed)
         {
             Vector2Int size = new Vector2Int(map.GetLength(0) - (Offset.x * 2), map.GetLength(1) - (Offset.y * 2));
-            List<Vector2Int> availablePositions = new List<Vector2Int>();
             if (size.x < 0 || size.y < 0) return map;
+
+            List<Vector2Int> availablePositions = new List<Vector2Int>();
             byte[,] m = new byte[size.x, size.y];
             for (int x = 0; x < size.x; x++)
             {

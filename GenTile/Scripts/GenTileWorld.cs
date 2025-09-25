@@ -34,9 +34,9 @@ namespace GenTools
             Map = new();
             for (int x = 0; x < WorldSize.x; x++)
             {
-                for (int y = 0; y < WorldSize.y; y++)
+                for (int z = 0; z < WorldSize.z; z++)
                 {
-                    for (int z = 0; z < WorldSize.z; z++)
+                    for (int y = 0; y < WorldSize.y; y++)
                     {
                         GenTileAreaTemplate areaTemplate = null;
                         foreach (var template in WorldAreaTemplates.OrderBy(x => random.Next()))

@@ -19,6 +19,10 @@ namespace MindTheatre
         public List<GenTilePreset> Presets = new();
         public Vector3Int WorldPosition = Vector3Int.zero;
 
+        public virtual async Awaitable LoadAreaData(int seed, GenTile genTile)
+        {
+        }
+
         public void Load(GenTile genTile)
         {
             genTile.Seed = Seed;
@@ -34,7 +38,7 @@ namespace MindTheatre
             GenTileArea area = CreateInstance<GenTileArea>();
             area.Seed = seed;
             area.name = worldName;
-            area.WorldPosition = new Vector3Int(worldPosition.x, worldPosition.y, 0);
+            area.WorldPosition = new Vector3Int(worldPosition.x, worldPosition.y, worldPosition.z);
             SerializeArea(area, worldName, worldPosition);
             return area;
         }
@@ -44,7 +48,7 @@ namespace MindTheatre
             GenTileArea area = Instantiate(template);
             area.Seed = seed;
             area.name = worldName;
-            area.WorldPosition = new Vector3Int(worldPosition.x, worldPosition.y, 0);
+            area.WorldPosition = new Vector3Int(worldPosition.x, worldPosition.y, worldPosition.z);
             GenTileArea.SerializeArea(area, worldName, worldPosition);
             return area;
         }

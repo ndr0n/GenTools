@@ -20,10 +20,20 @@ namespace GenTools
         public Vector2Int Offset = new Vector2Int(0, 0);
         public List<GenTileAlgorithmData> Algorithm = new List<GenTileAlgorithmData>();
 
+        // public List<Vector2Int> Execute(List<Vector2Int> availablePositions, int seed)
+        // {
+        //     System.Random random = new(seed);
+        //     foreach (var algorithm in Algorithm)
+        //     {
+        //     }
+        // }
+
         public byte[,] Execute(byte[,] map, byte value, int seed)
         {
             Vector2Int size = new Vector2Int(map.GetLength(0) - (Offset.x * 2), map.GetLength(1) - (Offset.y * 2));
             if (size.x < 0 || size.y < 0) return map;
+
+            List<Vector2Int> available = new();
 
             byte[,] m = new byte[size.x, size.y];
             for (int x = 0; x < size.x; x++)
@@ -32,6 +42,7 @@ namespace GenTools
                 {
                     Vector2Int pos = new Vector2Int(x + Offset.x, y + Offset.y);
                     m[x, y] = map[pos.x, pos.y];
+                    available.Add(pos);
                 }
             }
 
@@ -40,16 +51,32 @@ namespace GenTools
                 switch (algorithm.Algorithm)
                 {
                     case GenTileAlgorithmType.Fill:
-                        m = GenTileAlgorithmLibrary.Fill(m, value, seed, algorithm.FillPercentage, algorithm.FillCount);
-                        break;
-                    case GenTileAlgorithmType.Degrade:
-                        m = GenTileAlgorithmLibrary.Degrade(m, value, seed, algorithm.DegradePercentage);
+                        algorithm.Fill.Count = algorithm.FillCount;
+                        algorithm.Fill.Percentage = algorithm.FillPercentage;
+                        List<Vector2Int> placedFill = algorithm.Fill.Execute(available, seed);
+                        foreach (var pos in placedFill)
+                        {
+                            available.Remove(pos);
+                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                        }
                         break;
                     case GenTileAlgorithmType.RandomWalk:
-                        m = GenTileAlgorithmLibrary.RandomWalk(m, value, seed, algorithm.Size);
+                        algorithm.RandomWalk.Percentage = algorithm.RandomWalkPercentage;
+                        List<Vector2Int> placedRandomWalk = algorithm.RandomWalk.Execute(available, seed);
+                        foreach (var pos in placedRandomWalk)
+                        {
+                            available.Remove(pos);
+                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                        }
                         break;
                     case GenTileAlgorithmType.PerlinNoise:
-                        m = GenTileAlgorithmLibrary.PerlinNoise(m, value, seed, algorithm.PerlinNoiseModifier);
+                        algorithm.PerlinNoise.Modifier = algorithm.PerlinNoiseModifier;
+                        List<Vector2Int> placedPerlinNoise = algorithm.PerlinNoise.Execute(available, seed);
+                        foreach (var pos in placedPerlinNoise)
+                        {
+                            available.Remove(pos);
+                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                        }
                         break;
                     case GenTileAlgorithmType.Tunnel:
                         m = GenTileAlgorithmLibrary.Tunnel(m, value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
@@ -90,7 +117,11 @@ namespace GenTools
     {
         public GenTileAlgorithmType Algorithm;
 
-        // FILL
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Fill)]
+#endif
+        public GTA_Fill Fill = new();
+
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Fill)]
 #endif
@@ -101,19 +132,24 @@ namespace GenTools
 #endif
         public Vector2Int FillPercentage = new Vector2Int(100, 100);
 
-        // DEGRADE
-#if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Degrade)]
-#endif
-        public Vector2Int DegradePercentage = new Vector2Int(25, 75);
-
         // RANDOM WALK
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.RandomWalk)]
 #endif
-        public Vector2Int Size = new Vector2Int(50, 200);
+        public GTA_RandomWalk RandomWalk = new();
+
+#if UNITY_EDITOR
+        [FormerlySerializedAs("Size")]
+        [DrawIf("Algorithm", GenTileAlgorithmType.RandomWalk)]
+#endif
+        public Vector2Int RandomWalkPercentage = new Vector2Int(50, 200);
 
         // PERLIN NOISE
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.RandomWalk)]
+#endif
+        public GTA_PerlinNoise PerlinNoise = new();
+
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.PerlinNoise)]
 #endif

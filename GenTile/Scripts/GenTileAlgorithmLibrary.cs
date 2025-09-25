@@ -8,7 +8,6 @@ namespace GenTools
     public enum GenTileAlgorithmType
     {
         Fill,
-        Degrade,
         RandomWalk,
         PerlinNoise,
         Tunnel,
@@ -22,112 +21,6 @@ namespace GenTools
 
     public static class GenTileAlgorithmLibrary
     {
-        #region Fill
-
-        public static byte[,] Fill(byte[,] map, byte value, int seed, Vector2Int percentage, Vector2Int count)
-        {
-            System.Random random = new(seed);
-            int _percentage = random.Next(percentage.x, percentage.y + 1);
-            int _count = random.Next(count.x, count.y + 1);
-            _count += Mathf.FloorToInt((map.GetLength(0) * map.GetLength(1)) * (_percentage / 100f));
-            if (_count <= 0) return map;
-
-            int c = 0;
-            List<Vector2Int> positions = new();
-            for (int x = 0; x < map.GetLength(0); x++)
-            {
-                for (int y = 0; y < map.GetLength(1); y++)
-                {
-                    positions.Add(new Vector2Int(x, y));
-                }
-            }
-            positions = positions.OrderBy(x => random.Next()).ToList();
-            foreach (var pos in positions)
-            {
-                if (c >= _count) return map;
-                map[pos.x, pos.y] = value;
-                c++;
-            }
-
-            return map;
-        }
-
-        #endregion
-
-        #region Degrade
-
-        public static byte[,] Degrade(byte[,] map, byte value, int seed, Vector2Int chance)
-        {
-            System.Random random = new(seed);
-            for (int x = 0; x < map.GetLength(0); x++)
-            {
-                for (int y = 0; y < map.GetLength(1); y++)
-                {
-                    if (map[x, y] == value)
-                    {
-                        int _chance = random.Next(chance.x, chance.y);
-                        if (random.Next(0, 100) < _chance) map[x, y] = 0;
-                    }
-                }
-            }
-            return map;
-        }
-
-        #endregion
-
-        #region RandomWalk
-
-        public static byte[,] RandomWalk(byte[,] map, byte value, int seed, Vector2Int size)
-        {
-            System.Random random = new(seed);
-            int x = random.Next(0, map.GetLength(0));
-            int y = random.Next(0, map.GetLength(1));
-            int _size = random.Next(size.x, size.y);
-
-            int count = ((map.GetLength(1) * map.GetLength(0)) * _size) / 100;
-
-            map[x, y] = value;
-
-            for (int i = 0; i < count; i++)
-            {
-                int randomDirection = random.Next(4);
-                switch (randomDirection)
-                {
-                    case 0: // Up
-                        if (y < (map.GetLength(1) - 1))
-                        {
-                            y++;
-                            map[x, y] = value;
-                        }
-                        break;
-                    case 1: // Down
-                        if (y >= 1)
-                        {
-                            y--;
-                            map[x, y] = value;
-                        }
-                        break;
-                    case 2: //Right
-                        if (x < (map.GetLength(0) - 1))
-                        {
-                            x++;
-                            map[x, y] = value;
-                        }
-                        break;
-                    case 3: //Left
-                        if (x >= 1)
-                        {
-                            x--;
-                            map[x, y] = value;
-                        }
-                        break;
-                }
-            }
-            return map;
-        }
-
-        #endregion
-
         #region PerlinNoise
 
         public static byte[,] PerlinNoise(byte[,] map, byte value, int seed, Vector2 modifier)

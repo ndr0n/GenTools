@@ -81,7 +81,7 @@ namespace GenTools
                 GenTile.Generate();
             }
 
-            foreach (var tileRoom in GenTile.GenTileRoomArea.PlacedRooms)
+            foreach (var tileRoom in GenTile.GenTileArea.PlacedRooms)
             {
                 GenRoomType innerRoomType = InnerRoomType[random.Next(0, InnerRoomType.Count)];
                 GenRoom innerRoom = await BuildRoomFromTileRoom(tileRoom, innerRoomType, 0);

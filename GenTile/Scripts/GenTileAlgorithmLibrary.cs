@@ -24,21 +24,32 @@ namespace GenTools
     {
         #region Fill
 
-        public static List<Vector2Int> Fill(List<Vector2Int> availablePositions, int seed, Vector2Int percentage, Vector2Int count)
+        public static byte[,] Fill(byte[,] map, byte value, int seed, Vector2Int percentage, Vector2Int count)
         {
-            List<Vector2Int> placed = new();
             System.Random random = new(seed);
             int _percentage = random.Next(percentage.x, percentage.y + 1);
             int _count = random.Next(count.x, count.y + 1);
-            _count += Mathf.FloorToInt((availablePositions.Count) * (_percentage / 100f));
-            if (_count <= 0) return placed;
+            _count += Mathf.FloorToInt((map.GetLength(0) * map.GetLength(1)) * (_percentage / 100f));
+            if (_count <= 0) return map;
 
-            foreach (var position in availablePositions.OrderBy(x => random.Next()))
+            int c = 0;
+            List<Vector2Int> positions = new();
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                if (placed.Count >= _count) break;
-                placed.Add(position);
+                for (int y = 0; y < map.GetLength(1); y++)
+                {
+                    positions.Add(new Vector2Int(x, y));
+                }
             }
-            return placed;
+            positions = positions.OrderBy(x => random.Next()).ToList();
+            foreach (var pos in positions)
+            {
+                if (c >= _count) return map;
+                map[pos.x, pos.y] = value;
+                c++;
+            }
+
+            return map;
         }
 
         #endregion

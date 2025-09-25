@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
+using Vector2Int = UnityEngine.Vector2Int;
 
 namespace GenTools
 {
@@ -18,12 +19,12 @@ namespace GenTools
     }
 
     [System.Serializable]
-    public class GenTileRoomArea : MonoBehaviour
+    public class GenTileArea : MonoBehaviour
     {
         public GenTile GenTile;
-        public List<TileBase> TunnelTile = new();
         public readonly List<GenTileRoom> PlacedRooms = new();
         public readonly List<Vector3Int> PlacedTunnels = new();
+        GenTileRoomType areaRoomType = null;
         System.Random random = new();
 
         public void Clear()
@@ -35,16 +36,50 @@ namespace GenTools
         public void Place()
         {
             Clear();
+
             random = new(GenTile.Seed);
-            CheckRooms();
+            if (GenTile.Preset.AreaRoomTypes.Count > 0) areaRoomType = GenTile.Preset.AreaRoomTypes[random.Next(GenTile.Preset.AreaRoomTypes.Count)];
+            else areaRoomType = null;
+
+            PlaceRooms();
             PlaceTunnels();
             PopulateRooms(PlacedRooms);
+
+            if (areaRoomType != null)
+            {
+                GenTileRoom areaRoom = new GenTileRoom(areaRoomType, new Vector2Int(GenTile.Width, GenTile.Height), new Vector2Int(0, 0));
+
+                List<Vector2Int> availablePositions = new();
+                for (int x = 0; x < areaRoom.Size.x; x++)
+                {
+                    for (int y = 0; y < areaRoom.Size.y; y++)
+                    {
+                        Vector2Int pos = new Vector2Int(x, y);
+                        bool canPlace = true;
+                        foreach (var room in PlacedRooms)
+                        {
+                            if (room.GetBoundsInt().Contains(new Vector3Int(pos.x, pos.y, 0)))
+                            {
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                        if (canPlace)
+                        {
+                            availablePositions.Add(new Vector2Int(pos.x + areaRoom.Position.x, pos.y + areaRoom.Position.y));
+                        }
+                    }
+                }
+                PlacedRooms.Insert(0, areaRoom);
+                availablePositions = areaRoom.PlaceTileRoom(GenTile, availablePositions, random);
+            }
+
             foreach (var tilemap in GenTile.Tilemap) tilemap.RefreshAllTiles();
         }
 
         #region Rooms
 
-        public void CheckRooms()
+        public void PlaceRooms()
         {
             PlacedRooms.Clear();
             for (int x = 0; x < GenTile.Width; x++)
@@ -70,7 +105,7 @@ namespace GenTools
                         {
                             foreach (var roomType in GenTile.Preset.RoomTypes)
                             {
-                                GenTileRoom room = CheckForRoom(GenTile.Tilemap[i], pos, roomType);
+                                GenTileRoom room = TryPlaceRoom(GenTile.Tilemap[i], pos, roomType);
                                 if (room != null)
                                 {
                                     PlacedRooms.Add(room);
@@ -85,7 +120,7 @@ namespace GenTools
             }
         }
 
-        GenTileRoom CheckForRoom(Tilemap tilemap, Vector3Int pos, GenTileRoomType roomType)
+        GenTileRoom TryPlaceRoom(Tilemap tilemap, Vector3Int pos, GenTileRoomType roomType)
         {
             foreach (var roomTile in roomType.RoomTile)
             {
@@ -183,23 +218,23 @@ namespace GenTools
         public void PlaceTunnels()
         {
             PlacedTunnels.Clear();
-            for (int x = 0; x < GenTile.Width; x++)
-            {
-                for (int y = 0; y < GenTile.Height; y++)
-                {
-                    foreach (var tm in GenTile.Tilemap)
-                    {
-                        foreach (var tunnelTile in TunnelTile)
-                        {
-                            Vector3Int pos = new Vector3Int(x, y, 0);
-                            if (tm.GetTile(pos) == tunnelTile)
-                            {
-                                if (!PlacedTunnels.Contains(pos)) PlacedTunnels.Add(pos);
-                            }
-                        }
-                    }
-                }
-            }
+            // for (int x = 0; x < GenTile.Width; x++)
+            // {
+            // for (int y = 0; y < GenTile.Height; y++)
+            // {
+            // foreach (var tm in GenTile.Tilemap)
+            // {
+            // foreach (var room in PlacedRooms)
+            // {
+            // Vector3Int pos = new Vector3Int(x, y, 0);
+            // if (tm.GetTile(pos) == tunnelTile)
+            // {
+            // if (!PlacedTunnels.Contains(pos)) PlacedTunnels.Add(pos);
+            // }
+            // }
+            // }
+            // }
+            // }
 
             foreach (var origin in PlacedRooms.OrderBy(x => random.Next(int.MinValue, int.MaxValue)))
             {

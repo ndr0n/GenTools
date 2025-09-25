@@ -36,8 +36,8 @@ namespace GenTools
         public bool RandomSeed = false;
         public int Seed = 0;
 
+        public GenTileArea GenTileArea;
         public List<GenTilePreset> Presets = new();
-        public GenTileRoomArea GenTileRoomArea;
 
         public List<byte[,]> Map = new();
         public bool[,] CollisionMap = new bool[0, 0];
@@ -52,7 +52,7 @@ namespace GenTools
             Map.Clear();
             layerData.Clear();
             foreach (var tilemap in Tilemap) tilemap.ClearAllTiles();
-            if (GenTileRoomArea != null) GenTileRoomArea.Clear();
+            if (GenTileArea != null) GenTileArea.Clear();
         }
 
         void Init()
@@ -153,7 +153,7 @@ namespace GenTools
             Iterate();
             Draw();
             Render(Map);
-            if (GenTileRoomArea != null) GenTileRoomArea.Place();
+            if (GenTileArea != null) GenTileArea.Place();
             return Map.ToList();
         }
 
@@ -162,7 +162,7 @@ namespace GenTools
             Clear();
             Init();
             Render(map);
-            if (GenTileRoomArea != null) GenTileRoomArea.Place();
+            if (GenTileArea != null) GenTileArea.Place();
         }
     }
 

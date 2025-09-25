@@ -25,7 +25,6 @@ namespace GenTools
             Vector2Int size = new Vector2Int(map.GetLength(0) - (Offset.x * 2), map.GetLength(1) - (Offset.y * 2));
             if (size.x < 0 || size.y < 0) return map;
 
-            List<Vector2Int> availablePositions = new List<Vector2Int>();
             byte[,] m = new byte[size.x, size.y];
             for (int x = 0; x < size.x; x++)
             {
@@ -33,7 +32,6 @@ namespace GenTools
                 {
                     Vector2Int pos = new Vector2Int(x + Offset.x, y + Offset.y);
                     m[x, y] = map[pos.x, pos.y];
-                    availablePositions.Add(pos);
                 }
             }
 
@@ -42,12 +40,7 @@ namespace GenTools
                 switch (algorithm.Algorithm)
                 {
                     case GenTileAlgorithmType.Fill:
-                        List<Vector2Int> placed = GenTileAlgorithmLibrary.Fill(availablePositions, seed, algorithm.FillPercentage, algorithm.FillCount);
-                        foreach (var pos in placed)
-                        {
-                            availablePositions.Remove(pos);
-                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
-                        }
+                        m = GenTileAlgorithmLibrary.Fill(m, value, seed, algorithm.FillPercentage, algorithm.FillCount);
                         break;
                     case GenTileAlgorithmType.Degrade:
                         m = GenTileAlgorithmLibrary.Degrade(m, value, seed, algorithm.DegradePercentage);

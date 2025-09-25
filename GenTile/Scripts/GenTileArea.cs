@@ -16,8 +16,16 @@ namespace MindTheatre
     {
         public int Seed = 0;
         public List<byte[,]> Map = null;
+        public List<GenTilePreset> Presets = new();
         public Vector3Int WorldPosition = Vector3Int.zero;
-        public List<GenTilePreset> GenTilePresets = new();
+
+        public void Load(GenTile genTile)
+        {
+            genTile.Seed = Seed;
+            genTile.Presets = Presets;
+            if (Map != null) genTile.RenderMap(Map);
+            else Map = genTile.Generate();
+        }
 
         #region Creation
 
@@ -44,7 +52,7 @@ namespace MindTheatre
         public static void SerializeArea(GenTileArea area, string worldName, Vector3Int worldPosition)
         {
 #if UNITY_EDITOR
-            string path = AssetDatabase.GenerateUniqueAssetPath($"Assets/Modules/GenTools/GenTile/Data/World/{worldName}/{worldName}_WT_X{worldPosition.x}Y{worldPosition.y}Z{worldPosition.z}.asset");
+            string path = AssetDatabase.GenerateUniqueAssetPath($"Assets/Modules/GenTools/GenTile/Data/World/{worldName}/{worldName}_A_X{worldPosition.x}Y{worldPosition.y}Z{worldPosition.z}.asset");
             AssetDatabase.CreateAsset(area, path);
             AssetDatabase.SaveAssets();
 #endif

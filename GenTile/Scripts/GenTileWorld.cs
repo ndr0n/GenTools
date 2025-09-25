@@ -14,7 +14,7 @@ namespace GenTools
     {
         public Vector3Int MinPosition;
         public Vector3Int MaxPosition;
-        public List<WorldTile> WorldAreaTemplate;
+        public List<WorldArea> WorldAreaTemplate;
     }
 
     [System.Serializable]
@@ -22,7 +22,7 @@ namespace GenTools
     public class GenTileWorld : ScriptableObject
     {
         public int WorldSeed = 0;
-        public List<WorldTile> Map = new();
+        public List<WorldArea> Map = new();
         public Vector3Int WorldSize = new Vector3Int(1, 1, 1);
         public Vector3Int WorldAreaSize = new Vector3Int(50, 1, 50);
         public List<GenTileAreaTemplate> WorldAreaTemplates = new();
@@ -49,8 +49,8 @@ namespace GenTools
                         }
                         if (areaTemplate == null) areaTemplate = WorldAreaTemplates[random.Next(WorldAreaTemplates.Count)];
                         int seed = random.Next(int.MinValue, int.MaxValue);
-                        WorldTile worldTile = WorldTile.CreateWorldTileFromTemplate(seed, areaTemplate.WorldAreaTemplate[random.Next(areaTemplate.WorldAreaTemplate.Count)], name, new Vector3Int(x, y, z));
-                        Map.Add(worldTile);
+                        WorldArea worldArea = WorldArea.CreateWorldTileFromTemplate(seed, areaTemplate.WorldAreaTemplate[random.Next(areaTemplate.WorldAreaTemplate.Count)], name, new Vector3Int(x, y, z));
+                        Map.Add(worldArea);
                     }
                 }
             }

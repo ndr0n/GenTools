@@ -129,7 +129,7 @@ namespace GenTools
                 List<CardinalDirection> directions = new() {CardinalDirection.South, CardinalDirection.West, CardinalDirection.North, CardinalDirection.East};
                 directions = directions.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
                 Tilemap tunnelTilemap = genTile.Tilemap[(int) GenTileType.Terrain];
-                Tilemap doorTilemap = genTile.Tilemap[(int) GenTileType.Terrain];
+                Tilemap doorTilemap = genTile.Tilemap[(int) GenTileType.Objects];
                 TileBase door = Type.Doors[random.Next(Type.Doors.Count)];
 
                 for (int i = 0; i < doorCount; i++)

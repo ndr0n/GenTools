@@ -13,7 +13,7 @@ namespace GenTools
     }
 
     [System.Serializable]
-    public struct GenTileObject
+    public class GenTileObject
     {
         public TileBase Tile;
         public GameObject Spawn;
@@ -33,7 +33,7 @@ namespace GenTools
         // public int Chance = 100;
         public List<GenTileAlgorithm> Algorithm = new();
     }
-    
+
     [System.Serializable]
     public class GenTileObjectData
     {

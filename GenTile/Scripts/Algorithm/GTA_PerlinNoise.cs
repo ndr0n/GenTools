@@ -6,7 +6,7 @@ namespace GenTools
     [System.Serializable]
     public class GTA_PerlinNoise : GenTileAlgo
     {
-        public Vector2 Modifier = new Vector2(0, 1);
+        public Vector2 Modifier = new Vector2(0, 0.25f);
 
         public override List<Vector2Int> Execute(List<Vector2Int> available, int seed)
         {

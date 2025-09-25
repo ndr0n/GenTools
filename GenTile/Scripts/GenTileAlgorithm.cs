@@ -79,7 +79,18 @@ namespace GenTools
                         }
                         break;
                     case GenTileAlgorithmType.Tunnel:
-                        m = GenTileAlgorithmLibrary.Tunnel(m, value, seed, algorithm.PathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
+                        algorithm.Tunnel.PathWidth = algorithm.TunnelPathWidth;
+                        algorithm.Tunnel.XBeginPercentage = algorithm.TunnelXBeginPercent;
+                        algorithm.Tunnel.XFinishPercentage = algorithm.TunnelXFinishPercent;
+                        algorithm.Tunnel.YBeginPercentage = algorithm.TunnelYBeginPercent;
+                        algorithm.Tunnel.YFinishPercentage = algorithm.TunnelYFinishPercent;
+                        List<Vector2Int> placedTunnel = algorithm.Tunnel.Execute(available, seed);
+                        foreach (var pos in placedTunnel)
+                        {
+                            available.Remove(pos);
+                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                        }
+                        // m = GenTileAlgorithmLibrary.Tunnel(m, value, seed, algorithm.TunnelPathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
                         break;
                     case GenTileAlgorithmType.Tunneler:
                         m = GenTileAlgorithmLibrary.Tunneler(m, value, seed, algorithm.TunnelerLifetime, algorithm.TunnelerChangePercentage, algorithm.TunnelerWidth, algorithm.TunnelerOverlap);
@@ -159,27 +170,31 @@ namespace GenTools
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Tunnel)]
 #endif
-        public Vector2Int PathWidth = new Vector2Int(2, 6);
+        public GTA_Tunnel Tunnel = new();
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Tunnel)]
 #endif
-        public Vector2 XBeginPercent = new Vector2(0, 100);
+        public Vector2Int TunnelPathWidth = new Vector2Int(2, 6);
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Tunnel)]
+#endif
+        public Vector2Int TunnelXBeginPercent = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Tunnel)]
 #endif
-        public Vector2 XFinishPercent = new Vector2(0, 100);
+        public Vector2Int TunnelXFinishPercent = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Tunnel)]
 #endif
-        public Vector2 YBeginPercent = new Vector2(0, 100);
+        public Vector2Int TunnelYBeginPercent = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Tunnel)]
 #endif
-        public Vector2 YFinishPercent = new Vector2(0, 100);
+        public Vector2Int TunnelYFinishPercent = new Vector2Int(0, 100);
 
         // TUNNELER
 #if UNITY_EDITOR

@@ -16,7 +16,6 @@ namespace GenTools
 
         [Header("Doors")]
         public List<TileBase> Doors = new();
-        public List<TileBase> OuterFloorTile = new();
         public Vector2Int DoorCount = new Vector2Int(4, 4);
 
         [Header("Building")]
@@ -27,7 +26,6 @@ namespace GenTools
 
         [Header("Tunneling")]
         public TileBase TunnelTile;
-        public bool PlaceDoorsInsideRoom = false;
         public Vector2Int TunnelAmount = new Vector2Int(4, 4);
         public TunnelingAlgorithm TunnelingAlgorithm = TunnelingAlgorithm.Directional;
     }

@@ -129,7 +129,7 @@ namespace GenTools
                 int doorCount = random.Next(Type.DoorCount.x, Type.DoorCount.y + 1);
                 List<CardinalDirection> directions = new() {CardinalDirection.South, CardinalDirection.West, CardinalDirection.North, CardinalDirection.East};
                 directions = directions.OrderBy(x => random.Next(int.MinValue, int.MaxValue)).ToList();
-                Tilemap tunnelTilemap = genTile.Tilemap[(int) GenTileType.Terrain];
+                Tilemap floorTilemap = genTile.Tilemap[(int) GenTileType.Terrain];
                 Tilemap doorTilemap = genTile.Tilemap[(int) GenTileType.Objects];
                 TileBase door = Type.Doors[random.Next(Type.Doors.Count)];
 
@@ -141,99 +141,96 @@ namespace GenTools
                     switch (direction)
                     {
                         case CardinalDirection.South:
-                            bool breakLoop1 = false;
-                            for (int x1 = Position.x + 1; x1 < Position.x + Size.x - 1; x1++)
+                            foreach (int x1 in GT.GetRandomIterArray(Position.x + 1, Position.x + Size.x - 1, random))
                             {
                                 int y1 = Position.y;
                                 Vector3Int doorPosition1 = new Vector3Int(x1, y1, 0);
-                                foreach (var floorTile in Type.OuterFloorTile)
+
+                                Vector3Int checkPosition = doorPosition1 + Vector3Int.down;
+                                if (floorTilemap.HasTile(checkPosition))
                                 {
-                                    if (tunnelTilemap.GetTile(doorPosition1 + Vector3Int.down) == floorTile)
+                                    // TileData checkData = new();
+                                    // door.GetTileData(checkPosition, floorTilemap, ref checkData);
+                                    if (genTile.CollisionMap[checkPosition.x, checkPosition.y] == false)
                                     {
                                         doorTilemap.SetTile(doorPosition1, door);
-
-                                        TileData data = new();
-                                        door.GetTileData(doorPosition1, doorTilemap, ref data);
-                                        GameObject spawn = data.gameObject;
-
+                                        TileData doorData = new();
+                                        door.GetTileData(doorPosition1, doorTilemap, ref doorData);
+                                        GameObject spawn = doorData.gameObject;
                                         PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x1, y1), spawn));
-                                        breakLoop1 = true;
                                         break;
                                     }
                                 }
-                                if (breakLoop1) break;
                             }
                             break;
                         case CardinalDirection.West:
-                            bool breakLoop2 = false;
-                            for (int y2 = Position.y + 1; y2 < Position.y + Size.y - 1; y2++)
+                            foreach (int y2 in GT.GetRandomIterArray(Position.y + 1, Position.y + Size.y - 1, random))
                             {
                                 int x2 = Position.x;
                                 Vector3Int doorPosition2 = new Vector3Int(x2, y2, 0);
-                                foreach (var floorTile in Type.OuterFloorTile)
+
+                                Vector3Int checkPosition = doorPosition2 + Vector3Int.left;
+                                if (floorTilemap.HasTile(checkPosition))
                                 {
-                                    if (tunnelTilemap.GetTile(doorPosition2 + Vector3Int.left) == floorTile)
+                                    // TileData checkData = new();
+                                    // door.GetTileData(checkPosition, floorTilemap, ref checkData);
+                                    if (genTile.CollisionMap[checkPosition.x, checkPosition.y] == false)
                                     {
                                         doorTilemap.SetTile(doorPosition2, door);
-
-                                        TileData data = new();
-                                        door.GetTileData(doorPosition2, doorTilemap, ref data);
-                                        GameObject spawn = data.gameObject;
-
+                                        TileData doorData = new();
+                                        door.GetTileData(doorPosition2, doorTilemap, ref doorData);
+                                        GameObject spawn = doorData.gameObject;
                                         PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x2, y2), spawn));
-                                        breakLoop2 = true;
                                         break;
                                     }
                                 }
-                                if (breakLoop2) break;
                             }
                             break;
                         case CardinalDirection.North:
-                            bool breakLoop3 = false;
-                            for (int x3 = Position.x + 1; x3 < Position.x + Size.x - 1; x3++)
+                            foreach (int x3 in GT.GetRandomIterArray(Position.x + 1, Position.x + Size.x - 1, random))
                             {
                                 int y3 = Position.y + Size.y - 1;
                                 Vector3Int doorPosition3 = new Vector3Int(x3, y3, 0);
-                                foreach (var floorTile in Type.OuterFloorTile)
+
+                                Vector3Int checkPosition = doorPosition3 + Vector3Int.up;
+                                if (floorTilemap.HasTile(checkPosition))
                                 {
-                                    if (tunnelTilemap.GetTile(doorPosition3 + Vector3Int.up) == floorTile)
+                                    // TileData checkData = new();
+                                    // door.GetTileData(checkPosition, floorTilemap, ref checkData);
+                                    // Debug.Log($"Check North! {checkData.colliderType}");
+                                    if (genTile.CollisionMap[checkPosition.x, checkPosition.y] == false)
                                     {
                                         doorTilemap.SetTile(doorPosition3, door);
-
-                                        TileData data = new();
-                                        door.GetTileData(doorPosition3, doorTilemap, ref data);
-                                        GameObject spawn = data.gameObject;
-
+                                        TileData doorData = new();
+                                        door.GetTileData(doorPosition3, doorTilemap, ref doorData);
+                                        GameObject spawn = doorData.gameObject;
                                         PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x3, y3), spawn));
-                                        breakLoop3 = true;
                                         break;
                                     }
                                 }
-                                if (breakLoop3) break;
                             }
                             break;
                         case CardinalDirection.East:
-                            bool breakLoop4 = false;
-                            for (int y4 = Position.y + 1; y4 < Position.y + Size.y - 1; y4++)
+                            foreach (int y4 in GT.GetRandomIterArray(Position.y + 1, Position.y + Size.y - 1, random))
                             {
                                 int x4 = Position.x + Size.x - 1;
                                 Vector3Int doorPosition4 = new Vector3Int(x4, y4, 0);
-                                foreach (var floorTile in Type.OuterFloorTile)
+
+                                Vector3Int checkPosition = doorPosition4 + Vector3Int.right;
+                                if (floorTilemap.HasTile(checkPosition))
                                 {
-                                    if (tunnelTilemap.GetTile(doorPosition4 + Vector3Int.right) == floorTile)
+                                    // TileData checkData = new();
+                                    // door.GetTileData(checkPosition, floorTilemap, ref checkData);
+                                    if (genTile.CollisionMap[checkPosition.x, checkPosition.y] == false)
                                     {
                                         doorTilemap.SetTile(doorPosition4, door);
-
-                                        TileData data = new();
-                                        door.GetTileData(doorPosition4, doorTilemap, ref data);
-                                        GameObject spawn = data.gameObject;
-
+                                        TileData doorData = new();
+                                        door.GetTileData(doorPosition4, doorTilemap, ref doorData);
+                                        GameObject spawn = doorData.gameObject;
                                         PlacedDoors.Add(new GenTileObject(door, new Vector2Int(x4, y4), spawn));
-                                        breakLoop4 = true;
                                         break;
                                     }
                                 }
-                                if (breakLoop4) break;
                             }
                             break;
                     }

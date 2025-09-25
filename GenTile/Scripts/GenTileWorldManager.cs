@@ -41,8 +41,16 @@ namespace GenTools
             Adjacent.Clear();
         }
 
-        public virtual void InitWorld(GenTileWorld worldMap)
+        public void Rebuild(GenTileWorld world, Vector3Int worldPosition)
         {
+            GenTileArea worldArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition);
+            worldArea.Map.Clear();
+            Build(world, worldPosition);
+        }
+
+        public virtual void Build(GenTileWorld worldMap, Vector3Int worldPosition)
+        {
+            WorldPosition = worldPosition;
             ClearWorld();
             if (World.Map.Count == 0) World.Generate();
 
@@ -111,7 +119,8 @@ namespace GenTools
         {
             base.OnInspectorGUI();
             GenTileWorldManager genTileWorldManager = (GenTileWorldManager) target;
-            if (GUILayout.Button("Build")) genTileWorldManager.InitWorld(genTileWorldManager.World);
+            if (GUILayout.Button("Build")) genTileWorldManager.Build(genTileWorldManager.World, genTileWorldManager.WorldPosition);
+            if (GUILayout.Button("Rebuild")) genTileWorldManager.Rebuild(genTileWorldManager.World, genTileWorldManager.WorldPosition);
             if (GUILayout.Button("Clear")) genTileWorldManager.ClearWorld();
             if (genTileWorldManager.WorldEditor)
             {

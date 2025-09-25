@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f48c63866084bd2b73becea9b8c0400, type: 3}
+  m_Name: Neosig
+  m_EditorClassIdentifier: Assembly-CSharp::GenTools.GenTileWorld
+  WorldSeed: -1078483312
+  Map: []
+  WorldSize: {x: 1, y: 1, z: 1}
+  WorldAreaSize: {x: 50, y: 1, z: 50}
+  WorldAreaTemplates:
+  - MinPosition: {x: 0, y: 0, z: 0}
+    MaxPosition: {x: 0, y: 0, z: 0}
+    WorldAreaTemplate:
+    - {fileID: 11400000, guid: 4f3790483f05b51a2952d752027b15b0, type: 2}

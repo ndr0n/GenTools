@@ -37,11 +37,7 @@ namespace GenTools
         public int Seed = 0;
 
         public List<GenTilePreset> Presets = new();
-
-        // public bool ShowPresetEditor = false;
-
-        [Header("Extensions")]
-        public GenTileRoomPlacer GenTileRoomPlacer;
+        public GenTileRoomArea GenTileRoomArea;
 
         public List<byte[,]> Map = new();
         public bool[,] CollisionMap = new bool[0, 0];
@@ -56,7 +52,7 @@ namespace GenTools
             Map.Clear();
             layerData.Clear();
             foreach (var tilemap in Tilemap) tilemap.ClearAllTiles();
-            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Clear();
+            if (GenTileRoomArea != null) GenTileRoomArea.Clear();
         }
 
         void Init()
@@ -157,7 +153,7 @@ namespace GenTools
             Iterate();
             Draw();
             Render(Map);
-            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
+            if (GenTileRoomArea != null) GenTileRoomArea.Place();
             return Map.ToList();
         }
 
@@ -166,7 +162,7 @@ namespace GenTools
             Clear();
             Init();
             Render(map);
-            if (GenTileRoomPlacer != null) GenTileRoomPlacer.Generate();
+            if (GenTileRoomArea != null) GenTileRoomArea.Place();
         }
     }
 

@@ -164,7 +164,7 @@ MonoBehaviour:
         TunnelerOverlap: 0
         RoomerChance: {x: 100, y: 100}
         RoomerWidth: {x: 3, y: 20}
-        RoomerHeight: {x: 2, y: 20}
+        RoomerHeight: {x: 3, y: 20}
         Percentage: {x: 100, y: 100}
         Offset: {x: 1, y: 1}
         MinRoomWidth: {x: 6, y: 12}

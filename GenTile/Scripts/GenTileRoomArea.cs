@@ -18,7 +18,7 @@ namespace GenTools
     }
 
     [System.Serializable]
-    public class GenTileRoomPlacer : MonoBehaviour
+    public class GenTileRoomArea : MonoBehaviour
     {
         public GenTile GenTile;
         public List<TileBase> TunnelTile = new();
@@ -32,7 +32,7 @@ namespace GenTools
             PlacedTunnels.Clear();
         }
 
-        public void Generate()
+        public void Place()
         {
             Clear();
             random = new(GenTile.Seed);
@@ -214,7 +214,7 @@ namespace GenTools
                 }
             }
         }
-        
+
         public void PlaceTunnelsDirectional(GenTileRoom origin)
         {
             int tunnelCount = random.Next(origin.Type.TunnelAmount.x, origin.Type.TunnelAmount.y + 1);

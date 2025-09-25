@@ -4,6 +4,7 @@ using GenTools;
 using MindTheatre;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GenTools
 {
@@ -22,7 +23,8 @@ namespace GenTools
         public GenTileWorld World;
         public Vector3Int WorldPosition = new Vector3Int(0, 0, 0);
         public bool WorldEditor;
-        public GenTileArea Area;
+        [FormerlySerializedAs("Area")]
+        public GenTileWorldArea WorldArea;
         public bool AreaEditor;
 
         void Awake()
@@ -43,8 +45,8 @@ namespace GenTools
 
         public void Rebuild(GenTileWorld world, Vector3Int worldPosition)
         {
-            GenTileArea worldArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition);
-            worldArea.Map.Clear();
+            GenTileWorldArea worldArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition);
+            worldArea.Map = null;
             Build(world, worldPosition);
         }
 
@@ -59,25 +61,25 @@ namespace GenTools
             GenTile.Height = worldMap.WorldAreaSize.z;
             GenTile.transform.position = Vector3.zero;
 
-            Area = LoadWorldPosition(World, WorldPosition);
+            WorldArea = LoadWorldPosition(World, WorldPosition);
         }
 
-        public GenTileArea LoadWorldPosition(GenTileWorld world, Vector3Int worldPosition)
+        public GenTileWorldArea LoadWorldPosition(GenTileWorld world, Vector3Int worldPosition)
         {
-            GenTileArea worldArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition);
-            if (worldArea == null)
+            GenTileWorldArea worldWorldArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition);
+            if (worldWorldArea == null)
             {
                 Debug.LogError($"World Position {worldPosition} has no Area!");
                 return null;
             }
-            Area = worldArea;
+            WorldArea = worldWorldArea;
             ClearWorld();
 
             GenTile loader = Instantiate(GenTile, GenTile.transform.parent);
             loader.transform.position = GenTile.transform.position;
             loader.transform.rotation = GenTile.transform.rotation;
 
-            Area.Load(GenTile);
+            WorldArea.Load(GenTile);
 
             List<Vector3> adjacentPositions = new()
             {
@@ -88,8 +90,8 @@ namespace GenTools
 
             foreach (var adj in adjacentPositions)
             {
-                GenTileArea adjacentArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition + adj);
-                if (adjacentArea != null)
+                GenTileWorldArea adjacentWorldArea = world.Map.FirstOrDefault(x => x.WorldPosition == worldPosition + adj);
+                if (adjacentWorldArea != null)
                 {
                     GenTile genTile = loader;
                     if (RenderAdjacentTiles)
@@ -100,7 +102,7 @@ namespace GenTools
                         genTile.name = $"Adjacent-{adj}";
                         Adjacent.Add(genTile);
                     }
-                    adjacentArea.Load(genTile);
+                    adjacentWorldArea.Load(genTile);
                     Debug.Log($"Loaded AdjacentPosition: {worldPosition}");
                 }
             }
@@ -108,7 +110,7 @@ namespace GenTools
             DestroyImmediate(loader.gameObject);
 
             Debug.Log($"Loaded WorldPosition: {worldPosition}");
-            return Area;
+            return WorldArea;
         }
     }
 #if UNITY_EDITOR
@@ -128,7 +130,7 @@ namespace GenTools
             }
             if (genTileWorldManager.AreaEditor)
             {
-                if (genTileWorldManager.Area != null) CreateEditor(genTileWorldManager.Area).OnInspectorGUI();
+                if (genTileWorldManager.WorldArea != null) CreateEditor(genTileWorldManager.WorldArea).OnInspectorGUI();
             }
         }
     }

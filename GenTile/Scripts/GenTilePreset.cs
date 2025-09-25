@@ -16,5 +16,6 @@ namespace GenTools
     {
         public List<TilegenLayer> Layer = new();
         public List<GenTileRoomType> RoomTypes = new();
+        public List<GenTileRoomType> AreaRoomTypes = new();
     }
 }

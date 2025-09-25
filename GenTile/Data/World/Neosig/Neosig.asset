@@ -12,18 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f48c63866084bd2b73becea9b8c0400, type: 3}
   m_Name: Neosig
   m_EditorClassIdentifier: Assembly-CSharp::GenTools.GenTileWorld
-  WorldSeed: -464417173
-  Map:
-  - {fileID: 11400000, guid: 0e0fd0d7040dbed9cbcd057f308251f9, type: 2}
-  - {fileID: 11400000, guid: 0026bdfef1b2f4706a1ee32dc84bf601, type: 2}
-  - {fileID: 11400000, guid: 8fe439d087e8738fe80daf96697d8cc9, type: 2}
-  - {fileID: 11400000, guid: dd4b409eaf712f868afba4013ea5cd41, type: 2}
-  - {fileID: 11400000, guid: 93bfe580085a0813d818e069bb45562a, type: 2}
-  - {fileID: 11400000, guid: 1b7cde04e899b207798e4cf8d30bd958, type: 2}
-  - {fileID: 11400000, guid: b6289d72ed4491fd093bd470d2f711e7, type: 2}
-  - {fileID: 11400000, guid: b3b47ae135123bc5ebe3bc88d1891eef, type: 2}
-  - {fileID: 11400000, guid: 441b190c3ca8216d49b66e46749eaf55, type: 2}
-  WorldSize: {x: 3, y: 1, z: 3}
+  WorldSeed: 1060026196
+  Map: []
+  WorldSize: {x: 1, y: 1, z: 1}
   WorldAreaSize: {x: 50, y: 1, z: 50}
   WorldAreaTemplates:
   - MinPosition: {x: 0, y: 0, z: 0}

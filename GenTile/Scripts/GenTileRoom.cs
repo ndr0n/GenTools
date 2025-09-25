@@ -94,24 +94,24 @@ namespace GenTools
 
                     TileData data = new();
                     algorithm.Tile.GetTileData(worldPos, genTile.Tilemap[(int) algorithm.Type], ref data);
-                    GameObject obj = data.gameObject;
+                    GameObject spawn = data.gameObject;
 
                     switch (type)
                     {
                         case GenTileRoomObjectType.Floor:
-                            PlacedFloor.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
+                            PlacedFloor.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
                             break;
                         case GenTileRoomObjectType.Door:
-                            PlacedDoors.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
+                            PlacedDoors.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
                             break;
                         case GenTileRoomObjectType.Wall:
-                            PlacedWalls.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
+                            PlacedWalls.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
                             break;
                         case GenTileRoomObjectType.Balcony:
-                            PlacedBalcony.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
+                            PlacedBalcony.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
                             break;
                         case GenTileRoomObjectType.Object:
-                            PlacedObjects.Add(new GenTileObject(algorithm.Tile, roomPosition, obj));
+                            PlacedObjects.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(type), type, null);

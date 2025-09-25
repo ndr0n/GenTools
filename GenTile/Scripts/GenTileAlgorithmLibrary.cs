@@ -24,7 +24,7 @@ namespace GenTools
     {
         #region Fill
 
-        public static List<Vector2Int> Fill(List<Vector2Int> availablePositions, byte value, int seed, Vector2Int percentage, Vector2Int count)
+        public static List<Vector2Int> Fill(List<Vector2Int> availablePositions, int seed, Vector2Int percentage, Vector2Int count)
         {
             List<Vector2Int> placed = new();
             System.Random random = new(seed);
@@ -38,7 +38,6 @@ namespace GenTools
                 if (placed.Count >= _count) break;
                 placed.Add(position);
             }
-            foreach (var pos in placed) availablePositions.Remove(pos);
             return placed;
         }
 

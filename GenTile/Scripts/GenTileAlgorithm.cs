@@ -42,8 +42,12 @@ namespace GenTools
                 switch (algorithm.Algorithm)
                 {
                     case GenTileAlgorithmType.Fill:
-                        List<Vector2Int> placed = GenTileAlgorithmLibrary.Fill(availablePositions, value, seed, algorithm.FillPercentage, algorithm.FillCount);
-                        foreach (var pos in placed) m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                        List<Vector2Int> placed = GenTileAlgorithmLibrary.Fill(availablePositions, seed, algorithm.FillPercentage, algorithm.FillCount);
+                        foreach (var pos in placed)
+                        {
+                            availablePositions.Remove(pos);
+                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                        }
                         break;
                     case GenTileAlgorithmType.Degrade:
                         m = GenTileAlgorithmLibrary.Degrade(m, value, seed, algorithm.DegradePercentage);

@@ -16,25 +16,30 @@ namespace GenTools
         Roomer,
         BinarySpacePartition,
         Walls,
-        WaveFunctionCollapse
+        WaveFunctionCollapse,
+        Random
     }
 
     public static class GenTileAlgorithmLibrary
     {
         #region Fill
 
-        public static byte[,] Fill(byte[,] map, byte value, int seed, Vector2Int percentage)
+        public static List<Vector2Int> Fill(List<Vector2Int> availablePositions, byte value, int seed, Vector2Int percentage, Vector2Int count)
         {
+            List<Vector2Int> placed = new();
             System.Random random = new(seed);
-            int _percentage = random.Next(percentage.x, percentage.y);
-            for (int x = 0; x < map.GetLength(0); x++)
+            int _percentage = random.Next(percentage.x, percentage.y + 1);
+            int _count = random.Next(count.x, count.y + 1);
+            _count += Mathf.FloorToInt((availablePositions.Count) * (_percentage / 100f));
+            if (_count <= 0) return placed;
+
+            foreach (var position in availablePositions.OrderBy(x => random.Next()))
             {
-                for (int y = 0; y < map.GetLength(1); y++)
-                {
-                    if (random.Next(0, 100) < _percentage) map[x, y] = value;
-                }
+                if (placed.Count >= _count) break;
+                placed.Add(position);
             }
-            return map;
+            foreach (var pos in placed) availablePositions.Remove(pos);
+            return placed;
         }
 
         #endregion

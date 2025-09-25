@@ -23,6 +23,7 @@ namespace GenTools
         public byte[,] Execute(byte[,] map, byte value, int seed)
         {
             Vector2Int size = new Vector2Int(map.GetLength(0) - (Offset.x * 2), map.GetLength(1) - (Offset.y * 2));
+            List<Vector2Int> availablePositions = new List<Vector2Int>();
             if (size.x < 0 || size.y < 0) return map;
             byte[,] m = new byte[size.x, size.y];
             for (int x = 0; x < size.x; x++)
@@ -31,6 +32,7 @@ namespace GenTools
                 {
                     Vector2Int pos = new Vector2Int(x + Offset.x, y + Offset.y);
                     m[x, y] = map[pos.x, pos.y];
+                    availablePositions.Add(pos);
                 }
             }
 
@@ -39,7 +41,8 @@ namespace GenTools
                 switch (algorithm.Algorithm)
                 {
                     case GenTileAlgorithmType.Fill:
-                        m = GenTileAlgorithmLibrary.Fill(m, value, seed, algorithm.FillPercentage);
+                        List<Vector2Int> placed = GenTileAlgorithmLibrary.Fill(availablePositions, value, seed, algorithm.FillPercentage, algorithm.FillCount);
+                        foreach (var pos in placed) m[pos.x - Offset.x, pos.y - Offset.y] = value;
                         break;
                     case GenTileAlgorithmType.Degrade:
                         m = GenTileAlgorithmLibrary.Degrade(m, value, seed, algorithm.DegradePercentage);
@@ -90,6 +93,11 @@ namespace GenTools
         public GenTileAlgorithmType Algorithm;
 
         // FILL
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.Fill)]
+#endif
+        public Vector2Int FillCount = new Vector2Int(0, 0);
+
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.Fill)]
 #endif

@@ -23,7 +23,7 @@ namespace GenTools
         public List<GenTileAlgorithm> Floor = new();
         public List<GenTileAlgorithm> Walls = new();
         public List<GenTileAlgorithm> Balcony = new();
-        public List<GenTileObjectData> Objects = new();
+        public List<GenTileAlgorithm> Objects = new();
 
         [Header("Tunneling")]
         public TileBase TunnelTile;

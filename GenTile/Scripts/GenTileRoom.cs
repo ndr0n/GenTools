@@ -72,7 +72,8 @@ namespace GenTools
             foreach (var wallAlgo in Type.Walls) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, availablePositions, random);
             availablePositions = PlaceDoors(genTile, availablePositions, random);
             foreach (var wallAlgo in Type.Balcony) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Balcony, wallAlgo, genTile, availablePositions, random);
-            availablePositions = PlaceObjects(genTile, availablePositions, random);
+            foreach (var objectAlgo in Type.Objects) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Object, objectAlgo, genTile, availablePositions, random);
+            // availablePositions = PlaceObjects(genTile, availablePositions, random);
             return availablePositions;
         }
 
@@ -248,61 +249,62 @@ namespace GenTools
 
         public List<Vector2Int> PlaceObjects(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
-            List<GenTileObjectData> toPlace = new();
-            List<Vector2Int> possiblePosition = new();
-
-            if (Type.Objects.Count > 0)
-            {
-                Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
-                foreach (var pos in availablePositions) possiblePosition.Add(pos);
-                foreach (var obj in Type.Objects)
-                {
-                    for (int i = 0; i < obj.Amount; i++) toPlace.Add(obj);
-                }
-
-                List<GenTileObjectData> priority = new();
-                foreach (var placer in toPlace)
-                {
-                    GenTileObjectData obj = placer;
-                    if (priority.Count > 0)
-                    {
-                        obj = priority[0];
-                        priority.RemoveAt(0);
-                    }
-                    List<Vector2Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
-                    switch (obj.PlacementRules)
-                    {
-                        case GenTilePlacementRules.Any:
-                            break;
-                        case GenTilePlacementRules.Inner:
-                            iterPositions = iterPositions.Where(x => x.x != Position.x && x.x != (Position.x + Size.x - 1) && x.y != Position.y && x.y != (Position.y + Size.y - 1)).ToList();
-                            break;
-                        case GenTilePlacementRules.Outer:
-                            iterPositions = iterPositions.Where(x => x.x == Position.x || x.x == (Position.x + Size.x - 1) || x.y == Position.y || x.y == (Position.y + Size.y - 1)).ToList();
-                            break;
-                    }
-                    if (iterPositions.Count == 0) continue;
-
-                    Vector3Int pos = new Vector3Int(iterPositions[0].x, iterPositions[0].y, 0);
-                    if (tilemap.GetTile(pos) != null) continue;
-                    if (random.Next(0, 100) < obj.Chance)
-                    {
-                        possiblePosition.Remove(iterPositions[0]);
-                        availablePositions.Remove(iterPositions[0]);
-                        TileBase tile = obj.Tile[random.Next(obj.Tile.Count)];
-                        tilemap.SetTile(pos, tile);
-
-                        TileData data = new();
-                        tile.GetTileData(pos, tilemap, ref data);
-                        GameObject spawn = data.gameObject;
-
-                        PlacedObjects.Add(new GenTileObject(tile, iterPositions[0], spawn));
-                        priority.AddRange(obj.Recursion);
-                        // Tilegen.CollisionMap[pos.x, pos.y] = true;
-                    }
-                }
-            }
-            return availablePositions;
+            // List<GenTileObjectData> toPlace = new();
+            // List<Vector2Int> possiblePosition = new();
+            //
+            // if (Type.Objects.Count > 0)
+            // {
+            //     Tilemap tilemap = genTile.Tilemap[(int) GenTileType.Objects];
+            //     foreach (var pos in availablePositions) possiblePosition.Add(pos);
+            //     foreach (var obj in Type.Objects)
+            //     {
+            //         for (int i = 0; i < obj.Amount; i++) toPlace.Add(obj);
+            //     }
+            //
+            //     List<GenTileObjectData> priority = new();
+            //     foreach (var placer in toPlace)
+            //     {
+            //         GenTileObjectData obj = placer;
+            //         if (priority.Count > 0)
+            //         {
+            //             obj = priority[0];
+            //             priority.RemoveAt(0);
+            //         }
+            //         List<Vector2Int> iterPositions = possiblePosition.OrderBy(x => random.Next()).ToList();
+            //         switch (obj.PlacementRules)
+            //         {
+            //             case GenTilePlacementRules.Any:
+            //                 break;
+            //             case GenTilePlacementRules.Inner:
+            //                 iterPositions = iterPositions.Where(x => x.x != Position.x && x.x != (Position.x + Size.x - 1) && x.y != Position.y && x.y != (Position.y + Size.y - 1)).ToList();
+            //                 break;
+            //             case GenTilePlacementRules.Outer:
+            //                 iterPositions = iterPositions.Where(x => x.x == Position.x || x.x == (Position.x + Size.x - 1) || x.y == Position.y || x.y == (Position.y + Size.y - 1)).ToList();
+            //                 break;
+            //         }
+            //         if (iterPositions.Count == 0) continue;
+            //
+            //         Vector3Int pos = new Vector3Int(iterPositions[0].x, iterPositions[0].y, 0);
+            //         if (tilemap.GetTile(pos) != null) continue;
+            //         if (random.Next(0, 100) < obj.Chance)
+            //         {
+            //             possiblePosition.Remove(iterPositions[0]);
+            //             availablePositions.Remove(iterPositions[0]);
+            //             TileBase tile = obj.Tile[random.Next(obj.Tile.Count)];
+            //             tilemap.SetTile(pos, tile);
+            //
+            //             TileData data = new();
+            //             tile.GetTileData(pos, tilemap, ref data);
+            //             GameObject spawn = data.gameObject;
+            //
+            //             PlacedObjects.Add(new GenTileObject(tile, iterPositions[0], spawn));
+            //             priority.AddRange(obj.Recursion);
+            //             // Tilegen.CollisionMap[pos.x, pos.y] = true;
+            //         }
+            //     }
+            // }
+            // return availablePositions;
+            return null;
         }
     }
 }

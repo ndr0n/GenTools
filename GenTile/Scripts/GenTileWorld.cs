@@ -27,7 +27,7 @@ namespace GenTools
         public Vector3Int WorldAreaSize = new Vector3Int(50, 1, 50);
         public List<GenTileAreaTemplate> WorldAreaTemplates = new();
 
-        public void Generate()
+        public virtual void Generate()
         {
             WorldSeed = Random.Range(int.MinValue, int.MaxValue);
             System.Random random = new System.Random(WorldSeed);

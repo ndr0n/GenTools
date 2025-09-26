@@ -23,7 +23,6 @@ namespace GenTools
         public GenTileWorld World;
         public Vector3Int WorldPosition = new Vector3Int(0, 0, 0);
         public bool WorldEditor;
-        [FormerlySerializedAs("Area")]
         public GenTileWorldArea WorldArea;
         public bool AreaEditor;
 

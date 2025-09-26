@@ -15,7 +15,7 @@ namespace MindTheatre
     public class GenTileWorldArea : ScriptableObject
     {
         public int Seed = 0;
-        public List<byte[,]> Map = null;
+        public List<int[,]> Map = null;
         public List<GenTilePreset> Presets = new();
         public Vector3Int WorldPosition = Vector3Int.zero;
 

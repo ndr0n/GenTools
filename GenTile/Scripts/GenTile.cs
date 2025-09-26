@@ -16,13 +16,13 @@ namespace GenTools
     public struct GenTileLayerData
     {
         public int Layer;
-        public List<byte[,]> Map;
+        public List<int[,]> Map;
 
         public GenTileLayerData(int layer, int width, int height)
         {
             Layer = layer;
             Map = new();
-            for (int i = 0; i < Enum.GetNames(typeof(GenTileType)).Length; i++) Map.Add(new byte[width, height]);
+            for (int i = 0; i < Enum.GetNames(typeof(GenTileType)).Length; i++) Map.Add(new int[width, height]);
         }
     }
 
@@ -40,7 +40,7 @@ namespace GenTools
         public GenTileArea GenTileArea;
         public List<GenTilePreset> Presets = new();
 
-        public List<byte[,]> Map = new();
+        public List<int[,]> Map = new();
         public bool[,] CollisionMap = new bool[0, 0];
         public readonly List<TileBase> tiles = new();
         readonly List<GenTileLayerData> layerData = new();
@@ -80,7 +80,7 @@ namespace GenTools
         {
             for (int i = 0; i < Enum.GetNames(typeof(GenTileType)).Length; i++)
             {
-                Map.Add(new byte[Width, Height]);
+                Map.Add(new int[Width, Height]);
             }
 
             for (int layer = 0; layer < Preset.Layer.Count; layer++)
@@ -147,7 +147,7 @@ namespace GenTools
             }
         }
 
-        void Render(List<byte[,]> map)
+        void Render(List<int[,]> map)
         {
             Map = map.ToList();
             for (int type = 0; type < Enum.GetNames(typeof(GenTileType)).Length; type++)
@@ -162,7 +162,7 @@ namespace GenTools
             }
         }
 
-        public List<byte[,]> Generate()
+        public List<int[,]> Generate()
         {
             Clear();
             Init();
@@ -174,7 +174,7 @@ namespace GenTools
             return Map.ToList();
         }
 
-        public void RenderMap(List<byte[,]> map)
+        public void RenderMap(List<int[,]> map)
         {
             Clear();
             Init();

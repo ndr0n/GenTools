@@ -68,13 +68,37 @@ namespace GenTools
         public List<Vector2Int> PlaceTileRoom(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
             roomTiles.Clear();
-            foreach (var floorAlgo in Type.Floor) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Floor, floorAlgo, genTile, availablePositions, random);
-            foreach (var wallAlgo in Type.Walls) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, availablePositions, random);
-            availablePositions = PlaceDoors(genTile, availablePositions, random);
-            foreach (var wallAlgo in Type.Balcony) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Balcony, wallAlgo, genTile, availablePositions, random);
-            foreach (var objectAlgo in Type.Objects) availablePositions = PlaceAlgorithm(GenTileRoomObjectType.Object, objectAlgo, genTile, availablePositions, random);
-            // availablePositions = PlaceObjects(genTile, availablePositions, random);
-            return availablePositions;
+            List<Vector2Int> positions = new();
+            foreach (var pos in availablePositions.Distinct()) positions.Add(pos - Position);
+
+            foreach (var floorAlgo in Type.Floor)
+            {
+                List<Vector2Int> placedFloor = PlaceAlgorithm(GenTileRoomObjectType.Floor, floorAlgo, genTile, positions, random);
+            }
+
+            foreach (var wallAlgo in Type.Walls)
+            {
+                List<Vector2Int> placedWalls = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, positions, random);
+                // foreach (var wall in placedWalls) positions.Remove(wall);
+            }
+
+            List<Vector2Int> placedDoors = PlaceDoors(genTile, availablePositions, random);
+            // foreach (var door in placedDoors) positions.Remove(door);
+
+            foreach (var wallAlgo in Type.Balcony)
+            {
+                List<Vector2Int> placedBalcony = PlaceAlgorithm(GenTileRoomObjectType.Balcony, wallAlgo, genTile, positions, random);
+            }
+
+            foreach (var objectAlgo in Type.Objects)
+            {
+                List<Vector2Int> placedObjects = PlaceAlgorithm(GenTileRoomObjectType.Object, objectAlgo, genTile, positions, random);
+                // foreach (var obj in placedObjects) positions.Remove(obj);
+            }
+
+            for (int i = 0; i < positions.Count; i++) positions[i] = positions[i] + Position;
+
+            return positions.Distinct().ToList();
         }
 
         public List<Vector2Int> PlaceAlgorithm(GenTileRoomObjectType type, GenTileAlgorithm algorithm, GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
@@ -85,7 +109,6 @@ namespace GenTools
             foreach (var p in placed)
             {
                 Vector2Int worldPosition = p + Position;
-
                 Vector3Int worldPos = new Vector3Int(worldPosition.x, worldPosition.y, 0);
                 genTile.Tilemap[(int) algorithm.Type].SetTile(worldPos, algorithm.Tile);
                 TileData data = new();
@@ -112,10 +135,9 @@ namespace GenTools
                     default:
                         throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 }
-                availablePositions.Remove(worldPosition);
             }
             if (!roomTiles.Contains(algorithm.Tile)) roomTiles.Add(algorithm.Tile);
-            return availablePositions;
+            return placed;
         }
 
         public List<Vector2Int> PlaceDoors(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)

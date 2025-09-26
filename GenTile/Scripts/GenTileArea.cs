@@ -55,19 +55,22 @@ namespace GenTools
                     for (int y = 0; y < areaRoom.Size.y; y++)
                     {
                         Vector2Int pos = new Vector2Int(x, y);
-                        bool canPlace = true;
+                        // if (GenTile.CollisionMap[pos.x, pos.y] == false)
+                        // {
+                        bool canCreatePosition = true;
                         foreach (var room in PlacedRooms)
                         {
                             if (room.GetBoundsInt().Contains(new Vector3Int(pos.x, pos.y, 0)))
                             {
-                                canPlace = false;
+                                canCreatePosition = false;
                                 break;
                             }
                         }
-                        if (canPlace)
+                        if (canCreatePosition)
                         {
-                            availablePositions.Add(new Vector2Int(pos.x, pos.y));
+                            availablePositions.Add(new Vector2Int(pos.x + areaRoom.Position.x, pos.y + areaRoom.Position.y));
                         }
+                        // }
                     }
                 }
                 availablePositions = areaRoom.PlaceTileRoom(GenTile, availablePositions, random);
@@ -204,7 +207,7 @@ namespace GenTools
                 {
                     for (int y = 0; y < room.Size.y; y++)
                     {
-                        availablePositions.Add(new Vector2Int(x, y));
+                        availablePositions.Add(new Vector2Int(x + room.Position.x, y + room.Position.y));
                     }
                 }
                 availablePositions = room.PlaceTileRoom(GenTile, availablePositions, random);

@@ -20,14 +20,6 @@ namespace GenTools
         public Vector2Int Offset = new Vector2Int(0, 0);
         public List<GenTileAlgorithmData> Algorithm = new List<GenTileAlgorithmData>();
 
-        // public List<Vector2Int> Execute(List<Vector2Int> availablePositions, int seed)
-        // {
-        //     System.Random random = new(seed);
-        //     foreach (var algorithm in Algorithm)
-        //     {
-        //     }
-        // }
-
         public byte[,] Execute(byte[,] map, byte value, int seed)
         {
             Vector2Int size = new Vector2Int(map.GetLength(0) - (Offset.x * 2), map.GetLength(1) - (Offset.y * 2));
@@ -136,7 +128,17 @@ namespace GenTools
                         }
                         break;
                     case GenTileAlgorithmType.WaveFunctionCollapse:
-                        m = GenTileAlgorithmLibrary.WFC_Overlapping(m, value, seed, algorithm.Invert, algorithm.InputTexture, algorithm.N, algorithm.Symmetry, algorithm.Iterations);
+                        algorithm.WaveFunctionCollapse.InputTexture = algorithm.WFCInputTexture;
+                        algorithm.WaveFunctionCollapse.Invert = algorithm.WFCInvert;
+                        algorithm.WaveFunctionCollapse.N = algorithm.WFCN;
+                        algorithm.WaveFunctionCollapse.Iterations = algorithm.WFCIterations;
+                        algorithm.WaveFunctionCollapse.Symmetry = algorithm.WFCSymmetry;
+                        List<Vector2Int> placedWfc = algorithm.WaveFunctionCollapse.Execute(available, seed);
+                        foreach (var pos in placedWfc)
+                        {
+                            available.Remove(pos);
+                            placed.Add(pos);
+                        }
                         break;
                 }
             }
@@ -311,28 +313,33 @@ namespace GenTools
 
         // WAVE FUNCTION COLLAPSE
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.WaveFunctionCollapse)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.WallPlacer)]
 #endif
-        public Texture2D InputTexture;
+        public GTA_WaveFunctionCollapse WaveFunctionCollapse = new();
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.WaveFunctionCollapse)]
 #endif
-        public Vector2Int N = new Vector2Int(4, 4);
+        public Texture2D WFCInputTexture;
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.WaveFunctionCollapse)]
 #endif
-        public Vector2Int Symmetry = new Vector2Int(1, 3);
+        public Vector2Int WFCN = new Vector2Int(4, 4);
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.WaveFunctionCollapse)]
 #endif
-        public Vector2Int Iterations = new Vector2Int(0, 0);
+        public Vector2Int WFCSymmetry = new Vector2Int(1, 3);
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.WaveFunctionCollapse)]
 #endif
-        public bool Invert = false;
+        public Vector2Int WFCIterations = new Vector2Int(0, 0);
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.WaveFunctionCollapse)]
+#endif
+        public bool WFCInvert = false;
     }
 }

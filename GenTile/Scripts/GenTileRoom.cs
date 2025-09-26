@@ -81,7 +81,8 @@ namespace GenTools
         {
             byte value = 1;
             byte[,] map = new byte[Size.x, Size.y];
-            map = algorithm.Execute(map, value, random.Next(int.MinValue, int.MaxValue));
+            List<Vector2Int> placed = algorithm.Execute(availablePositions, map, value, random.Next(int.MinValue, int.MaxValue));
+            foreach (var p in placed) availablePositions.Remove(p);
             List<Vector2Int> worldPositions = availablePositions.ToList();
             foreach (var worldPosition in worldPositions)
             {

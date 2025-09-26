@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -92,12 +93,21 @@ namespace GenTools
         {
             for (int layer = 0; layer < Preset.Layer.Count; layer++)
             {
+                List<Vector2Int> availablePositions = new();
+                for (int x = 0; x < Width; x++)
+                {
+                    for (int y = 0; y < Height; y++)
+                    {
+                        availablePositions.Add(new Vector2Int(x, y));
+                    }
+                }
                 foreach (var iter in Preset.Layer[layer].Iterations)
                 {
                     byte value = (byte) tiles.IndexOf(iter.Tile);
                     int seed = random.Next(int.MinValue, int.MaxValue);
                     int type = (int) iter.Type;
-                    layerData[layer].Map[type] = iter.Execute(layerData[layer].Map[type], value, seed);
+                    List<Vector2Int> placed = iter.Execute(availablePositions, layerData[layer].Map[type], value, seed);
+                    foreach (var p in placed) availablePositions.Remove(p);
                 }
             }
         }

@@ -35,7 +35,6 @@ namespace GenTools
                 if (val.x > max.x) max.x = val.x;
                 if (val.y > max.y) max.y = val.y;
             }
-            max = max - min;
 
             BoundsInt spaceToSplit = new(new Vector3Int(min.x, min.y, 0), new Vector3Int(max.x, max.y, 0));
             Queue<BoundsInt> roomsQueue = new();

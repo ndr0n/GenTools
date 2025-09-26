@@ -101,13 +101,20 @@ namespace GenTools
                         availablePositions.Add(new Vector2Int(x, y));
                     }
                 }
-                foreach (var iter in Preset.Layer[layer].Iterations)
+                if (availablePositions.Count == 0) continue;
+
+                foreach (var algorithm in Preset.Layer[layer].Iterations)
                 {
-                    byte value = (byte) tiles.IndexOf(iter.Tile);
+                    byte value = (byte) tiles.IndexOf(algorithm.Tile);
                     int seed = random.Next(int.MinValue, int.MaxValue);
-                    int type = (int) iter.Type;
-                    List<Vector2Int> placed = iter.Execute(availablePositions, layerData[layer].Map[type], value, seed);
-                    foreach (var p in placed) availablePositions.Remove(p);
+                    int type = (int) algorithm.Type;
+
+                    List<Vector2Int> placed = algorithm.Execute(availablePositions.Where(v => v.x >= algorithm.Offset.x && v.x < Width - algorithm.Offset.x && v.y >= algorithm.Offset.y && v.y < Height - algorithm.Offset.y).ToList(), seed);
+                    foreach (var p in placed)
+                    {
+                        layerData[layer].Map[type][p.x, p.y] = value;
+                        availablePositions.Remove(p);
+                    }
                 }
             }
         }

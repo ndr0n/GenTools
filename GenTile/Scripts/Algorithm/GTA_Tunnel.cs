@@ -25,7 +25,6 @@ namespace GenTools
                 if (val.sqrMagnitude < min.sqrMagnitude) min = val;
                 if (val.sqrMagnitude > max.sqrMagnitude) max = val;
             }
-            max = max - min;
 
             int beginx = available.OrderBy(v => Vector2Int.Distance(v, max * random.Next(XBeginPercentage.x, XBeginPercentage.y + 1))).First().x;
             int endx = available.OrderBy(v => Vector2Int.Distance(v, max * random.Next(XFinishPercentage.x, XFinishPercentage.y + 1))).First().x;

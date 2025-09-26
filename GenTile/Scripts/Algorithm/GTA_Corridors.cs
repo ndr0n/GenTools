@@ -42,7 +42,6 @@ namespace GenTools
                 if (val.x > max.x) max.x = val.x;
                 if (val.y > max.y) max.y = val.y;
             } 
-            max = max - min;;
 
             List<Vector2Int> placed = new();
             List<Vector2Int> targetPositions = new();

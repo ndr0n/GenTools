@@ -20,23 +20,18 @@ namespace GenTools
         public Vector2Int Offset = new Vector2Int(0, 0);
         public List<GenTileAlgorithmData> Algorithm = new List<GenTileAlgorithmData>();
 
-        public List<Vector2Int> Execute(List<Vector2Int> available, byte[,] map, byte value, int seed)
+        public List<Vector2Int> Execute(List<Vector2Int> available, int seed)
         {
             System.Random random = new System.Random(seed);
             List<Vector2Int> placed = new List<Vector2Int>();
-            Vector2Int size = new Vector2Int(map.GetLength(0) - (Offset.x * 2), map.GetLength(1) - (Offset.y * 2));
-            if (size.x < 0 || size.y < 0) return placed;
+            if (available.Count == 0) return placed;
 
             List<Vector2Int> positions = new();
-            for (int x = 0; x < size.x; x++)
+            foreach (var pos in available)
             {
-                for (int y = 0; y < size.y; y++)
-                {
-                    Vector2Int pos = new Vector2Int(x + Offset.x, y + Offset.y);
-                    if (available.Contains(pos)) positions.Add(pos);
-                }
+                Vector2Int p = new Vector2Int(pos.x, pos.y);
+                positions.Add(p);
             }
-            if (positions.Count == 0) return placed;
 
             foreach (var algorithm in Algorithm)
             {
@@ -142,7 +137,6 @@ namespace GenTools
                 }
             }
 
-            foreach (var pos in placed) map[pos.x, pos.y] = value;
             return placed;
         }
     }

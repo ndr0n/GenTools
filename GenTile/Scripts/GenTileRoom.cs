@@ -79,11 +79,11 @@ namespace GenTools
             foreach (var wallAlgo in Type.Walls)
             {
                 List<Vector2Int> placedWalls = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, positions, random);
-                // foreach (var wall in placedWalls) positions.Remove(wall);
+                foreach (var wall in placedWalls) positions.Remove(wall);
             }
 
             List<Vector2Int> placedDoors = PlaceDoors(genTile, availablePositions, random);
-            // foreach (var door in placedDoors) positions.Remove(door);
+            foreach (var door in placedDoors) positions.Remove(door);
 
             foreach (var wallAlgo in Type.Balcony)
             {
@@ -103,9 +103,8 @@ namespace GenTools
 
         public List<Vector2Int> PlaceAlgorithm(GenTileRoomObjectType type, GenTileAlgorithm algorithm, GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
-            byte value = 1;
-            byte[,] map = new byte[Size.x, Size.y];
-            List<Vector2Int> placed = algorithm.Execute(availablePositions, map, value, random.Next(int.MinValue, int.MaxValue));
+            availablePositions = availablePositions.Where(v => v.x >= algorithm.Offset.x && v.x < Size.x - algorithm.Offset.x && v.y >= algorithm.Offset.y && v.y < Size.y - algorithm.Offset.y).ToList();
+            List<Vector2Int> placed = algorithm.Execute(availablePositions, random.Next(int.MinValue, int.MaxValue));
             foreach (var p in placed)
             {
                 Vector2Int worldPosition = p + Position;

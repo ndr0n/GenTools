@@ -55,22 +55,14 @@ namespace GenTools
                     for (int y = 0; y < areaRoom.Size.y; y++)
                     {
                         Vector2Int pos = new Vector2Int(x, y);
-                        // if (GenTile.CollisionMap[pos.x, pos.y] == false)
-                        // {
-                        bool canCreatePosition = true;
-                        foreach (var room in PlacedRooms)
+                        foreach (var tile in areaRoomType.RoomTile)
                         {
-                            if (room.GetBoundsInt().Contains(new Vector3Int(pos.x, pos.y, 0)))
+                            if (GenTile.Tilemap[(int) GenTileType.Terrain].GetTile(new Vector3Int(pos.x, pos.y, 0)) == tile)
                             {
-                                canCreatePosition = false;
+                                availablePositions.Add(new Vector2Int(pos.x + areaRoom.Position.x, pos.y + areaRoom.Position.y));
                                 break;
                             }
                         }
-                        if (canCreatePosition)
-                        {
-                            availablePositions.Add(new Vector2Int(pos.x + areaRoom.Position.x, pos.y + areaRoom.Position.y));
-                        }
-                        // }
                     }
                 }
                 availablePositions = areaRoom.PlaceTileRoom(GenTile, availablePositions, random);

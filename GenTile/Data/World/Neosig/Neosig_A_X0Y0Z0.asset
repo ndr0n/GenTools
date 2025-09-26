@@ -197,7 +197,7 @@ MonoBehaviour:
           rid: 3423325652665237592
         Spawn: {fileID: 0}
         SpawnPosition: {x: 7, y: 0, z: 5}
-    - Name: ' Abyssal Pit'
+    - Name: Abyssal Pit
       Description: A bottomless depression in the floor of a 4x5 meter area, its
         walls made of cold, grey metal. The air is thick with an otherworldly scent
         and the sound of whispering echoes off its surface.
@@ -255,7 +255,7 @@ MonoBehaviour:
         SpawnPosition: {x: 13, y: 0, z: 8}
       Characters:
       - Name: Nexara-12
-        Location: ' Abyssal Pit'
+        Location: Abyssal Pit
         Description: A sleek and agile android with an affinity for exploration.
           Nexara's eyes glow with a soft blue light as she examines the Pit.
         Type: {fileID: 11400000, guid: 5768b5a8f623da4f8b7882bc44ec6c73, type: 2}
@@ -268,7 +268,7 @@ MonoBehaviour:
         Spawn: {fileID: 0}
         SpawnPosition: {x: 14, y: 0, z: 7}
       - Name: Kaida-9
-        Location: ' Abyssal Pit'
+        Location: Abyssal Pit
         Description: A skilled negotiator and mediator, Kaida serves as a liaison
           between The Transcended and the other factions.
         Type: {fileID: 11400000, guid: b9864c6ceb91c96e0bd3d812f77ffbdc, type: 2}

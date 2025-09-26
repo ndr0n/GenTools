@@ -74,6 +74,7 @@ namespace GenTools
             foreach (var floorAlgo in Type.Floor)
             {
                 List<Vector2Int> placedFloor = PlaceAlgorithm(GenTileRoomObjectType.Floor, floorAlgo, genTile, positions, random);
+                positions = placedFloor;
             }
 
             foreach (var wallAlgo in Type.Walls)

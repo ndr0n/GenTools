@@ -60,9 +60,8 @@ namespace GenTools
             Position = position;
         }
 
-        public Vector3 GetCenter() => new Vector3(Position.x + (Size.x / 2f), Position.y + (Size.y / 2f), 0);
         public Bounds GetBounds() => new Bounds(GetCenter(), new Vector3(Size.x, Size.y, 0));
-        public BoundsInt GetBoundsInt() => new BoundsInt(Vector3Int.RoundToInt(GetCenter()), new Vector3Int(Size.x, Size.y, 0));
+        public Vector3 GetCenter() => new Vector3(Position.x + (Size.x / 2f), Position.y + (Size.y / 2f), 0);
         public bool Contains(Vector2Int point) => point.x >= Position.x && point.x < (Position.x + Size.x) && point.y >= Position.y && point.y < (Position.y + Size.y);
 
         public List<Vector2Int> PlaceTileRoom(GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
@@ -77,24 +76,25 @@ namespace GenTools
                 positions = placedFloor;
             }
 
+            foreach (var balconyAlgo in Type.Balcony)
+            {
+                List<Vector2Int> placedBalcony = PlaceAlgorithm(GenTileRoomObjectType.Balcony, balconyAlgo, genTile, positions, random);
+                // foreach (var p in placedBalcony) positions.Add(p);
+            }
+
             foreach (var wallAlgo in Type.Walls)
             {
                 List<Vector2Int> placedWalls = PlaceAlgorithm(GenTileRoomObjectType.Wall, wallAlgo, genTile, positions, random);
-                foreach (var wall in placedWalls) positions.Remove(wall);
+                // foreach (var wall in placedWalls) positions.Remove(wall);
             }
 
             List<Vector2Int> placedDoors = PlaceDoors(genTile, availablePositions, random);
             foreach (var door in placedDoors) positions.Remove(door);
 
-            foreach (var wallAlgo in Type.Balcony)
-            {
-                List<Vector2Int> placedBalcony = PlaceAlgorithm(GenTileRoomObjectType.Balcony, wallAlgo, genTile, positions, random);
-            }
-
             foreach (var objectAlgo in Type.Objects)
             {
                 List<Vector2Int> placedObjects = PlaceAlgorithm(GenTileRoomObjectType.Object, objectAlgo, genTile, positions, random);
-                // foreach (var obj in placedObjects) positions.Remove(obj);
+                foreach (var obj in placedObjects) positions.Remove(obj);
             }
 
             for (int i = 0; i < positions.Count; i++) positions[i] = positions[i] + Position;
@@ -104,7 +104,7 @@ namespace GenTools
 
         public List<Vector2Int> PlaceAlgorithm(GenTileRoomObjectType type, GenTileAlgorithm algorithm, GenTile genTile, List<Vector2Int> availablePositions, System.Random random)
         {
-            availablePositions = availablePositions.Where(v => v.x >= algorithm.Offset.x && v.x < Size.x - algorithm.Offset.x && v.y >= algorithm.Offset.y && v.y < Size.y - algorithm.Offset.y).ToList();
+            availablePositions = availablePositions.Distinct().Where(v => v.x >= algorithm.Offset.x && v.x < Size.x - algorithm.Offset.x && v.y >= algorithm.Offset.y && v.y < Size.y - algorithm.Offset.y).ToList();
             List<Vector2Int> placed = algorithm.Execute(availablePositions, random.Next(int.MinValue, int.MaxValue));
             foreach (var p in placed)
             {

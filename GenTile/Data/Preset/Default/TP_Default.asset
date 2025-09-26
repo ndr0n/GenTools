@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tilegen.TilegenPreset
   Layer:
   - Iterations:
-    - Tile: {fileID: 11400000, guid: e02e8c29f1e4a049d8c00d8cf0f59780, type: 2}
+    - Tile: {fileID: 11400000, guid: f5ba76eb4082e07f0be497d518d68fd8, type: 2}
       Type: 0
       Offset: {x: 0, y: 0}
       Algorithm:
-      - Algorithm: 1
+      - Algorithm: 0
         Fill:
           Count: {x: 0, y: 0}
           Percentage: {x: 100, y: 100}
@@ -26,17 +26,18 @@ MonoBehaviour:
         FillPercentage: {x: 100, y: 100}
         RandomWalk:
           Percentage: {x: 50, y: 50}
-        Size: {x: 50, y: 50}
+        RandomWalkPercentage: {x: 50, y: 50}
+        PerlinNoise:
+          Modifier: {x: 0, y: 0.25}
         PerlinNoiseModifier: {x: 0, y: 0.25}
-        PathWidth: {x: 0, y: 0}
-        XBeginPercent: {x: 0, y: 0}
-        XFinishPercent: {x: 0, y: 0}
-        YBeginPercent: {x: 0, y: 0}
-        YFinishPercent: {x: 0, y: 0}
+        TunnelPathWidth: {x: 0, y: 0}
+        TunnelXBeginPercent: {x: 0, y: 100}
+        TunnelXFinishPercent: {x: 0, y: 100}
+        TunnelYBeginPercent: {x: 0, y: 100}
+        TunnelYFinishPercent: {x: 0, y: 100}
         TunnelerLifetime: {x: 0, y: 100}
         TunnelerChangePercentage: {x: 0, y: 100}
         TunnelerWidth: {x: 3, y: 3}
-        TunnelerOverlap: 0
         RoomerChance: {x: 100, y: 100}
         RoomerWidth: {x: 5, y: 10}
         RoomerHeight: {x: 5, y: 10}
@@ -51,29 +52,30 @@ MonoBehaviour:
         Symmetry: {x: 1, y: 1}
         Iterations: {x: 0, y: 0}
         Invert: 0
-    - Tile: {fileID: 11400000, guid: f5ba76eb4082e07f0be497d518d68fd8, type: 2}
+    - Tile: {fileID: 11400000, guid: e02e8c29f1e4a049d8c00d8cf0f59780, type: 2}
       Type: 0
       Offset: {x: 0, y: 0}
       Algorithm:
-      - Algorithm: 0
+      - Algorithm: 4
         Fill:
           Count: {x: 0, y: 0}
           Percentage: {x: 100, y: 100}
         FillCount: {x: 0, y: 0}
         FillPercentage: {x: 100, y: 100}
         RandomWalk:
-          Percentage: {x: 0, y: 0}
-        Size: {x: 0, y: 0}
+          Percentage: {x: 50, y: 50}
+        RandomWalkPercentage: {x: 50, y: 50}
+        PerlinNoise:
+          Modifier: {x: 0, y: 0.25}
         PerlinNoiseModifier: {x: 0, y: 0.25}
-        PathWidth: {x: 0, y: 0}
-        XBeginPercent: {x: 0, y: 0}
-        XFinishPercent: {x: 0, y: 0}
-        YBeginPercent: {x: 0, y: 0}
-        YFinishPercent: {x: 0, y: 0}
-        TunnelerLifetime: {x: 0, y: 100}
-        TunnelerChangePercentage: {x: 0, y: 100}
+        TunnelPathWidth: {x: 3, y: 3}
+        TunnelXBeginPercent: {x: 0, y: 100}
+        TunnelXFinishPercent: {x: 0, y: 100}
+        TunnelYBeginPercent: {x: 0, y: 100}
+        TunnelYFinishPercent: {x: 0, y: 100}
+        TunnelerLifetime: {x: 50, y: 50}
+        TunnelerChangePercentage: {x: 10, y: 10}
         TunnelerWidth: {x: 3, y: 3}
-        TunnelerOverlap: 0
         RoomerChance: {x: 100, y: 100}
         RoomerWidth: {x: 5, y: 10}
         RoomerHeight: {x: 5, y: 10}

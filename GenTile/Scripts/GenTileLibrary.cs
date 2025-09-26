@@ -9,8 +9,22 @@ namespace GenTools
     {
         #region BinarySpacePartition
 
-        public static List<BoundsInt> BinarySpacePartition(System.Random random, BoundsInt spaceToSplit, Vector2Int width, Vector2Int height)
+        public static List<Vector2Int> BinarySpacePartition(System.Random random, List<Vector2Int> positions, Vector2Int width, Vector2Int height, Vector2Int chance, Vector2Int Offset)
         {
+            int of7 = random.Next(Offset.x, Offset.y + 1);
+
+            Vector2Int min = positions[0];
+            Vector2Int max = positions[0];
+
+            foreach (var val in positions)
+            {
+                if (val.x < min.x) min.x = val.x;
+                if (val.y < min.y) min.y = val.y;
+                if (val.x > max.x) max.x = val.x;
+                if (val.y > max.y) max.y = val.y;
+            }
+
+            BoundsInt spaceToSplit = new(new Vector3Int(min.x, min.y, 0), new Vector3Int(max.x, max.y, 0));
             Queue<BoundsInt> roomsQueue = new();
             List<BoundsInt> roomsList = new();
             roomsQueue.Enqueue(spaceToSplit);
@@ -36,7 +50,26 @@ namespace GenTools
                     }
                 }
             }
-            return roomsList;
+            List<Vector2Int> placed = new();
+            foreach (var bounds in roomsList)
+            {
+                if (random.Next(0, 100) < random.Next(chance.x, chance.y))
+                {
+                    for (int x = bounds.position.x + of7; x < bounds.position.x + bounds.size.x - of7 - 1; x++)
+                    {
+                        for (int y = bounds.position.y + of7; y < bounds.position.y + bounds.size.y - of7 - 1; y++)
+                        {
+                            Vector2Int pos = new Vector2Int(x, y);
+                            if (positions.Contains(pos))
+                            {
+                                placed.Add(pos);
+                                positions.Remove(pos);
+                            }
+                        }
+                    }
+                }
+            }
+            return placed;
         }
 
         static void SplitHorizontally(System.Random random, int minHeight, Queue<BoundsInt> roomsQueue, BoundsInt room)
@@ -56,10 +89,6 @@ namespace GenTools
             roomsQueue.Enqueue(room1);
             roomsQueue.Enqueue(room2);
         }
-
-        #endregion
-
-        #region Tunneler
 
         #endregion
     }

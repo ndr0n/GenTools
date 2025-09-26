@@ -34,6 +34,7 @@ namespace GenTools
             if (size.x < 0 || size.y < 0) return map;
 
             List<Vector2Int> available = new();
+            List<Vector2Int> placed = new();
 
             byte[,] m = new byte[size.x, size.y];
             for (int x = 0; x < size.x; x++)
@@ -57,7 +58,7 @@ namespace GenTools
                         foreach (var pos in placedFill)
                         {
                             available.Remove(pos);
-                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                            placed.Add(pos);
                         }
                         break;
                     case GenTileAlgorithmType.RandomWalk:
@@ -66,7 +67,7 @@ namespace GenTools
                         foreach (var pos in placedRandomWalk)
                         {
                             available.Remove(pos);
-                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                            placed.Add(pos);
                         }
                         break;
                     case GenTileAlgorithmType.PerlinNoise:
@@ -75,7 +76,7 @@ namespace GenTools
                         foreach (var pos in placedPerlinNoise)
                         {
                             available.Remove(pos);
-                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                            placed.Add(pos);
                         }
                         break;
                     case GenTileAlgorithmType.Tunnel:
@@ -88,26 +89,61 @@ namespace GenTools
                         foreach (var pos in placedTunnel)
                         {
                             available.Remove(pos);
-                            m[pos.x - Offset.x, pos.y - Offset.y] = value;
+                            placed.Add(pos);
                         }
-                        // m = GenTileAlgorithmLibrary.Tunnel(m, value, seed, algorithm.TunnelPathWidth, algorithm.XBeginPercent, algorithm.XFinishPercent, algorithm.YBeginPercent, algorithm.YFinishPercent);
                         break;
-                    case GenTileAlgorithmType.Tunneler:
-                        m = GenTileAlgorithmLibrary.Tunneler(m, value, seed, algorithm.TunnelerLifetime, algorithm.TunnelerChangePercentage, algorithm.TunnelerWidth, algorithm.TunnelerOverlap);
+                    case GenTileAlgorithmType.Corridors:
+                        algorithm.Corridors.Lifetime = algorithm.CorridorsLifetime;
+                        algorithm.Corridors.TunnelWidth = algorithm.CorridorsWidth;
+                        algorithm.Corridors.ChangePercentage = algorithm.CorridorsChangePercentage;
+                        List<Vector2Int> placedTunneler = algorithm.Corridors.Execute(available, seed);
+                        foreach (var pos in placedTunneler)
+                        {
+                            available.Remove(pos);
+                            placed.Add(pos);
+                        }
                         break;
-                    case GenTileAlgorithmType.Roomer:
-                        m = GenTileAlgorithmLibrary.Roomer(m, value, seed, algorithm.RoomerChance, algorithm.RoomerWidth, algorithm.RoomerHeight);
+                    case GenTileAlgorithmType.RoomPlacer:
+                        algorithm.RoomPlacer.Chance = algorithm.RoomPlacerChance;
+                        algorithm.RoomPlacer.Width = algorithm.RoomPlacerWidth;
+                        algorithm.RoomPlacer.Height = algorithm.RoomPlacerHeight;
+                        List<Vector2Int> placedRooms = algorithm.RoomPlacer.Execute(available, seed);
+                        foreach (var pos in placedRooms)
+                        {
+                            available.Remove(pos);
+                            placed.Add(pos);
+                        }
                         break;
                     case GenTileAlgorithmType.BinarySpacePartition:
-                        m = GenTileAlgorithmLibrary.BinarySpacePartition(m, value, seed, algorithm.Percentage, algorithm.Offset, algorithm.MinRoomWidth, algorithm.MinRoomHeight);
+                        algorithm.BinarySpacePartition.Width = algorithm.BSPWidth;
+                        algorithm.BinarySpacePartition.Height = algorithm.BSPHeight;
+                        algorithm.BinarySpacePartition.Chance = algorithm.BSPChance;
+                        algorithm.BinarySpacePartition.Offset = algorithm.BSPOffset;
+                        List<Vector2Int> placedBsp = algorithm.BinarySpacePartition.Execute(available, seed);
+                        foreach (var pos in placedBsp)
+                        {
+                            available.Remove(pos);
+                            placed.Add(pos);
+                        }
                         break;
-                    case GenTileAlgorithmType.Walls:
-                        m = GenTileAlgorithmLibrary.Walls(m, value, seed, algorithm.WallPercentage, algorithm.OuterWall);
+                    case GenTileAlgorithmType.WallPlacer:
+                        algorithm.WallPlacer.Percentage = algorithm.WallPlacerPercentage;
+                        List<Vector2Int> placedWallPlacer = algorithm.WallPlacer.Execute(available, seed);
+                        foreach (var pos in placedWallPlacer)
+                        {
+                            available.Remove(pos);
+                            placed.Add(pos);
+                        }
                         break;
                     case GenTileAlgorithmType.WaveFunctionCollapse:
                         m = GenTileAlgorithmLibrary.WFC_Overlapping(m, value, seed, algorithm.Invert, algorithm.InputTexture, algorithm.N, algorithm.Symmetry, algorithm.Iterations);
                         break;
                 }
+            }
+
+            foreach (var pos in placed)
+            {
+                m[pos.x - Offset.x, pos.y - Offset.y] = value;
             }
 
             for (int x = 0; x < m.GetLength(0); x++)
@@ -196,71 +232,82 @@ namespace GenTools
 #endif
         public Vector2Int TunnelYFinishPercent = new Vector2Int(0, 100);
 
-        // TUNNELER
+        // CORRIDORS
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Corridors)]
 #endif
-        public Vector2Int TunnelerLifetime = new Vector2Int(0, 100);
+        public GTA_Corridors Corridors = new();
 
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Corridors)]
 #endif
-        public Vector2Int TunnelerChangePercentage = new Vector2Int(0, 100);
+        public Vector2Int CorridorsLifetime = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Corridors)]
 #endif
-        public Vector2Int TunnelerWidth = new Vector2Int(3, 3);
-#if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Tunneler)]
-#endif
-        public bool TunnelerOverlap = false;
-
-        // ROOMER
-#if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Roomer)]
-#endif
-        public Vector2Int RoomerChance = new Vector2Int(100, 100);
-#if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Roomer)]
-#endif
-        public Vector2Int RoomerWidth = new Vector2Int(5, 10);
+        public Vector2Int CorridorsChangePercentage = new Vector2Int(0, 100);
 
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Roomer)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.Corridors)]
 #endif
-        public Vector2Int RoomerHeight = new Vector2Int(5, 10);
+        public Vector2Int CorridorsWidth = new Vector2Int(3, 3);
+
+        // ROOM PLACER
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.RoomPlacer)]
+#endif
+        public GTA_RoomPlacer RoomPlacer = new();
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.RoomPlacer)]
+#endif
+        public Vector2Int RoomPlacerChance = new Vector2Int(100, 100);
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.RoomPlacer)]
+#endif
+        public Vector2Int RoomPlacerWidth = new Vector2Int(4, 20);
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.RoomPlacer)]
+#endif
+        public Vector2Int RoomPlacerHeight = new Vector2Int(4, 20);
 
         // BINARY SPACE PARTITION
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
 #endif
-        public Vector2Int Percentage = new Vector2Int(100, 100);
-#if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
-#endif
-        public Vector2Int Offset = new Vector2Int(1, 1);
+        public GTA_BinarySpacePartition BinarySpacePartition = new();
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
 #endif
-        public Vector2Int MinRoomWidth = new Vector2Int(5, 10);
+        public Vector2Int BSPWidth = new Vector2Int(8, 12);
 
 #if UNITY_EDITOR
         [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
 #endif
-        public Vector2Int MinRoomHeight = new Vector2Int(5, 10);
-
-        // WALLS
-#if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Walls)]
-#endif
-        public bool OuterWall = false;
+        public Vector2Int BSPHeight = new Vector2Int(8, 12);
 
 #if UNITY_EDITOR
-        [DrawIf("Algorithm", GenTileAlgorithmType.Walls)]
+        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
 #endif
-        public Vector2Int WallPercentage = new Vector2Int(0, 100);
+        public Vector2Int BSPChance = new Vector2Int(100, 100);
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.BinarySpacePartition)]
+#endif
+        public Vector2Int BSPOffset = new Vector2Int(1, 1);
+
+        // WALL PLACER
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.WallPlacer)]
+#endif
+        public GTA_WallPlacer WallPlacer = new();
+
+#if UNITY_EDITOR
+        [DrawIf("Algorithm", GenTileAlgorithmType.WallPlacer)]
+#endif
+        public Vector2Int WallPlacerPercentage = new Vector2Int(100, 100);
 
         // WAVE FUNCTION COLLAPSE
 #if UNITY_EDITOR

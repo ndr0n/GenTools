@@ -25,33 +25,34 @@ MonoBehaviour:
         FillCount: {x: 0, y: 0}
         FillPercentage: {x: 100, y: 100}
         RandomWalk:
-          Percentage: {x: 50, y: 50}
-        RandomWalkPercentage: {x: 50, y: 50}
+          Percentage: {x: 0, y: 0}
+        RandomWalkPercentage: {x: 0, y: 0}
         PerlinNoise:
-          Modifier: {x: 0, y: 0.25}
-        PerlinNoiseModifier: {x: 0, y: 0.25}
+          Modifier: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0}
         TunnelPathWidth: {x: 0, y: 0}
-        TunnelXBeginPercent: {x: 0, y: 100}
-        TunnelXFinishPercent: {x: 0, y: 100}
-        TunnelYBeginPercent: {x: 0, y: 100}
-        TunnelYFinishPercent: {x: 0, y: 100}
-        CorridorsLifetime: {x: 0, y: 100}
-        CorridorsChangePercentage: {x: 0, y: 100}
-        CorridorsWidth: {x: 3, y: 3}
-        RoomPlacerChance: {x: 100, y: 100}
-        RoomPlacerWidth: {x: 4, y: 20}
-        RoomPlacerHeight: {x: 4, y: 20}
-        BSPWidth: {x: 4, y: 20}
-        BSPHeight: {x: 4, y: 20}
-        BSPChance: {x: 100, y: 100}
-        BSPOffset: {x: 1, y: 1}
-        WallPlacerPercentage: {x: 100, y: 100}
+        TunnelXBeginPercent: {x: 0, y: 0}
+        TunnelXFinishPercent: {x: 0, y: 0}
+        TunnelYBeginPercent: {x: 0, y: 0}
+        TunnelYFinishPercent: {x: 0, y: 0}
+        CorridorsLifetime: {x: 0, y: 0}
+        CorridorsChangePercentage: {x: 0, y: 0}
+        CorridorsWidth: {x: 0, y: 0}
+        RoomPlacerChance: {x: 0, y: 0}
+        RoomPlacerWidth: {x: 0, y: 0}
+        RoomPlacerHeight: {x: 0, y: 0}
+        BSPWidth: {x: 0, y: 0}
+        BSPHeight: {x: 0, y: 0}
+        BSPChance: {x: 0, y: 0}
+        BSPOffset: {x: 0, y: 0}
+        WallPlacerPercentage: {x: 0, y: 0}
         WFCInputTexture: {fileID: 0}
-        WFCN: {x: 4, y: 4}
-        WFCSymmetry: {x: 1, y: 3}
+        WFCN: {x: 0, y: 0}
+        WFCSymmetry: {x: 0, y: 0}
         WFCIterations: {x: 0, y: 0}
         WFCInvert: 0
-    - Tile: {fileID: 11400000, guid: e02e8c29f1e4a049d8c00d8cf0f59780, type: 2}
+  - Iterations:
+    - Tile: {fileID: 11400000, guid: bbb4b5a53d3e5ed2495fc5adec4eb950, type: 2}
       Type: 0
       Offset: {x: 0, y: 0}
       Algorithm:
@@ -62,67 +63,67 @@ MonoBehaviour:
         FillCount: {x: 0, y: 0}
         FillPercentage: {x: 100, y: 100}
         RandomWalk:
-          Percentage: {x: 50, y: 50}
-        RandomWalkPercentage: {x: 50, y: 50}
+          Percentage: {x: 0, y: 0}
+        RandomWalkPercentage: {x: 0, y: 0}
         PerlinNoise:
-          Modifier: {x: 0, y: 0.25}
-        PerlinNoiseModifier: {x: 0, y: 0.25}
-        TunnelPathWidth: {x: 3, y: 3}
-        TunnelXBeginPercent: {x: 0, y: 100}
-        TunnelXFinishPercent: {x: 0, y: 100}
-        TunnelYBeginPercent: {x: 0, y: 100}
-        TunnelYFinishPercent: {x: 0, y: 100}
-        CorridorsLifetime: {x: 50, y: 50}
+          Modifier: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0}
+        TunnelPathWidth: {x: 0, y: 0}
+        TunnelXBeginPercent: {x: 0, y: 0}
+        TunnelXFinishPercent: {x: 0, y: 0}
+        TunnelYBeginPercent: {x: 0, y: 0}
+        TunnelYFinishPercent: {x: 0, y: 0}
+        CorridorsLifetime: {x: 40, y: 40}
         CorridorsChangePercentage: {x: 10, y: 10}
-        CorridorsWidth: {x: 3, y: 3}
-        RoomPlacerChance: {x: 100, y: 100}
-        RoomPlacerWidth: {x: 4, y: 20}
-        RoomPlacerHeight: {x: 4, y: 20}
-        BSPWidth: {x: 4, y: 20}
-        BSPHeight: {x: 4, y: 20}
-        BSPChance: {x: 100, y: 100}
-        BSPOffset: {x: 1, y: 1}
-        WallPlacerPercentage: {x: 100, y: 100}
+        CorridorsWidth: {x: 1, y: 1}
+        RoomPlacerChance: {x: 0, y: 0}
+        RoomPlacerWidth: {x: 0, y: 0}
+        RoomPlacerHeight: {x: 0, y: 0}
+        BSPWidth: {x: 0, y: 0}
+        BSPHeight: {x: 0, y: 0}
+        BSPChance: {x: 0, y: 0}
+        BSPOffset: {x: 0, y: 0}
+        WallPlacerPercentage: {x: 0, y: 0}
         WFCInputTexture: {fileID: 0}
-        WFCN: {x: 4, y: 4}
-        WFCSymmetry: {x: 1, y: 3}
+        WFCN: {x: 0, y: 0}
+        WFCSymmetry: {x: 0, y: 0}
         WFCIterations: {x: 0, y: 0}
         WFCInvert: 0
     - Tile: {fileID: 11400000, guid: 0ab7fb213098c2e4f90f020cc6f88d53, type: 2}
       Type: 0
       Offset: {x: 0, y: 0}
       Algorithm:
-      - Algorithm: 7
+      - Algorithm: 5
         Fill:
           Count: {x: 0, y: 0}
           Percentage: {x: 100, y: 100}
         FillCount: {x: 0, y: 0}
         FillPercentage: {x: 100, y: 100}
         RandomWalk:
-          Percentage: {x: 50, y: 50}
-        RandomWalkPercentage: {x: 50, y: 50}
+          Percentage: {x: 0, y: 0}
+        RandomWalkPercentage: {x: 0, y: 0}
         PerlinNoise:
-          Modifier: {x: 0, y: 0.25}
-        PerlinNoiseModifier: {x: 0, y: 0.25}
-        TunnelPathWidth: {x: 3, y: 3}
-        TunnelXBeginPercent: {x: 0, y: 100}
-        TunnelXFinishPercent: {x: 0, y: 100}
-        TunnelYBeginPercent: {x: 0, y: 100}
-        TunnelYFinishPercent: {x: 0, y: 100}
-        CorridorsLifetime: {x: 0, y: 100}
-        CorridorsChangePercentage: {x: 0, y: 100}
-        CorridorsWidth: {x: 3, y: 3}
-        RoomPlacerChance: {x: 0, y: 0}
-        RoomPlacerWidth: {x: 4, y: 20}
-        RoomPlacerHeight: {x: 4, y: 20}
-        BSPWidth: {x: 8, y: 12}
-        BSPHeight: {x: 8, y: 12}
-        BSPChance: {x: 100, y: 100}
-        BSPOffset: {x: 1, y: 1}
-        WallPlacerPercentage: {x: 100, y: 100}
+          Modifier: {x: 0, y: 0}
+        PerlinNoiseModifier: {x: 0, y: 0}
+        TunnelPathWidth: {x: 0, y: 0}
+        TunnelXBeginPercent: {x: 0, y: 0}
+        TunnelXFinishPercent: {x: 0, y: 0}
+        TunnelYBeginPercent: {x: 0, y: 0}
+        TunnelYFinishPercent: {x: 0, y: 0}
+        CorridorsLifetime: {x: 40, y: 40}
+        CorridorsChangePercentage: {x: 10, y: 10}
+        CorridorsWidth: {x: 1, y: 1}
+        RoomPlacerChance: {x: 100, y: 100}
+        RoomPlacerWidth: {x: 5, y: 16}
+        RoomPlacerHeight: {x: 5, y: 16}
+        BSPWidth: {x: 0, y: 0}
+        BSPHeight: {x: 0, y: 0}
+        BSPChance: {x: 0, y: 0}
+        BSPOffset: {x: 0, y: 0}
+        WallPlacerPercentage: {x: 0, y: 0}
         WFCInputTexture: {fileID: 0}
-        WFCN: {x: 4, y: 4}
-        WFCSymmetry: {x: 1, y: 3}
+        WFCN: {x: 0, y: 0}
+        WFCSymmetry: {x: 0, y: 0}
         WFCIterations: {x: 0, y: 0}
         WFCInvert: 0
   RoomTypes: []

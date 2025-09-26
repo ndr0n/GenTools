@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab003e3009ad45149a8e55f35fb82d1c, type: 3}
   m_Name: Neosig_A_X0Y0Z0
   m_EditorClassIdentifier: Assembly-CSharp::MindTheatre.WorldArea
-  Seed: 2102212562
+  Seed: -590207525
   Presets:
   - {fileID: 11400000, guid: 8b58d22d9429f4b16996b5444d95ac70, type: 2}
   WorldPosition: {x: 0, y: 0, z: 0}

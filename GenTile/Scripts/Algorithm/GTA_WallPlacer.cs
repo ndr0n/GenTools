@@ -25,6 +25,7 @@ namespace GenTools
                 if (val.x > max.x) max.x = val.x;
                 if (val.y > max.y) max.y = val.y;
             }
+            max = max - min;
 
             for (int x = min.x; x <= max.x; x++)
             {

@@ -27,6 +27,7 @@ namespace GenTools
                 if (val.x > max.x) max.x = val.x;
                 if (val.y > max.y) max.y = val.y;
             }
+            max = max - min;
             int width = max.x + 1;
             int height = max.y + 1;
 

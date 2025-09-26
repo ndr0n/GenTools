@@ -5,12 +5,12 @@ using UnityEngine;
 namespace GenTools
 {
     [System.Serializable]
-    public class GTA_Fill : GenTileAlgo
+    public struct GTA_Fill
     {
-        public Vector2Int Count = Vector2Int.zero;
-        public Vector2Int Percentage = Vector2Int.zero;
+        public Vector2Int Count;
+        public Vector2Int Percentage;
 
-        public override List<Vector2Int> Execute(List<Vector2Int> available, int seed)
+        public List<Vector2Int> Execute(List<Vector2Int> available, int seed)
         {
             List<Vector2Int> placed = new();
             System.Random random = new(seed);

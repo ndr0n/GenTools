@@ -82,42 +82,37 @@ namespace GenTools
             byte value = 1;
             byte[,] map = new byte[Size.x, Size.y];
             List<Vector2Int> placed = algorithm.Execute(availablePositions, map, value, random.Next(int.MinValue, int.MaxValue));
-            foreach (var p in placed) availablePositions.Remove(p);
-            List<Vector2Int> worldPositions = availablePositions.ToList();
-            foreach (var worldPosition in worldPositions)
+            foreach (var p in placed)
             {
-                Vector2Int roomPosition = worldPosition - new Vector2Int(Position.x, Position.y);
-                if (map[roomPosition.x, roomPosition.y] == value)
+                Vector2Int worldPosition = p + Position;
+
+                Vector3Int worldPos = new Vector3Int(worldPosition.x, worldPosition.y, 0);
+                genTile.Tilemap[(int) algorithm.Type].SetTile(worldPos, algorithm.Tile);
+                TileData data = new();
+                algorithm.Tile.GetTileData(worldPos, genTile.Tilemap[(int) algorithm.Type], ref data);
+                GameObject spawn = data.gameObject;
+
+                switch (type)
                 {
-                    availablePositions.Remove(roomPosition);
-                    Vector3Int worldPos = new Vector3Int(worldPosition.x, worldPosition.y, 0);
-                    genTile.Tilemap[(int) algorithm.Type].SetTile(worldPos, algorithm.Tile);
-
-                    TileData data = new();
-                    algorithm.Tile.GetTileData(worldPos, genTile.Tilemap[(int) algorithm.Type], ref data);
-                    GameObject spawn = data.gameObject;
-
-                    switch (type)
-                    {
-                        case GenTileRoomObjectType.Floor:
-                            PlacedFloor.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
-                            break;
-                        case GenTileRoomObjectType.Door:
-                            PlacedDoors.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
-                            break;
-                        case GenTileRoomObjectType.Wall:
-                            PlacedWalls.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
-                            break;
-                        case GenTileRoomObjectType.Balcony:
-                            PlacedBalcony.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
-                            break;
-                        case GenTileRoomObjectType.Object:
-                            PlacedObjects.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(type), type, null);
-                    }
+                    case GenTileRoomObjectType.Floor:
+                        PlacedFloor.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
+                        break;
+                    case GenTileRoomObjectType.Door:
+                        PlacedDoors.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
+                        break;
+                    case GenTileRoomObjectType.Wall:
+                        PlacedWalls.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
+                        break;
+                    case GenTileRoomObjectType.Balcony:
+                        PlacedBalcony.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
+                        break;
+                    case GenTileRoomObjectType.Object:
+                        PlacedObjects.Add(new GenTileObject(algorithm.Tile, worldPosition, spawn));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 }
+                availablePositions.Remove(worldPosition);
             }
             if (!roomTiles.Contains(algorithm.Tile)) roomTiles.Add(algorithm.Tile);
             return availablePositions;

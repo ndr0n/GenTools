@@ -33,7 +33,7 @@ namespace GenTools
             PlacedTunnels.Clear();
         }
 
-        public void Place()
+        public void PlaceArea()
         {
             Clear();
 
@@ -66,12 +66,12 @@ namespace GenTools
                         }
                         if (canPlace)
                         {
-                            availablePositions.Add(new Vector2Int(pos.x + areaRoom.Position.x, pos.y + areaRoom.Position.y));
+                            availablePositions.Add(new Vector2Int(pos.x, pos.y));
                         }
                     }
                 }
-                PlacedRooms.Insert(0, areaRoom);
                 availablePositions = areaRoom.PlaceTileRoom(GenTile, availablePositions, random);
+                PlacedRooms.Insert(0, areaRoom);
             }
 
             foreach (var tilemap in GenTile.Tilemap) tilemap.RefreshAllTiles();
@@ -204,7 +204,7 @@ namespace GenTools
                 {
                     for (int y = 0; y < room.Size.y; y++)
                     {
-                        availablePositions.Add(new Vector2Int(x + room.Position.x, y + room.Position.y));
+                        availablePositions.Add(new Vector2Int(x, y));
                     }
                 }
                 availablePositions = room.PlaceTileRoom(GenTile, availablePositions, random);

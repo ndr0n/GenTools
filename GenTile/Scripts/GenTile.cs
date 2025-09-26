@@ -163,7 +163,7 @@ namespace GenTools
             Iterate();
             Draw();
             Render(Map);
-            if (GenTileArea != null) GenTileArea.Place();
+            if (GenTileArea != null) GenTileArea.PlaceArea();
             return Map.ToList();
         }
 
@@ -172,7 +172,7 @@ namespace GenTools
             Clear();
             Init();
             Render(map);
-            if (GenTileArea != null) GenTileArea.Place();
+            if (GenTileArea != null) GenTileArea.PlaceArea();
         }
     }
 
